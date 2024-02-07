@@ -37,7 +37,7 @@ class StripeController extends Controller
             "line_items" => [
                 [
                     "price_data" => [
-                        "currency" => "usd",
+                        "currency" => "CHF",
                         "product_data" => [
                             "name" => $item,
                         ],

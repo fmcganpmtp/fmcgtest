@@ -65,8 +65,8 @@
                       <tr>
                         <th>Package name</th>
                         <th>Cost</th>
-                        <th>Additional Profiles</th>
-                        <th>Profile Cost</th>
+                        <!--<th>Additional Profiles</th>
+                        <th>Profile Cost</th>-->
                         <th>Validity</th>
                         <th>Auto renewal </th>
 						@if(!empty(Session::get('last_oreder_total')))
@@ -77,16 +77,16 @@
                     </thead>
                     <tbody>
                       <tr>
-                        <td>{{ $package->name   }}
-                          ({{ $package->user_type ?? ''   }})</td>
-                          <td>${{ $basic_price }}</td>
-                          <td>{{ $no_of_accounts }}
-                         @if($package->subscription_type=="Extended") (${{ $account_basic_price   }} / Profile) @endif</td>
-                        <td>@if($package->subscription_type=="Extended") ${{ $profile_cost }} @endif</td>
+                        <td>{{ $package->name   }}</td>
+                          <td>CHF {{ $basic_price }}</td>
+                         <!-- <td>{{ $no_of_accounts }}
+                         @if($package->subscription_type=="Extended") (CHF{{ $account_basic_price   }} / Profile) @endif</td>
+                        <td>@if($package->subscription_type=="Extended") CHF{{ $profile_cost }} @endif</td>
+                        -->
                         <td>{{ $package->package_validity   }}</td>
                         <td>
 						<?php
-       if ($view_composer_co_users_criteria['flag2'] == true) { ?>
+       if ($view_composer_profile_menu_visible_criteria['flag2'] == true) { ?>
 	<div class="switch-field"> 
     <input disabled type="radio" id="radio-{{$package->id}}" name="auto_renewal" value="1" {{ ($auto_renewal=="1")? "checked" : "" }} />
     <label for="radio-{{$package->id}}">On</label>
@@ -104,9 +104,9 @@
       ?>
  </td>
  @if(!empty(Session::get('last_oreder_total')))
- <td>${{ Session::get('last_oreder_total') ?? '' }} </td>
+ <td>CHF {{ Session::get('last_oreder_total') ?? '' }} </td>
  @endif
-						<td>${{ $grand_total }} </td>
+						<td>CHF {{ $grand_total }} </td>
                       </tr>
                     </tbody>
                   </table>
@@ -117,7 +117,7 @@
                   <h3>TOTAL</h3>
                   <ul>
                     <li class="sub-ttl-mb">Sub total<b>:</b></li>
-                    <li><span>${{ $grand_total }}</span></li>
+                    <li><span>CHF {{ $grand_total }}</span></li>
                   </ul>
                   <div class="form-group form-check">
                     <input required type="checkbox" value="yes" class="form-check-input" id="exampleCheck1" name="privacy_check">

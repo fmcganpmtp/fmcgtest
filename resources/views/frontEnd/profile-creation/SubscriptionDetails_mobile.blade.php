@@ -26,7 +26,7 @@ $today = Carbon::createFromFormat('Y-m-d H:s:i', $today);
               @endif
               </div>
             </div>
-            <div class="tableC subcrib-dt">
+            <div class="tableC subcrib-dt subcrib-dt8">
               <table class="table table-bordered">
                 <thead>
                   <tr>
@@ -49,7 +49,7 @@ $today = Carbon::createFromFormat('Y-m-d H:s:i', $today);
                 <?php  $package = $subscription->Package;  ?>
                   <tr>
                     <td><a href="{{ route('PackgeInvoice', ['package_id'=>$subscription->package_id,'subscription_id'=>$subscription->id]) }}"><h5><i class="fa fa-dot-circle-o" aria-hidden="true"></i>{{$subscription->Package->name ?? ''}} </h5></a></td>
-                    <td>${{$package->package_basic_price ?? ''}} </td>
+                    <td>CHF {{$package->package_basic_price ?? ''}} </td>
 					 <td>{{$subscription->order_total ?? ''}}</td>
                     <td>
                       <?php 
@@ -113,7 +113,22 @@ $today = Carbon::createFromFormat('Y-m-d H:s:i', $today);
                      @if($package->status=='deleted')
                         <a  onclick="sweetAlert('This Package is no longer available.', '', 'error');"  href="#"  class="btn btn-outline-info">Renew </a>
                     @elseif($dates_remining<=15)
+                    
+                    
+	                    @if($package->package_basic_price>0)
 	                    <a  href="{{ route('renew.package',['package_id'=>$package->id,'accounts_id'=>$subscription->OrderDetail->accounts_id ,'order_type'=>'Renew','old_pkg_id'=>$package->id])}}"  class="btn btn-outline-info">Renew </a>
+	                    @else
+	                    <form method="post" action="{{route('cart.submit')}}" name="direct_submit">
+                                  
+                            @csrf
+                            <input type="hidden" name="package_id" value="{{$package->id}}">
+                            <input type="hidden" name="order_type" value="Renew">
+                            <input type="hidden" name="old_pkg_id" value="{{$package->id}}">
+                            <button class="btn btn-outline-info renw-nw">Renew</button>
+                            </form>
+	                    @endif
+                    
+                    
                     @endif
 					   <?php } ?>
 					@endif

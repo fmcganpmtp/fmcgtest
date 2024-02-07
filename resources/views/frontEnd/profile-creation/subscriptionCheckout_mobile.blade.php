@@ -1,6 +1,23 @@
 @extends('layouts.template_mobile')
 @section('title', 'Checkout')
 @section('content')
+<?php 
+                          $validity=12;
+                          if($package->package_validity=='One year')
+                          $no_of_months = 12;
+                          if($package->package_validity=='6 months')
+                          $no_of_months = 6;
+                          if($package->package_validity=='3 months')
+                          $no_of_months = 3;
+                          
+                          ?>
+                          <?php 
+                          $price=  $package->package_basic_price/$no_of_months;
+                          $price = number_format($price,2);
+                         // $price=explode('.',number_format((float)$price, 2, '.', ''));
+                          $price_offer=  $package->package_offer_price/$no_of_months;
+                          $price_offer = number_format($price_offer,2);
+                         // $price_offer=explode('.',number_format((float)$price_offer, 2, '.', '')); ?>
 <div class="bg-light min-vh-100 d-flex flex-row align-items-center login-scr sub-chk-out pack-bg bg_white">
    <div class="container">
       <div class="row">
@@ -10,13 +27,13 @@
                   <div class="col-lg-6 col-12 ">
                      <div class="log-left ">
                         <div class="chk-out-left">
-                           <h3> {{ $package->name }} </h3>
+                           <h3> {{ $package->name }} ({{$package->package_validity}}) </h3>
                            
                            
-                           @if(($package->package_offer_price != "") || ($package->package_offer_price>0))
-                           <h4><del> ${{$package->package_basic_price ?? ''}}</del><b> ${{$package->package_offer_price ?? ''}}</b> {{$package->package_validity ?? ''}} </h4>
+                          @if(($package->package_offer_price != "") && ($package->package_offer_price>0))
+                           <h4><del> CHF {{$price ?? ''}}</del><b> CHF {{$price_offer ?? ''}}</b><br> /pm </h4>
                            @else
-                           <h4><b> ${{$package->package_basic_price ?? ''}}</b> {{$package->package_validity ?? ''}} </h4>
+                           <h4><b> CHF {{$price ?? ''}}</b><br> /pm </h4>
                            @endif
                            <div class="shk-left-txt">
                               <p> {{$package->package_description ?? ''}} </p>

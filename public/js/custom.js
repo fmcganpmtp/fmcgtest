@@ -91,6 +91,41 @@
 	});
 
 
+// product-req-slider JS
+	$('.product-req-slider').owlCarousel({
+		items: 1,
+		loop: true,
+		margin: 24,
+		nav: false,
+		dots: false,
+		autoplay: true,
+		smartSpeed: 1000,
+		autoplayHoverPause: true,
+		navText: [
+			"<i class='ri-arrow-left-s-line'></i>",
+			"<i class='ri-arrow-right-s-line'></i>",
+		],
+		responsive: {
+			0: {
+				items: 1,
+			},
+			414: {
+				items: 1,
+			},
+			576: {
+				items: 2,
+			},
+			768: {
+				items: 2,
+			},
+			992: {
+				items: 4,
+			},
+			1200: {
+				items: 4,
+			},
+		},
+	});
 
 
 	// category list top slider JS

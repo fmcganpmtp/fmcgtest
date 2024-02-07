@@ -45,6 +45,11 @@
 
       <!-- Title -->
       <title>@yield('title')</title>
+		<meta name="description" content="@yield('description')">
+        <meta property="og:title" content="@yield('title')" />
+        <meta property="og:description" content="@yield('description')" />
+        <?php $og_logo_url =   asset('images/og_logo.jpg'); ?>
+        <meta property="og:image" content="{{ asset('images/og_logo.jpg') }}" />
       <script async src="https://tag.clearbitscripts.com/v1/pk_0d9018251a9f1ab180aed58c2059e241/tags.js" referrerpolicy="strict-origin-when-cross-origin"></script>
   <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-TG7NKKFFF4"></script>
@@ -116,87 +121,64 @@
                                  <span class="user-name01"> {{ substr(Auth::guard('user')->user()->name,0,6) ?? '' }}</span> 
                               </button>
                               
-                              <div class="dropdown-menu language-dropdown-menu" aria-labelledby="language2" style=""> 
-                              
-                              @if($usertype=="seller" )
-                              @if($view_composer_co_users_criteria['flag_blocked_active'] != true)
-							  @if($view_composer_co_users_criteria['flag2'] == true)
-                              <a class="dropdown-item" href="{{route('seller.dashboard')}}"> <i class="fa fa-tachometer" aria-hidden="true"></i> Dashboard</a> 
-                              @endif
-                              @endif
-                              <a class="dropdown-item" href="{{route('ViewProfileSeller')}}"> <i class="fa fa-user" aria-hidden="true"></i> My profile </a>
-                              @if(Auth::guard('user')->user()->seller_type!='Co-Seller' && $view_composer_co_users_criteria['flag2'] == true)
-									<a class="dropdown-item" href="{{route('seller.kyc.approval')}}"> <i class="fa fa-tasks" aria-hidden="true"></i> KYC approval @if(Auth::guard('user')->user()->varification_status!="varified" )<i class="fa fa-exclamation notific" aria-hidden="true" ></i>@endif</a>
-							  @endif
-							  @if($view_composer_co_users_criteria['flag_blocked_active'] != true)
-							  @if($view_composer_co_users_criteria['flag2'] == true) 
-									<a class="dropdown-item" href="{{route('user.mynetwork')}}"> <i class="fa fa-tasks" aria-hidden="true"></i>My network </a>
-							  @endif		
-							  @if( $view_composer_co_users_criteria['flag'] == true && Auth::guard('user')->user()->seller_type!='Co-Seller' ) 
-								<a class="dropdown-item" href="{{route('user.listcosellers')}}"> <i class="fa fa-toggle-on" aria-hidden="true"></i> Manage co-sellers </a> 
-							  @endif
-							  @if($view_composer_co_users_criteria['flag2'] == true) 
-								 <a class="dropdown-item" href="{{route('seller.products')}}"> <i class="fa fa-plus-square" aria-hidden="true"></i> Product </a>
-								 <a class="dropdown-item" href="{{ route('Product.Requests')}}"> <i class="fa fa-tasks" aria-hidden="true"></i> Product requests </a>
-							  @endif
-							  @if( Auth::guard('user')->user()->seller_type!='Co-Seller' ) 
-								 <a class="dropdown-item" href="{{ route('subscription.details')}}"> <i class="fa fa-tasks" aria-hidden="true"></i> Subscription details </a>
-								 
-							  @endif		
-							  @endif		
-							
-							
-							 @elseif($usertype=="buyer" || $usertype =="guest")
-							 
-							 @if($view_composer_co_users_criteria['flag_blocked_active'] != true)
-									@if($usertype !="guest" && $view_composer_co_users_criteria['flag2'] == true)<a class="dropdown-item" href="{{route('buyer.dashboard')}}"> <i class="fa fa-tachometer" aria-hidden="true"></i> Dashboard</a>
-								    @endif 
+                              <div class="dropdown-menu language-dropdown-menu" aria-labelledby="language2">
+									{{--	@if($view_composer_profile_menu_visible_criteria['general_companyDashboard'] == 1 )--}}
+									@if(($view_composer_profile_menu_visible_criteria['flag_blocked_active'] != true) && $view_composer_profile_menu_visible_criteria['flag2'])
+									<a class="dropdown-item" href="{{route('seller.dashboard')}}"> <i class="fa fa-tachometer" aria-hidden="true"></i> Dashboard</a>
 									@endif
-									@if($usertype !="guest") <a class="dropdown-item" href="{{route('ViewProfileBuyer')}}"> <i class="fa fa-user" aria-hidden="true"></i> My profile </a> 
-									@else <a class="dropdown-item" href="{{route('ViewProfileGuest')}}"> <i class="fa fa-user" aria-hidden="true"></i> My profile </a> @endif
-									@if($usertype !="guest" && Auth::guard('user')->user()->seller_type!='Co-Seller' && $view_composer_co_users_criteria['flag2'] == true)
+								{{--	@endif  --}}
+								{{-- @if($view_composer_profile_menu_visible_criteria['general_companyProfile'] == 1 )--}}
+									<a class="dropdown-item" href="{{route('ViewProfileSeller')}}"> <i class="fa fa-user" aria-hidden="true"></i> My profile </a> 
+								 {{-- @endif --}}
+									@if((Auth::guard('user')->user()->seller_type!='Co-Seller')  && $view_composer_profile_menu_visible_criteria['flag2'] == true)
 									<a class="dropdown-item" href="{{route('seller.kyc.approval')}}"> <i class="fa fa-clone" aria-hidden="true"></i> KYC approval @if(Auth::guard('user')->user()->varification_status!="varified" )<i class="fa fa-exclamation notific" aria-hidden="true" ></i>@endif</a>
 									@endif
+									@if(($view_composer_profile_menu_visible_criteria['flag_blocked_active'] != true) && $view_composer_profile_menu_visible_criteria['flag2'])
+									{{-- @if($view_composer_profile_menu_visible_criteria['network_expand'] == 1)--}}
+									 <a class="dropdown-item" href="{{route('user.mynetwork')}}"> <i class="fa fa-pencil-square-o" aria-hidden="true"></i>My Networks </a> 
+									{{-- @endif --}}
+									@if( $view_composer_profile_menu_visible_criteria['general_companyDashboard'] == 1 && Auth::guard('user')->user()->seller_type!='Co-Seller' ) 
+								<!--	<a class="dropdown-item" href="{{route('user.listcosellers')}}"> <i class="fa fa-toggle-on" aria-hidden="true"></i> Manage Co-Users </a> -->
+									@endif
 									
-									@if($view_composer_co_users_criteria['flag_blocked_active'] != true)
+								{{--	@if($view_composer_profile_menu_visible_criteria['prd_menu_visble'] == 1 || $view_composer_profile_menu_visible_criteria['active_product_count'] >0)--}}
+									<a class="dropdown-item" href="{{route('seller.products')}}"> <i class="fa fa-plus-square" aria-hidden="true"></i> Product </a>
+								{{--	@endif --}}
+									
+								{{--	@if($view_composer_profile_menu_visible_criteria['market_productRequests'] == 1 || $view_composer_profile_menu_visible_criteria['market_createProductRequests'] ==1) --}}
+									<a class="dropdown-item" href="{{ route('Product.Requests')}}"> <i class="fa fa-tasks" aria-hidden="true"></i> Product requests </a>
+								{{--	@endif--}}
+									@endif
 									@if( Auth::guard('user')->user()->seller_type!='Co-Seller' ) 
 									<a class="dropdown-item" href="{{ route('subscription.details')}}"> <i class="fa fa-tasks" aria-hidden="true"></i> Subscription details </a>
-								 	@endif   
-								 	@if($view_composer_co_users_criteria['flag2'] == true) 
-								
-								    <a class="dropdown-item" href="{{ route('Product.Requests')}}"> <i class="fa fa-tasks" aria-hidden="true"></i> Product requests </a>
-							        @endif
-									@if( $view_composer_co_users_criteria['flag'] == true && Auth::guard('user')->user()->seller_type!='Co-Seller' ) 
-									<a class="dropdown-item" href="{{route('user.listcosellers')}}"> <i class="fa fa-toggle-on" aria-hidden="true"></i> Manage co-buyers </a> 
-									@endif 
-									@if($usertype !="guest" && $view_composer_co_users_criteria['flag2'] == true) 	 
-									<a class="dropdown-item" href="{{route('user.mynetwork')}}"> <i class="fa fa-pencil-square-o" aria-hidden="true"></i>My Networks </a> 
 									@endif
-									@endif
-									
-                              @endif
-                              <a class="dropdown-item" href="{{route('logout')}}"> <i class="fa fa-sign-out" aria-hidden="true"></i>Log out </a> 
-                               </div>
+									<a class="dropdown-item" href="{{route('logout')}}"> <i class="fa fa-sign-out" aria-hidden="true"></i>Log out </a> 
+								</div>
                               
                               
                               
                               
-                               @if($view_composer_co_users_criteria['flag_blocked_active'] != true)
-								@if($usertype !="guest" && $view_composer_co_users_criteria['flag2'] == true)
+                               @if($view_composer_profile_menu_visible_criteria['flag_blocked_active'] != true)
+								@if($usertype !="guest" && $view_composer_profile_menu_visible_criteria['flag2'] == true)
                               <ul class="head-right  home-demo">
                                   <li class="wish-list wish_show">
-                                      <a href="{{ route('WishlistItems')}}"><i class="fa fa-heart-o" aria-hidden="true"></i> </i><br>
+                                      <a href="{{ route('WishlistItems')}}"><i class="fa fa-heart" aria-hidden="true">
+ </i><br>
 										<div class="wish-count wishlist_count" @php if($view_composer_wishCount==0) {  echo 'style="display:none;"'; } @endphp>{{ $view_composer_wishCount ?? "" }}
 							            </div>
 							          </a>
 							      </li>
-							<li class="wish-list"><a href="javascript:void(0)" id="loadChatWindow"><i class="fa fa-comment-o" aria-hidden="true"></i> </i><br>
+							@if( $view_composer_profile_menu_visible_criteria['network_chat'] == 1)      
+							<li class="wish-list"><a href="javascript:void(0)" id="loadChatWindow"><img src="{{ asset('images/chat-ic-03.png') }}"> <br>
 							@if($view_composer_chact_unreadcnt!=0)
 							<div class="chat-count wish-count">{{ $view_composer_chact_unreadcnt}}</div>
 							@else
 							<div class="chat-count wish-count" style="display:none;"></div>
 							@endif
 							</a></li>
+							@else
+                             <li class="wish-list"><a href="javascript:void(0)" onclick="showerrorchat()"><img src="{{ asset('images/chat-ic-03.png') }}"></a>
+                            @endif
                               </ul>
                               @endif
 							@endif

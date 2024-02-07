@@ -76,13 +76,15 @@ class PackageController extends Controller
         
         $pkg_type = $request->get("pkg_type"); //
         $query = Package::where("status", "!=", "deleted");
-        if ($pkg_type == "seller") {
+       /* if ($pkg_type == "seller") {
             $query = $query->where("user_type", "Seller");
         } elseif ($pkg_type == "buyer") {
             $query = $query->where("user_type", "Buyer");
-        } 
-        if(!is_null($old_subscription) && $expairy_date->isFuture() ) {        
-        $query->when($userType == "seller", function ($q) use ($packagePrice) {
+        } */
+        if(!is_null($old_subscription) && $expairy_date->isFuture() ) { 
+            
+        $query = $query->where("package_basic_price", ">", $packagePrice);
+       /* $query->when($userType == "seller", function ($q) use ($packagePrice) {
                 return $q
                     ->where("package_basic_price", ">", $packagePrice)
                     ->where("user_type", "Seller")
@@ -95,7 +97,7 @@ class PackageController extends Controller
                     ->where("package_basic_price", ">", $packagePrice)
                     ->where("status", "!=", "deleted");
             });
-            $query->where("id", "!=", $old_pkg_id);
+            $query->where("id", "!=", $old_pkg_id);*/
         }
         $packages = $query->get();
         $stripe_status = StripeStatus::pluck('status')->first();
@@ -210,7 +212,8 @@ class PackageController extends Controller
             "phone" => ["required", "string"],
             "address" => ["required", "string"],
             "city" => ["required", "string"],
-            "zip" => ["required", "numeric", "max-digits:6"],
+            //"zip" => ["required", "numeric", "max-digits:6"],
+             "zip" => ["required"],
           //  "card_month" => 'numeric|max:12',
           //  "card_year" => 'numeric|digits:4|min:2022',
           //  "card_cvc" => 'numeric|digits:3',
@@ -280,12 +283,38 @@ class PackageController extends Controller
 		$package_id = $request->get("package_id");
         $accounts_id = $request->get("accounts_id");
         $order_type = $old_pkg_id = "";
-        if (!empty(Session::get("order_type"))) {
-            $order_type = Session::get("order_type");
+        
+        
+        if($request->get("order_type")=="Renew")
+        {
+          Session::put("old_pkg_id", $request->get("old_pkg_id"));
+          Session::put("order_type", $request->get("order_type"));
+          $old_pkg_id = $request->get("old_pkg_id");
+          $order_type =  $request->get("order_type");
+          $packageId = $request->get("package_id");
         }
-        if (!empty(Session::get("old_pkg_id"))) {
-            $old_pkg_id = Session::get("old_pkg_id");
+        
+        
+        else{
+            if (!empty(Session::get("order_type"))) {
+             $order_type = Session::get("order_type");
+             }
+            if (!empty(Session::get("old_pkg_id"))) {
+                $old_pkg_id = Session::get("old_pkg_id");
+            }
         }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         $auto_renewal = 1;
         $accounts = PackageAccount::where("id", $accounts_id)->first();
         $package = Package::where("id", $package_id)->first();
@@ -349,18 +378,22 @@ class PackageController extends Controller
 			"status" => "Active",
         ];
 		$package_validity = $EndDate = "";
-		if(!empty($package->package_validity))
-        $package_validity = $package->package_validity;
-		if ($package_validity == "3 months") {
-                $EndDate = Carbon::now()->addMonths(3);
-            } //add 3 months from date of purchase
-            if ($package_validity == "6 months") {
-                $EndDate = Carbon::now()->addMonths(6);
-            } //add 6 months from date of purchase
-            if ($package_validity == "One year") {
-                $EndDate = Carbon::now()->addMonths(12);
-            } //add 12 months from date of purchase
-			
+		// if(!empty($package->package_validity))
+        // $package_validity = $package->package_validity;
+		// if ($package_validity == "3 months") {
+        //         $EndDate = Carbon::now()->addMonths(3);
+        //     } //add 3 months from date of purchase
+        //     if ($package_validity == "6 months") {
+        //         $EndDate = Carbon::now()->addMonths(6);
+        //     } //add 6 months from date of purchase
+        //     if ($package_validity == "One year") {
+        //         $EndDate = Carbon::now()->addMonths(12);
+        //     } //add 12 months from date of purchase
+
+            // New subscription options
+			$package_validity = 1;
+            $EndDate = Carbon::now()->addMonths(1);
+
 			$updt_old = DB::table("subscriptions")
                 ->where("user_id", $user_id)
                 ->where("package_id", Session::get("old_pkg_id"))
@@ -375,15 +408,16 @@ class PackageController extends Controller
             $input["expairy_date"] = $EndDate->toDateString(); // carbon date format to noramal date
             if (!$current_endDate->isPast()) {
                 //active packages
-                if ($package_validity == "3 months") {
-                    $EndDate1 = $current_endDate->addMonths(3);
-                }
-                if ($package_validity == "6 months") {
-                    $EndDate1 = $current_endDate->addMonths(6);
-                }
-                if ($package_validity == "One year") {
-                    $EndDate1 = $current_endDate->addMonths(12);
-                }
+                // if ($package_validity == "3 months") {
+                //     $EndDate1 = $current_endDate->addMonths(3);
+                // }
+                // if ($package_validity == "6 months") {
+                //     $EndDate1 = $current_endDate->addMonths(6);
+                // }
+                // if ($package_validity == "One year") {
+                //     $EndDate1 = $current_endDate->addMonths(12);
+                // }
+                $EndDate1 = $current_endDate->addMonths(1);
                 $input["expairy_date"] = $EndDate1->toDateString(); // carbon date format to noramal date
             }
             
@@ -412,8 +446,8 @@ class PackageController extends Controller
             $input["auto_renewal"] = $auto_renewal;
             Subscription::create($input);
         }
-        $usertype = Package::find($package_id)->user_type;
-        
+        //$usertype = Package::find($package_id)->user_type;
+        $usertype = 'seller';
         $input = [
             "usertype" => $usertype,
         ];
@@ -568,11 +602,13 @@ class PackageController extends Controller
         $subscriptions = Subscription::where("user_id", $userId)
             ->orderBy("id", "DESC")
             ->get();
+
+        $highestPackage = Package::where("status", 'Active')->orderBy("package_basic_price", "DESC")->first();
         
         if($this->isMobile()) { 
 	    return view( "frontEnd.profile-creation.SubscriptionDetails_mobile",compact("subscriptions") );
         } else {
-          return view( "frontEnd.profile-creation.SubscriptionDetails",compact("subscriptions") );
+          return view( "frontEnd.profile-creation.SubscriptionDetails",compact("subscriptions","highestPackage") );
     }
     }
     public function UpgradePackage(Request $request)
@@ -585,15 +621,16 @@ class PackageController extends Controller
             ->where("id", $old_pkg_id)
             ->pluck("package_validity")
             ->first();
-        if ($package_validity == "One year") {
-            $tot_months = 12;
-        }
-        if ($package_validity == "6 months") {
-            $tot_months = 6;
-        }
-        if ($package_validity == "3 months") {
-            $tot_months = 3;
-        }
+        // if ($package_validity == "One year") {
+        //     $tot_months = 12;
+        // }
+        // if ($package_validity == "6 months") {
+        //     $tot_months = 6;
+        // }
+        // if ($package_validity == "3 months") {
+        //     $tot_months = 3;
+        // }
+        $tot_months = 1;
         $userId = Auth::guard("user")->user()->id;
         $user = User::find($userId);
         //$orders = $user->Subscription; //orders  of current user
@@ -620,7 +657,7 @@ class PackageController extends Controller
         $packagePrice = $request->get("package_basicPrice");
         //$package_ids = $orders->pluck("package_id")->all(); //all package ids purchased
         $userType = Auth::guard("user")->user()->usertype;
-        $packages = Package::select("*")
+        /*$packages = Package::select("*")
             ->where("status", "!=", "deleted")
             ->when($userType == "seller", function ($q) use ($packagePrice) {
                 return $q
@@ -636,6 +673,15 @@ class PackageController extends Controller
                     ->where("status", "!=", "deleted");
             })
             ->where("id", "!=", $old_pkg_id)
+            //->whereNotIn('id', $package_ids)
+            ->get();*/
+            
+            $packages = Package::select("*")
+            ->where("status", "!=", "deleted")
+            
+                    ->where("package_basic_price", ">", $packagePrice)
+                    ->where("status", "!=", "deleted")
+                    ->where("id", "!=", $old_pkg_id)
             //->whereNotIn('id', $package_ids)
             ->get();
             $stripe_status = StripeStatus::pluck('status')->first();

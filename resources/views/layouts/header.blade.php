@@ -5,7 +5,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 		<link rel="shortcut icon" href="{{ URL::asset('/images/favicon.ico')}}" type="image/x-icon">
-		<link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+		<link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet"> 
 		<!-- Bootstrap Min CSS -->
 		<link rel="stylesheet" href="{{ asset('/css/bootstrap.min.css')}}">
 		<!-- Owl Theme Default Min CSS -->
@@ -38,6 +38,11 @@
 		<link rel="icon" type="image/png" href="{{ URL::asset('/images/favicon.png')}}">
 		<!-- Title -->
 		<title>@yield('title')</title>
+		<meta name="description" content="@yield('description')">
+        <meta property="og:title" content="@yield('title')" />
+        <meta property="og:description" content="@yield('description')" />
+        <?php $og_logo_url =   asset('images/og_logo.jpg'); ?>
+        <meta property="og:image" content="{{ asset('images/og_logo.jpg') }}" />
 		<script async src="https://tag.clearbitscripts.com/v1/pk_0d9018251a9f1ab180aed58c2059e241/tags.js" referrerpolicy="strict-origin-when-cross-origin"></script>
   <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-TG7NKKFFF4"></script>
@@ -88,22 +93,7 @@
 							<div class="logo"> <a href="{{route('home')}}"> <img src="{{ $img_url }}" alt="Image"> </a> </div>
 						</div>
 						<div class="col-lg-4">
-							<?php
-							$search_key_value = Request::get('search_key');
-							  if(!empty($search_key))
-									$search_key_value = $search_key;
-							   if(!empty($category_Name_fr_slug))
-									$search_key_value = $category_Name_fr_slug;
-									?>
-							<form class="search-box" action="{{route('headsearch')}}"> 
-								<input type="text"  name="search" autocomplete="off" id="search" class="form-control input-lg  {{ $errors->has('search') ? ' is-invalid' : '' }} hd_srch" value="{{$search_key_value}}" placeholder="Search"  >
-								@if ($errors->has('search'))
-								<span class="invalid-feedback" role="alert">
-								<strong>{{ $errors->first('search') }}</strong>
-								</span>
-								@endif
-								<button type="submit" class="search-btn hd_srch_btn"> <i class="ri-search-line"></i> </button>
-							</form>
+							
 						</div>
 						<div class="col-lg-5">
 							<?php    
@@ -114,20 +104,25 @@
 								                else  
 								                $img_path = asset('uploads/defaultImages/default_avatar.png'); ?>
 							<div class="after-login">
-							    @if($view_composer_co_users_criteria['flag_blocked_active'] != true)
-								@if($usertype !="guest" && $view_composer_co_users_criteria['flag2'] == true)
+							    @if($view_composer_profile_menu_visible_criteria['flag_blocked_active'] != true)
+								@if($usertype !="guest" && $view_composer_profile_menu_visible_criteria['flag2'] == true)
 								<ul class="head-right">
-									<li class="wish-list wish_show"><a href="{{ route('WishlistItems')}}"><i class="fa fa-heart-o" aria-hidden="true"></i> </i><br>
+									<li class="wish-list wish_show"><a href="{{ route('WishlistItems')}}"><i class="fa fa-heart" aria-hidden="true"></i>
+<br>
 										<div class="wish-count wishlist_count" @php if($view_composer_wishCount==0) {  echo 'style="display:none;"'; } @endphp>{{ $view_composer_wishCount ?? "" }}
 							</div>
 							</a></li>
-							<li class="wish-list"><a href="javascript:void(0)" id="loadChatWindow"><i class="fa fa-comment-o" aria-hidden="true"></i> </i><br>
+							@if( $view_composer_profile_menu_visible_criteria['network_chat'] == 1)
+							     <li class="wish-list"><a href="javascript:void(0)" id="loadChatWindow"><img src="{{ asset('images/chat-ic-03.png') }}"><br>
 							@if($view_composer_chact_unreadcnt!=0)
-							<div class="chat-count wish-count">{{ $view_composer_chact_unreadcnt}}</div>
+							    <div class="chat-count wish-count">{{ $view_composer_chact_unreadcnt}}</div>
 							@else
-							<div class="chat-count wish-count" style="display:none;"></div>
+							    <div class="chat-count wish-count" style="display:none;"></div>
 							@endif
 							</a></li>
+							 @else
+                             <li class="wish-list"><a href="javascript:void(0)" onclick="showerrorchat()"><img src="{{ asset('images/chat-ic-03.png') }}"></a>
+                            @endif
 							</ul>
 							@endif
 							@endif
@@ -143,69 +138,45 @@
 										@endif
 									</div>
 									<span class="user-name01"> {{ Auth::guard('user')->user()->name ?? '' }}</span> 
-									@if(Auth::guard('user')->user()->varification_status!="varified" && $usertype=="seller" && $view_composer_co_users_criteria['flag2'] == true)<i class="fa fa-exclamation notific" aria-hidden="true" ></i>@endif
+									@if(Auth::guard('user')->user()->varification_status!="varified"  )<i class="fa fa-exclamation notific" aria-hidden="true" ></i>@endif
 								</button> 
-								@if($usertype=="seller" )
+								
+									
 								<div class="dropdown-menu language-dropdown-menu" aria-labelledby="language2">
-									@if($view_composer_co_users_criteria['flag_blocked_active'] != true)
-									@if($view_composer_co_users_criteria['flag2'] == true)
+								{{--	@if($view_composer_profile_menu_visible_criteria['general_companyDashboard'] == 1 )--}}
+								@if(($view_composer_profile_menu_visible_criteria['flag_blocked_active'] != true) && $view_composer_profile_menu_visible_criteria['flag2'])
 									<a class="dropdown-item" href="{{route('seller.dashboard')}}"> <i class="fa fa-tachometer" aria-hidden="true"></i> Dashboard</a>
-									@endif  @endif
+							    @endif
+								{{--	@endif  --}}
+								{{-- @if($view_composer_profile_menu_visible_criteria['general_companyProfile'] == 1 )--}}
 									<a class="dropdown-item" href="{{route('ViewProfileSeller')}}"> <i class="fa fa-user" aria-hidden="true"></i> My profile </a> 
-									@if(Auth::guard('user')->user()->seller_type!='Co-Seller' && $view_composer_co_users_criteria['flag2'] == true)
+								 {{-- @endif --}}
+									@if((Auth::guard('user')->user()->seller_type!='Co-Seller')  && $view_composer_profile_menu_visible_criteria['flag2'] == true)
 									<a class="dropdown-item" href="{{route('seller.kyc.approval')}}"> <i class="fa fa-clone" aria-hidden="true"></i> KYC approval @if(Auth::guard('user')->user()->varification_status!="varified" )<i class="fa fa-exclamation notific" aria-hidden="true" ></i>@endif</a>
 									@endif
+									@if(($view_composer_profile_menu_visible_criteria['flag_blocked_active'] != true) && $view_composer_profile_menu_visible_criteria['flag2'])
+									{{-- @if($view_composer_profile_menu_visible_criteria['network_expand'] == 1)--}}
+									 <a class="dropdown-item" href="{{route('user.mynetwork')}}"> <i class="fa fa-pencil-square-o" aria-hidden="true"></i>My Networks </a> 
+									{{-- @endif --}}
+									@if( $view_composer_profile_menu_visible_criteria['general_companyDashboard'] == 1 && Auth::guard('user')->user()->seller_type!='Co-Seller' ) 
+								<!--	<a class="dropdown-item" href="{{route('user.listcosellers')}}"> <i class="fa fa-toggle-on" aria-hidden="true"></i> Manage Co-Users </a> -->
+									@endif
 									
-									@if($view_composer_co_users_criteria['flag_blocked_active'] != true)
-									@if($view_composer_co_users_criteria['flag2'] == true) 
-									<a class="dropdown-item" href="{{route('user.mynetwork')}}"> <i class="fa fa-pencil-square-o" aria-hidden="true"></i>My Networks </a> 
-									@endif
-									@if( $view_composer_co_users_criteria['flag'] == true && Auth::guard('user')->user()->seller_type!='Co-Seller' ) 
-									<a class="dropdown-item" href="{{route('user.listcosellers')}}"> <i class="fa fa-toggle-on" aria-hidden="true"></i> Manage co-sellers </a> 
-									@endif
-									@if($view_composer_co_users_criteria['flag2'] == true) 
+								{{--	@if($view_composer_profile_menu_visible_criteria['prd_menu_visble'] == 1 || $view_composer_profile_menu_visible_criteria['active_product_count'] >0)--}}
 									<a class="dropdown-item" href="{{route('seller.products')}}"> <i class="fa fa-plus-square" aria-hidden="true"></i> Product </a>
+								{{--	@endif --}}
+									
+								{{--	@if($view_composer_profile_menu_visible_criteria['market_productRequests'] == 1 || $view_composer_profile_menu_visible_criteria['market_createProductRequests'] ==1) --}}
+									<a class="dropdown-item" href="{{ route('Product.Requests')}}"> <i class="fa fa-tasks" aria-hidden="true"></i> Product requests </a>
+								{{--	@endif--}}
 									@endif
 									@if( Auth::guard('user')->user()->seller_type!='Co-Seller' ) 
 									<a class="dropdown-item" href="{{ route('subscription.details')}}"> <i class="fa fa-tasks" aria-hidden="true"></i> Subscription details </a>
-									
-									@endif
-									@endif
-									@if($view_composer_co_users_criteria['flag2'] == true) 
-									<a class="dropdown-item" href="{{ route('Product.Requests')}}"> <i class="fa fa-tasks" aria-hidden="true"></i> Product requests </a>
-									@endif
-									<!-- <a class="dropdown-item" href="seller-Bulk-upload.php"> <i class="fa fa-upload" aria-hidden="true"></i> Bulk upload</a>  -->
-									<a class="dropdown-item" href="{{route('logout')}}"> <i class="fa fa-sign-out" aria-hidden="true"></i>Log out </a> 
-								</div>
-								@elseif($usertype=="buyer" || $usertype =="guest")
-								<div class="dropdown-menu language-dropdown-menu" aria-labelledby="language2"> 
-								    @if($view_composer_co_users_criteria['flag_blocked_active'] != true)
-									@if($usertype !="guest" && $view_composer_co_users_criteria['flag2'] == true)<a class="dropdown-item" href="{{route('buyer.dashboard')}}"> <i class="fa fa-tachometer" aria-hidden="true"></i> Dashboard</a>@endif 
-									@endif
-									@if($usertype !="guest") <a class="dropdown-item" href="{{route('ViewProfileBuyer')}}"> <i class="fa fa-user" aria-hidden="true"></i> My profile </a> 
-									@else <a class="dropdown-item" href="{{route('ViewProfileGuest')}}"> <i class="fa fa-user" aria-hidden="true"></i> My profile </a> @endif
-									@if($usertype !="guest" && Auth::guard('user')->user()->seller_type!='Co-Seller' && $view_composer_co_users_criteria['flag2'] == true)
-									<a class="dropdown-item" href="{{route('seller.kyc.approval')}}"> <i class="fa fa-clone" aria-hidden="true"></i> KYC approval @if(Auth::guard('user')->user()->varification_status!="varified" )<i class="fa fa-exclamation notific" aria-hidden="true" ></i>@endif</a>
-									@endif
-									
-									@if($view_composer_co_users_criteria['flag_blocked_active'] != true)
-									@if( Auth::guard('user')->user()->seller_type!='Co-Seller' ) 
-									<a class="dropdown-item" href="{{ route('subscription.details')}}"> <i class="fa fa-tasks" aria-hidden="true"></i> Subscription details </a>
-									
-									@endif  
-									@if($view_composer_co_users_criteria['flag2'] == true) 
-									<a class="dropdown-item" href="{{ route('Product.Requests')}}"> <i class="fa fa-tasks" aria-hidden="true"></i> Product requests </a>
-									@endif
-									@if( $view_composer_co_users_criteria['flag'] == true && Auth::guard('user')->user()->seller_type!='Co-Seller' ) 
-									<a class="dropdown-item" href="{{route('user.listcosellers')}}"> <i class="fa fa-toggle-on" aria-hidden="true"></i> Manage co-buyers </a> 
-									@endif 
-									@if($usertype !="guest" && $view_composer_co_users_criteria['flag2'] == true) 	 
-									<a class="dropdown-item" href="{{route('user.mynetwork')}}"> <i class="fa fa-pencil-square-o" aria-hidden="true"></i>My Networks </a> 
-									@endif
 									@endif
 									<a class="dropdown-item" href="{{route('logout')}}"> <i class="fa fa-sign-out" aria-hidden="true"></i>Log out </a> 
 								</div>
-								@endif
+								
+								
 							</div>
 						</div>
 						<?php } else { ?> 
@@ -215,6 +186,8 @@
 						</ul>
 						<?php } ?>          
 					</div>
+					
+					
 				</div>
 			</div>
 			</div>
@@ -237,6 +210,9 @@
 				    
 				    
 					<div class="container">
+					<div class="row">
+					
+					<div class="col-lg-3">
 						<nav class="navbar navbar-expand-md navbar-light">
 							<div class="navbar-category">
 								<button type="button" id="categoryButton2" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="ri-menu-line"></i> ALL CATEGORIES <i class="arrow-down ri-arrow-down-s-line"></i> </button>
@@ -244,6 +220,10 @@
 								<ul id="desktopmenu" class="ui-menu"></ul>  
 								</div>
 							</div>
+							
+								</nav>
+								
+								</div><!-->
 							
 							<!--menu.css-->
 							<style>
@@ -338,23 +318,61 @@ body{position:relative;}
 
 /* Handle on hover */
 .desktop-nav ::-webkit-scrollbar-thumb:hover {
+
   background: #cecece; 
 }
+
+
+.image {
+  width: 8%;
+  float: left;
+  padding: 10px;
+}
+
+.label_search {
+  width: 90%; float:left;}
+  
+  
+
 </style>				
 							
 							
 							
 							
 							
+		<div class="col-lg-7">
+		
+		<div class=" middle-header search-sec-new">
+		
+			<?php
+							$search_key_value = Request::get('search_key');
+							  if(!empty($search_key))
+									$search_key_value = $search_key;
+							   if(!empty($category_Name_fr_slug))
+									$search_key_value = $category_Name_fr_slug;
+									?>
+							<form class="search-box" action="{{route('headsearch')}}"> 
+								<input type="text"  name="search" autocomplete="off" id="search" class="form-control input-lg  {{ $errors->has('search') ? ' is-invalid' : '' }} hd_srch" value="{{$search_key_value}}" placeholder="Search"  >
+								@if ($errors->has('search'))
+								<span class="invalid-feedback" role="alert">
+								<strong>{{ $errors->first('search') }}</strong>
+								</span>
+								@endif
+								<button type="submit" class="search-btn hd_srch_btn"> <i class="ri-search-line"></i> Search</button>
+							</form>
 							
 							
 							
+		</div>					
+							
+							
+					</div>		
 							
 							
 							
+				<!--			
+							<div class="collapse navbar-collapse mean-menu" id="navbarSupportedContent">-->
 							
-							
-							<div class="collapse navbar-collapse mean-menu" id="navbarSupportedContent">
 								<!-- <ul class="navbar-nav">  
 									@if(!empty($view_composer_TopmenuCats_visible))
 									@foreach($view_composer_TopmenuCats_visible as $visible_item)
@@ -367,6 +385,8 @@ body{position:relative;}
 									@endforeach
 									@endif 
 									</ul>-->
+									
+						<div class="col-lg-2">			
 								<div class="others-options">
 									<div class="top-social">
 										<ul>
@@ -386,8 +406,10 @@ body{position:relative;}
 										</ul>
 									</div>
 								</div>
+								
+								</div><!--2-->
 							</div>
-						</nav>
+					
 					</div>
 				</div>
 			</div>

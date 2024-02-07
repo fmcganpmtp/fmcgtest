@@ -46,7 +46,7 @@
                             </div>
                         </div>
 						
-						
+						<!--
                         <div class="form-group">
                             <label style="display:block; clear:both;" for="name" >{{ __('Subscription Type :') }}</label>
 
@@ -123,38 +123,7 @@
                                 @endif
                             </div>
                         </div>
-						
-						
-						<div class="form-group" style="display:block;clear:both;">
-                            <label style="display:block; clear:both;" for="name" >{{ __('Price :') }}</label>
-
-                            <div >
-                                <input type="number" step="0.01" name="package_basic_price"  value="{{ $package->package_basic_price }}"   class="form-control {{ $errors->has('package_basic_price') ? ' is-invalid' : '' }}" >
-
-                                @if ($errors->has('package_basic_price'))
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $errors->first('package_basic_price') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-						
-						<div class="form-group">
-                            <label style="display:block; clear:both;" for="name" >{{ __('Offer price :') }}</label>
-
-                            <div >
-                                <input type="number" step="0.01" name="package_offer_price"  value="{{ $package->package_offer_price }}"   class="form-control {{ $errors->has('package_offer_price') ? ' is-invalid' : '' }}" >
-
-                                @if ($errors->has('package_offer_price'))
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $errors->first('package_offer_price') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-						
-						
-						
+						-->
 						<div class="form-group">
                             <label style="display:block; clear:both;" for="name" >{{ __('Validity:') }}</label>
 
@@ -180,52 +149,34 @@
                                 @endif
                             </div>
                         </div>
+						<div class="form-group" style="display:block;clear:both;">
+                            <label style="display:block; clear:both;" for="name" >{{ __('Price :') }}</label>
+
+                            <div >
+                                <input type="number" step="0.01" name="package_basic_price"  value="{{ $package->package_basic_price }}"   class="form-control {{ $errors->has('package_basic_price') ? ' is-invalid' : '' }}" >
+
+                                @if ($errors->has('package_basic_price'))
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $errors->first('package_basic_price') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
 						
-						 <div class="form-group add-mr">
-                        <label style="display:block; clear:both;" for="name" >Key Features Included :</label>
-                        <div id="dynamicAddRemove" >
-                       <?php $count_included = 1; ?>
-                        @foreach ($package->IncludedFeatures as $includ_feature)
-                        @if($includ_feature->feature!="")
-                     <div class="outer_included"><input type="text" name="addMoreInputFields[<?=$count_included?>][feature]" value="{{ $includ_feature->feature }}" class="form-control">
-					<span class="removeclass remove-input-field"><i class="fa fa-minus-circle" aria-hidden="true"></i></span>
-					</div>
-					<?php $count_included= $count_included+1; ?>
-                       @endif
-                        @endforeach 
-						<div class="outer_included"><input type="text" name="addMoreInputFields[<?=$count_included?>][feature]" placeholder="Enter Feature" class="form-control" />
-                      <span class="removeclass remove-input-field"><i class="fa fa-minus-circle" aria-hidden="true"></i></span>
-					  </div></div>						
-                    
-                   <span  id="dynamic-ar" class="btn btn-success round-button"><i class="fa fa-plus-circle" aria-hidden="true"></i></span>
-                     <br><br>
-                    
-           
-                       
-                      
-                      
-                      <div class="form-group add-mr">
-                        <label style="display:block; clear:both;" for="name" >Key Features Excluded :</label>
-                        <div id="dynamicAddRemoveExluded" >
-                        <?php $count = 1; ?>
-                        @foreach ($package->ExcludedFeatures as $exclud_feature)
-                        @if($exclud_feature->feature!="")
-                        <div class="outer">
-					<input type="text" name="addMoreInputFieldsExcluded[<?=$count?>][feature]" value="{{ $exclud_feature->feature }}" class="form-control">
-					<span class="removeclass remove-input-field"><i class="fa fa-minus-circle" aria-hidden="true"></i></span>
-					</div>
-					<?php $count= $count+1; ?>
-                       @endif
-                        @endforeach
-						<div class="outer">
-						<input type="text" name="addMoreInputFieldsExcluded[<?=$count?>][feature]" placeholder="Enter Feature" class="form-control" />
-                       <span class="removeclass remove-input-field"><i class="fa fa-minus-circle" aria-hidden="true"></i></span>
-					   </div>
-					   </div>
-						
-                    <span   id="dynamic-excluded" class="btn btn-success round-button"><i class="fa fa-plus-circle" aria-hidden="true"></i></span>
-                      <br><br> 
-						
+						<div class="form-group">
+                            <label style="display:block; clear:both;" for="name" >{{ __('Offer price :') }}</label>
+
+                            <div >
+                                <input type="number" step="0.01" name="package_offer_price"  value="{{ $package->package_offer_price==0.00?'':$package->package_offer_price }}"   class="form-control {{ $errors->has('package_offer_price') ? ' is-invalid' : '' }}" >
+
+                                @if ($errors->has('package_offer_price'))
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $errors->first('package_offer_price') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+
                         <div class="form-group">
                       <label style="display:block; clear:both;" for="name" >Description :</label>
                       <textarea  name="package_description"    class="form-control {{ $errors->has('package_description') ? ' is-invalid' : '' }}" >{{ $package->package_description }}</textarea>
@@ -235,6 +186,179 @@
                                     </span>
                        @endif
                     </div>
+
+
+                        <div class="form-group">
+                      <div class="no-over">
+                        <p>Select access permissions for this package </p>
+                        <h2>General:</h2>
+                      </div>                    
+                    </div> 
+                   
+                   <div class="form-group three-radio">
+                        <div class="no-over">
+                          <label>Access to Company Profile :</label>
+                        </div>
+                        <label class="control control--checkbox">
+                        No
+                        <input type="radio" name="general_companyProfile" value="0" @if(($package->general_companyProfile==0)) checked @endif />
+                        <div class="control__indicator"></div>
+                        </label>
+                        <label class="control control--checkbox">
+                        Yes
+                        <input type="radio" name="general_companyProfile" value="1" @if(($package->general_companyProfile==1)) checked @endif />
+                        <div class="control__indicator"></div>
+                        </label> 
+                    </div>
+
+                    <div class="form-group three-radio">
+                        <div class="no-over">
+                          <label>Access to Company Dashboard :</label>
+                        </div>
+                        <label class="control control--checkbox">
+                        No
+                        <input type="radio" name="general_companyDashboard" value="0" @if(($package->general_companyDashboard==0)) checked @endif/>
+                        <div class="control__indicator"></div>
+                        </label>
+                        <label class="control control--checkbox">
+                        Yes
+                        <input type="radio" name="general_companyDashboard" value="1" @if(($package->general_companyDashboard==1)) checked @endif/>
+                        <div class="control__indicator"></div>
+                        </label> 
+                    </div>
+
+                    <div class="form-group three-radio">
+                        <div class="no-over">
+                          <label>Access to Profile Insights	:</label>
+                        </div>
+                        <label class="control control--checkbox">
+                        No
+                        <input type="radio" name="general_profileInsights" value="0" @if(($package->general_profileInsights==0)) checked @endif/>
+                        <div class="control__indicator"></div>
+                        </label>
+                        <label class="control control--checkbox">
+                        Yes
+                        <input type="radio" name="general_profileInsights" value="1" @if(($package->general_profileInsights==1)) checked @endif/>
+                        <div class="control__indicator"></div>
+                        </label> 
+                    </div>
+
+                    <div class="form-group three-radio">
+                        <div class="no-over">
+                          <label>Access to Media Options :</label>
+                        </div>
+                        <label class="control control--checkbox">
+                        No
+                        <input type="radio" name="general_accesToMedia" value="0" @if(($package->general_accesToMedia==1)) checked @endif/>
+                        <div class="control__indicator"></div>
+                        </label>
+                        <label class="control control--checkbox">
+                        Yes
+                        <input type="radio" name="general_accesToMedia" value="1" @if(($package->general_accesToMedia==1)) checked @endif/>
+                        <div class="control__indicator"></div>
+                        </label> 
+                    </div>
+                  				   
+                    <div class="form-group">
+                      <div class="no-over">
+                        <h2>Marketplace:</h2>
+                      </div>                    
+                    </div> 
+                   
+                    <div class="form-group three-radio">
+                        <div class="no-over">
+                          <label>Access to Search & find products :</label>
+                        </div>
+                        <label class="control control--checkbox">
+                        No
+                        <input type="radio" name="market_Search" value="0" @if(($package->market_Search==0)) checked @endif/>
+                        <div class="control__indicator"></div>
+                        </label>
+                        <label class="control control--checkbox">
+                        Yes
+                        <input type="radio" name="market_Search" value="1" @if(($package->market_Search==1)) checked @endif/>
+                        <div class="control__indicator"></div>
+                        </label> 
+                    </div>
+
+                    <div class="form-group three-radio">
+                        <div class="no-over">
+                          <label>Product Uploads (<i>Keep blank for unlimited</i>):</label>
+                        </div>
+                        <input type="number" name="market_uploads" value="{{$package->market_uploads}}" class="form-control " placeholder="Keep blank for unlimited"> 
+                    </div>
+
+                    <div class="form-group three-radio">
+                        <div class="no-over">
+                          <label>Access to View Product Requests :</label>
+                        </div>
+                        <label class="control control--checkbox">
+                        No
+                        <input type="radio" name="market_productRequests" value="0"  @if(($package->market_productRequests==0)) checked @endif/>
+                        <div class="control__indicator"></div>
+                        </label>
+                        <label class="control control--checkbox">
+                        Yes
+                        <input type="radio" name="market_productRequests" value="1" @if(($package->market_productRequests==1)) checked @endif/>
+                        <div class="control__indicator"></div>
+                        </label> 
+                    </div>
+
+                    <div class="form-group three-radio">
+                        <div class="no-over">
+                          <label>Access to Create Product Requests :</label>
+                        </div>
+                        <label class="control control--checkbox">
+                        No
+                        <input type="radio" name="market_createProductRequests" value="0"  @if(($package->market_createProductRequests==0)) checked @endif />
+                        <div class="control__indicator"></div>
+                        </label>
+                        <label class="control control--checkbox">
+                        Unlimited
+                        <input type="radio" name="market_createProductRequests" value="1" @if(($package->market_createProductRequests==1)) checked @endif/>
+                        <div class="control__indicator"></div>
+                        </label> 
+                    </div>
+
+                    <div class="form-group">
+                      <div class="no-over">
+                        <h2>Network Feed:</h2>
+                      </div>                    
+                    </div> 
+                   
+                    <div class="form-group three-radio">
+                        <div class="no-over">
+                          <label>Allow Expand your Network :</label>
+                        </div>
+                        <label class="control control--checkbox">
+                        No
+                        <input type="radio" name="network_expand" value="0"  @if(($package->network_expand==0)) checked @endif/>
+                        <div class="control__indicator"></div>
+                        </label>
+                        <label class="control control--checkbox">
+                        Yes
+                        <input type="radio" name="network_expand" value="1"  @if(($package->network_expand==1)) checked @endif/>
+                        <div class="control__indicator"></div>
+                        </label> 
+                    </div>
+
+                    <div class="form-group three-radio">
+                        <div class="no-over">
+                          <label>Allow Chat with Network :</label>
+                        </div>
+                        <label class="control control--checkbox">
+                        No
+                        <input type="radio" name="network_chat" value="0"   @if(($package->network_chat==0)) checked @endif/>
+                        <div class="control__indicator"></div>
+                        </label>
+                        <label class="control control--checkbox">
+                        Yes
+                        <input type="radio" name="network_chat" value="1"   @if(($package->network_chat==1)) checked @endif/>
+                        <div class="control__indicator"></div>
+                        </label> 
+                    </div>
+						
+						     
                        
 
                         <div class="form-group mb-0">
@@ -352,32 +476,6 @@ function show2(){
        }
    }
 </script>
-<script type="text/javascript">
-<?php $count_included = $count_included+1; ?>
-    var i = <?php echo $count_included; ?>;
-    
-    $("#dynamic-ar").click(function () {
-        ++i;
-        $("#dynamicAddRemove").append('<div class="outer_included"><input type="text" name="addMoreInputFields[' + i +
-            '][feature]" placeholder="Enter Feature" class="form-control" /><span class="removeclass remove-input-field"><i class="fa fa-minus-circle" aria-hidden="true"></i></span></div>'
-            );
-    });
-    $(document).on('click', '.remove-input-field', function () {
-        $(this).parents('.outer_included').remove();
-    });
-</script>
-<script type="text/javascript">
-    <?php $count = $count+1; ?>
-    var i = <?php echo $count; ?>;
-    $("#dynamic-excluded").click(function () {
-        ++i;
-        $("#dynamicAddRemoveExluded").append('<div class="outer">  <input type="text" name="addMoreInputFieldsExcluded[' + i +
-            '][feature]" placeholder="Enter Feature" class="form-control" /><span class="removeclass remove-input-field"><i class="fa fa-minus-circle" aria-hidden="true"></i></span></div>'
-            );
-    });
-    $(document).on('click', '.remove-input-field', function () {
-        $(this).parents('.outer').remove();
-    });
-</script>
+
 
 @endsection
