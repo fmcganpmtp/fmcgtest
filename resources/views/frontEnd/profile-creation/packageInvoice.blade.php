@@ -16,7 +16,7 @@
           <div class="pans-txt">
             <p>{{$package->package_description ?? ''}}</p>
           </div>
-         <ul>
+         <!--<ul>
                 @foreach ($package->IncludedFeatures as $includ_feature)
                         @if($includ_feature->feature!="")
                         <li class="avl">{{ $includ_feature->feature }}</li>
@@ -29,7 +29,7 @@
                        @endif
                         @endforeach
                   
-                </ul>
+                </ul>-->
                 
                 <div class="pkg-det32" >
                     <h2 class="pkg-det-outhead">GENERAL</h2>

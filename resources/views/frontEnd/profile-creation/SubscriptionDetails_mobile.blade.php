@@ -116,7 +116,11 @@ $today = Carbon::createFromFormat('Y-m-d H:s:i', $today);
                     
                     
 	                    @if($package->package_basic_price>0)
-	                    <a  href="{{ route('renew.package',['package_id'=>$package->id,'accounts_id'=>$subscription->OrderDetail->accounts_id ,'order_type'=>'Renew','old_pkg_id'=>$package->id])}}"  class="btn btn-outline-info">Renew </a>
+	                    
+	                    <!--<a  href="{{ route('renew.package',['package_id'=>$package->id,'accounts_id'=>$subscription->OrderDetail->accounts_id ,'order_type'=>'Renew','old_pkg_id'=>$package->id])}}"  class="btn btn-outline-info">Renew </a> -->
+	                    <a  href="{{route('subscription.checkout', ['pkg_id'=>$package->id, 'accounts_id'=>'','order_type'=>'Renew','old_pkg_id'=>$package->id])}}" class="btn btn-outline-info"><span>Renew</span></a>
+	                    
+	                    
 	                    @else
 	                    <form method="post" action="{{route('cart.submit')}}" name="direct_submit">
                                   
