@@ -8,8 +8,8 @@
         <div class="card-bx plan-dtl-bx">
         <div class="pl-tp">
           <h1> {{$package->name  ?? ''}}<br/>
-<span>({{$package->user_type  ?? ''}})</span></h1>
-          <h2> <b>(${{$package->package_basic_price ?? ''}})</b>
+<span></span></h1>
+          <h2> <b>(CHF {{$package->package_basic_price ?? ''}})</b>
             ({{$package->package_validity}}) </h2>
             </div>
             
@@ -30,6 +30,39 @@
                         @endforeach
                   
                 </ul>
+                
+                <div class="pkg-det32" >
+                    <h2 class="pkg-det-outhead">GENERAL</h2>
+                <ul>
+                    <li><label class="pkg-det32-title"><span>Access to Company Profile</span><b>:</b></label><label class="pkg-det32-ans"> {{ $package->general_companyProfile==1?'Yes':'No' }}</label></li>
+                    <li><label class="pkg-det32-title"><span>Access to Company Dashboard</span><b>:</b></label><label class="pkg-det32-ans"> {{ $package->general_companyDashboard==1?'Yes':'No' }}</label></li>
+                    <li><label class="pkg-det32-title"><span>Access to Profile Insights</span><b>:</b></label><label class="pkg-det32-ans"> {{ $package->general_profileInsights==1?'Yes':'No' }}</label></li>
+                    <li><label class="pkg-det32-title"><span>Access to Media Options</span><b>:</b></label><label class="pkg-det32-ans"> {{ $package->general_accesToMedia==1?'Yes':'No' }}</label></li>
+                    
+                </ul>
+                   <h2 class="pkg-det-outhead">MARKETPLACE</h2>
+                <ul>
+                    <li><label class="pkg-det32-title"><span>Access to Search & find products</span><b>:</b></label><label class="pkg-det32-ans"> {{ $package->market_Search==1?'Yes':'No' }}</label></li>
+                    <li><label class="pkg-det32-title"><span>Product Uploads</span><b>:</b></label><label class="pkg-det32-ans"> 
+                    <?php 
+                        if($package->market_uploads!='') 
+                        echo $package->market_uploads;
+                        else
+                        { ?>
+                            <strong>Unlimited</strong> 
+                        <?php } ?>
+                    </label></li>
+                    <li><label class="pkg-det32-title"><span>Access to View Product Requests</span><b>:</b></label><label class="pkg-det32-ans"> {{ $package->market_productRequests==1?'Yes':'No' }}</label></li>
+                    <li><label class="pkg-det32-title"><span>Access to Create Product Requests</span><b>:</b></label><label class="pkg-det32-ans"> {{ $package->market_createProductRequests==1?'Yes':'No' }}</label></li>
+                    
+                </ul>
+                <h2 class="pkg-det-outhead">NETWORK FEED</h2>
+                <ul>
+                    <li><label class="pkg-det32-title"><span>Allow Expand your Network</span><b>:</b></label><label class="pkg-det32-ans"> {{ $package->network_expand==1?'Yes':'No' }}</label></li>
+                    <li><label class="pkg-det32-title"><span>Allow Chat with Network</span><b>:</b></label><label class="pkg-det32-ans"> {{ $package->network_chat==1?'Yes':'No' }}</label></li>
+                    
+                </ul>
+                </div> 
                 <!--href="subscription-checkout.php"-->
           
         </div>

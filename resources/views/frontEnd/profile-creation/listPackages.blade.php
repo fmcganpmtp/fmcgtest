@@ -256,8 +256,7 @@
                 <div class="tabl-btm-txt">
                   <div class="row">
                     <div class="col-lg-6 col-12">
-                      <p>Here there is room for any small print Micha or David wants to enter. This text is not for reading purposes.
-                        It is just here to give an impression of how the text will look like visually. Therefore makes no sense to keep reading it.The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog.</p>
+                      <p>Welcome to our B2B social business platform! Join a community built for connections and opportunities. Whether you're a startup, wholesaler, distributor, or corporation, our platform streamlines networking. Discover like-minded professionals, explore collaborations, and access resources effortlessly. Let's shape the future of business together!</p>
                     </div>
                     <div class="col-lg-1 col-12">
                       <div class="assistance"><img src="assets/images/Assistance svg.png" /></div>
