@@ -9,7 +9,7 @@
         <div class="pl-tp">
           <h1> {{$package->name  ?? ''}}<br/>
 <span></span></h1>
-          <h2> <b>(CHF {{$package->package_basic_price ?? ''}})</b>
+          <h2> <b>(EUR {{$package->package_basic_price ?? ''}})</b>
             ({{$package->package_validity}}) </h2>
             </div>
             

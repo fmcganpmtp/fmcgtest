@@ -358,7 +358,14 @@
                         </label> 
                     </div>
 						
-						     
+					<div class="form-group">
+                            <label for="name">Display Order :</label>
+
+                            <div>
+                                <input id="display_order" type="number" class="form-control" name="display_order" value="{{ $package->display_order }}" >
+
+                                                            </div>
+                        </div>	     
                        
 
                         <div class="form-group mb-0">

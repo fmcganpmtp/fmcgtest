@@ -12,7 +12,7 @@
 
 
      <div class="card srch-seller serch-seller-sec3 networks-search ">
-           <h3>Expand Your Networks </h3>
+           <h3>Company Database </h3>
            <div class="row">
          <div class="col-lg-3 col-12">
                 

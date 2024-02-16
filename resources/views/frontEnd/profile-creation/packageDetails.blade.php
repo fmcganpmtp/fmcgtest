@@ -10,9 +10,9 @@
           <h1> {{$package->name  ?? ''}}<br/>
 
  @if(($package->package_offer_price != "") && ($package->package_offer_price>0))
-	 <h2> <b>(<del>CHF {{$package->package_basic_price}}</del></small>&nbsp;<small>CHF </small>{{$package->package_offer_price}})</b> ({{$package->package_validity}}) </h2>
+	 <h2> <b>(<del>EUR {{$package->package_basic_price}}</del></small>&nbsp;<small>EUR </small>{{$package->package_offer_price}})</b> ({{$package->package_validity}}) </h2>
  @else
-     <h2> <b>(CHF {{$package->package_basic_price ?? ''}})</b> ({{$package->package_validity}}) </h2>
+     <h2> <b>(EUR {{$package->package_basic_price ?? ''}})</b> ({{$package->package_validity}}) </h2>
  @endif
             </div>
           <div class="pans-txt">
@@ -72,7 +72,7 @@
         <div class="card-bx pack-dtl-right">
         <div class="plan-img"><img src="{{ URL::asset('/images/plan.jpg')}}"></div>
         @if(!empty($lowest))
-          <h2> Plans starting at <b>CHF {{$lowest->package_basic_price}} </b></h2>
+          <h2> Plans starting at <b>EUR {{$lowest->package_basic_price}} </b></h2>
           <p>{{$lowest->package_description}}  </p>
           <a href="{{route('package.listing')}}" class="default-btn">View more plans</a>
           @endif

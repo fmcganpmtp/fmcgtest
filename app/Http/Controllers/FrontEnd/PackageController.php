@@ -99,7 +99,7 @@ class PackageController extends Controller
             });
             $query->where("id", "!=", $old_pkg_id);*/
         }
-        $packages = $query->get();
+        $packages = $query->orderBy('display_order','asc') ->get();
         $stripe_status = StripeStatus::pluck('status')->first();
         
         if($this->isMobile()) { 
@@ -196,6 +196,15 @@ class PackageController extends Controller
         $accounts_id = $request->accounts_id;
         $accounts = PackageAccount::where("id", $accounts_id)->first();
         $package = Package::where("id", $package_id)->first();
+        
+         if($request->order_type=='Renew')
+        {
+        Session::forget("last_oreder_total");
+        Session::put("old_pkg_id", $request->get("old_pkg_id"));
+        Session::put("order_type", $request->get("order_type"));
+        }
+        
+        
         if($this->isMobile()) { 
             return view("frontEnd.profile-creation.subscriptionCheckout_mobile",compact( "countries", "package","accounts"));
         } else {
@@ -683,7 +692,7 @@ class PackageController extends Controller
                     ->where("status", "!=", "deleted")
                     ->where("id", "!=", $old_pkg_id)
             //->whereNotIn('id', $package_ids)
-            ->get();
+            ->orderBy('display_order','asc') ->get();
             $stripe_status = StripeStatus::pluck('status')->first();
         
         if($this->isMobile()) { 
@@ -819,7 +828,7 @@ class PackageController extends Controller
         $packagePrice = $request->get("package_basicPrice");
 		$packages = Package::select("*")
             ->where("status", "!=", "deleted")
-            ->get();
+            ->orderBy('display_order','asc') ->get();
         $stripe_status = StripeStatus::pluck('status')->first();    
         
         if($this->isMobile()) { 

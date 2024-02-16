@@ -29,9 +29,9 @@
                         <div class="chk-out-left">
                            <h3> {{ $package->name }} ({{$package->package_validity}}) </h3>
                            @if(($package->package_offer_price != "") && ($package->package_offer_price>0))
-                           <h4><del> CHF {{$price ?? ''}}</del><b> CHF {{$price_offer ?? ''}}</b><br> /pm </h4>
+                           <h4><del> EUR {{$price ?? ''}}</del><b> EUR {{$price_offer ?? ''}}</b><br> /pm </h4>
                            @else
-                           <h4><b> CHF {{$price ?? ''}}</b><br> /pm </h4>
+                           <h4><b> EUR {{$price ?? ''}}</b><br> /pm </h4>
                            @endif
                            <div class="shk-left-txt">
                               <p> {{$package->package_description ?? ''}} </p>

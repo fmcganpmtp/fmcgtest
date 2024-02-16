@@ -163,7 +163,7 @@ class AppServiceProvider extends ServiceProvider
                   $product_count = $product_count_approved + $product_count_pending;
                   //$product_count = SellerProduct::where("user_id", $parent_id)->where("status",'<>', "deleted")->count();   
                  //dd($product_count);
-                                                                   
+                // dd($package_data)    ;                                              
                                                                    
              
             } 
@@ -176,7 +176,7 @@ class AppServiceProvider extends ServiceProvider
                                   {
                                       if(Auth::guard('user')->user()->status=='Blocked' &&  $package_data->expairy_date>=date('Y-m-d'))
                                       {
-                                          $flag_blocked_active = "true";
+                                          $flag_blocked_active = "true"; ///u
                                       }
                                   }
                                   /*if($package_data->market_uploads>0 || $package_data->market_uploads=='')

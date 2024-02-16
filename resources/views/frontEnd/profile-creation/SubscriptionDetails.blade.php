@@ -42,8 +42,8 @@ $today = Carbon::createFromFormat('Y-m-d H:s:i', $today);
                 <?php  $package = $subscription->Package;  ?>
                   <tr>
                     <td><a href="{{ route('PackgeInvoice', ['package_id'=>$subscription->package_id,'subscription_id'=>$subscription->id]) }}"><h5><i class="fa fa-dot-circle-o" aria-hidden="true"></i>{{$subscription->Package->name ?? ''}} </h5></a></td>
-                    <td>CHF {{$package->package_basic_price ?? ''}} </td>
-					 <td>{{$subscription->order_total ?? ''}}</td>
+                    <td>EUR {{$package->package_basic_price ?? ''}} </td>
+					 <td>EUR {{$subscription->order_total ?? ''}}</td>
                     <td>
                       <?php 
                       $purchsed_date = date('d - M - Y', strtotime($subscription->created_at)); 
@@ -66,9 +66,10 @@ $today = Carbon::createFromFormat('Y-m-d H:s:i', $today);
                     </td>
                       <td>
   <div class="switch-field"> 
-    <input disabled type="radio" id="radio-{{$subscription->id}}" name="switch-{{$subscription->id}}" value="1" {{ ($subscription->auto_renewal=="1")? "checked" : "" }} />
+   <!-- <input disabled type="radio" id="radio-{{$subscription->id}}" name="switch-{{$subscription->id}}" value="1" {{ ($subscription->auto_renewal=="1")? "checked" : "" }} />-->
+     <input disabled type="radio" id="radio-{{$subscription->id}}" name="switch-{{$subscription->id}}" value="1"  />
     <label for="radio-{{$subscription->id}}">On</label>
-    <input disabled type="radio" id="radio-{{$subscription->package_id}}" name="switch-{{$subscription->id}}" value="0" {{ ($subscription->auto_renewal=="0")? "checked" : "" }}/>
+    <input disabled type="radio" id="radio-{{$subscription->package_id}}" name="switch-{{$subscription->id}}" value="0"  checked />
     <label for="radio-{{$subscription->package_id}}">Off</label>
   </div>
   </td>

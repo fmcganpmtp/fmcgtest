@@ -15,14 +15,14 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 .view_profile{ display:block ; }
 </style>
 <div id="submitmessage"></div>
-@if($errors->any() || Session::has('message_not_match'))
+ @if($errors->any() ||  Session::has('message_not_match') || is_null($user->BuyerCompany->company_image) ||is_null($user->BuyerCompany->about_company))
 	<style>
 		.edit_form{ display:block !important; }
 		.view_profile{ display:none !important; }
 	</style>
 	   @if(Session::has('message_not_match')) 
 	   <div class="alert alert-danger">{{Session::get('message_not_match') }}</div> 
-       @else
+       @elseif($errors->any())
       	<div class="alert alert-danger">Some Error Occured</div>
        @endif
 

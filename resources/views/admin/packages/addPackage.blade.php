@@ -322,7 +322,14 @@
                         </label> 
                     </div>
 				  
-                    	 
+                    <div class="form-group">
+                            <label for="name">Display Order :</label>
+
+                            <div>
+                                <input id="display_order" type="number" class="form-control" name="display_order" value="" >
+
+                                                            </div>
+                        </div>		 
                     
 
             <button type="submit" class="bl-btn">Submit</button>

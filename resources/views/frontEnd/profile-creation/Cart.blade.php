@@ -84,7 +84,7 @@
                     <tbody>
                       <tr>
                         <td>{{ $package->name   }}</td>
-                          <td>CHF{{ $basic_price }}</td>
+                          <td>EUR{{ $basic_price }}</td>
                           <!--<td>{{ $no_of_accounts }}
                          @if($package->subscription_type=="Extended") (CHF{{ $account_basic_price   }} / Profile) @endif</td>
                         <td>@if($package->subscription_type=="Extended") CHF{{ $profile_cost }} @endif</td>-->
@@ -93,25 +93,26 @@
 						<?php
       if ($view_composer_profile_menu_visible_criteria['flag2'] == true) { //active user already have acive plan?>  
 	<div class="switch-field"> 
-    <input disabled type="radio" id="radio-{{$package->id}}" name="auto_renewal" value="1" {{ ($auto_renewal=="1")? "checked" : "" }} />
+    <input disabled type="radio" id="radio-{{$package->id}}" name="auto_renewal" value="1"  />
+    <!--<input disabled type="radio" id="radio-{{$package->id}}" name="auto_renewal" value="1" {{ ($auto_renewal=="1")? "checked" : "" }} />-->
     <label for="radio-{{$package->id}}">On</label>
-    <input disabled type="radio" id="radio-{{$package->package_id}}" name="auto_renewal" value="0" {{ ($auto_renewal=="0")? "checked" : "" }}/>
+    <input disabled type="radio" id="radio-{{$package->package_id}}" name="auto_renewal" value="0" checked />
     <label for="radio-{{$package->package_id}}">Off</label>
     </div>
 		<?php } else { ?>
 	<div class="switch-field">
-    <input type="radio" id="radio-{{$package->id}}" name="auto_renewal" value="1" checked/>
+    <input type="radio" id="radio-{{$package->id}}" name="auto_renewal" value="1" />
     <label for="radio-{{$package->id}}">On</label>
-    <input type="radio" id="radio-{{$package->id}}2" name="auto_renewal" value="0" />
+    <input type="radio" id="radio-{{$package->id}}2" name="auto_renewal" value="0" checked/>
     <label for="radio-{{$package->id}}2">Off</label>
 	</div>
 		     <?php }
       ?>
  </td>
  @if(!empty(Session::get('last_oreder_total')))
- <td>CHF {{ Session::get('last_oreder_total') ?? '' }} </td>
+ <td>EUR {{ Session::get('last_oreder_total') ?? '' }} </td>
  @endif
-						<td>CHF {{ $grand_total }} </td>
+						<td>EUR {{ $grand_total }} </td>
                       </tr>
                     </tbody>
                   </table>
@@ -122,7 +123,7 @@
                   <h3>TOTAL</h3>
                   <ul>
                     <li>sub total<b>:</b></li>
-                    <li><span>CHF {{ $grand_total }}</span></li>
+                    <li><span>EUR {{ $grand_total }}</span></li>
                   </ul>
                   <div class="form-group form-check">
                     <input required type="checkbox" value="yes" class="form-check-input" id="exampleCheck1" name="privacy_check">

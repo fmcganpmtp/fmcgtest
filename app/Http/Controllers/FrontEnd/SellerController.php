@@ -299,7 +299,7 @@ class SellerController extends Controller
         
         $user_id = Auth::guard("user")->user()->id;
         $usertype = Auth::guard("user")->user()->usertype;
-        if ($usertype != "seller" && $usertype != "buyer") { return redirect()->route("home"); }
+       /* if ($usertype != "seller" && $usertype != "buyer") { return redirect()->route("home"); }*/
         $user = User::find($user_id);
         
       
@@ -338,8 +338,8 @@ class SellerController extends Controller
         
         $user_id = Auth::guard("user")->user()->id;
         $usertype = Auth::guard("user")->user()->usertype;
-        
-        if ($usertype != "seller" && $usertype != "buyer") { return redirect()->route("home"); }
+        /*
+        if ($usertype != "seller" && $usertype != "buyer") { return redirect()->route("home"); }*/
         $user = User::find($user_id);
         
       
@@ -511,7 +511,7 @@ class SellerController extends Controller
 				$user_id = Auth::guard("user")->user()->parent_id;
 			 }
         }
-        if ($usertype != "seller" && $usertype != "buyer") { return redirect()->route("home"); }
+       /* if ($usertype != "seller" && $usertype != "buyer") { return redirect()->route("home"); }*/
         $productRequests = ProductRequest::select("product_requests.*")
                     //->where("product_requests.parent_id", "<>", $user_id)
                    ->whereDate('req_end_date', '>', Carbon::now())
@@ -794,7 +794,7 @@ class SellerController extends Controller
             $user = User::find($user_id);
             $usertype = Auth::guard("user")->user()->usertype;
         }
-        if ($usertype != "seller" && $usertype != "buyer") { return redirect()->route("home"); }
+      /*  if ($usertype != "seller" && $usertype != "buyer") { return redirect()->route("home"); }*/
         $productRequests = ProductRequest::select("product_requests.*")
                     ->where("product_requests.parent_id", $user_id)
                     ->whereDate('req_end_date', '>', Carbon::now())

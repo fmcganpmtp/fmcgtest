@@ -49,7 +49,7 @@
                                         @if($categories)
                                             @foreach($categories as $item)
                                                 <?php 
-                                                 $category_ids = [];
+                                               /*  $category_ids = [];
                                                 $categorylist=App\Models\Category::where('parent_id',$item->id)->pluck('id')->all();       // all subcategories                   
                                                 array_push($category_ids,$item->id);  //parent category to array
                                                 foreach ($categorylist as $value){
@@ -69,7 +69,7 @@
                                                 $productlist=App\Models\SellerProduct::whereIn('category_id',$category_ids)->where('user_id',$userId)->where('status','active')->get();
                                                 
                                                 if(count($productlist)==0)
-                                                  continue;
+                                                  continue;*/
                                                   ?>
                                                 <option value="{{$item->id}}" >{{$item->name ?? ''}}</option>
                                                 

@@ -358,6 +358,7 @@ class PackageController extends Controller
             'market_createProductRequests' => $request->get('market_createProductRequests')??'',
             'network_expand' => $request->get('network_expand')??'',
             'network_chat' => $request->get('network_chat')??'',
+            'display_order' => $request->get('display_order')??'',
         ];
         //  save  $input;
         $id = Package::create( $input )->id;
@@ -445,6 +446,7 @@ class PackageController extends Controller
             'market_createProductRequests' => $request->get('market_createProductRequests')??'',
             'network_expand' => $request->get('network_expand')??'',
             'network_chat' => $request->get('network_chat')??'',
+            'display_order' => $request->get('display_order')??'',
         ];
         //update data
         $package->update($input);

@@ -347,22 +347,22 @@ public function mynetwork(){
 	}      
 	
 public function getsellerslist_search(Request $request){  
-$start_from=$request->input('start_from');
-$per_page=$request->input('per_page');
-$seller_name_search=strtoupper($request->input('seller_name'));
-$category_id= $request->input('category_id');
-$company_type= $request->input('company_type');
+	$start_from=$request->input('start_from');
+	$per_page=$request->input('per_page');
+	$seller_name_search=strtoupper($request->input('seller_name'));
+	$category_id= $request->input('category_id');
+	$company_type= $request->input('company_type');
 // $company_type=explode(',', $company_type);
-$user_id = Auth::guard('user')->user()->id;
-$my_networks=Mynetworks::where('user_id',$user_id)->pluck('mynetwork_id')->first();
-$network_id=explode(',', $my_networks);
-$selected_country_id= $request->input('selected_country_id');  
+	$user_id = Auth::guard('user')->user()->id;
+	$my_networks=Mynetworks::where('user_id',$user_id)->pluck('mynetwork_id')->first();
+	$network_id=explode(',', $my_networks);
+	$selected_country_id= $request->input('selected_country_id');  
 // $selected_country_id=explode(',', $selected_country_id);
 $active_sellers=$this->PublicMiddlewareController->getexpireduserslist();
 $company_types = CompanyType::select("id", "company_type")->get();
 $user_data = User::leftJoin('buyer_companies', function($join){
 $join->on('buyer_companies.user_id', '=', 'users.id');
-$join->orOn('buyer_companies.user_id', '=', 'users.parent_id');
+//$join->orOn('buyer_companies.user_id', '=', 'users.parent_id');
 })
 ->leftJoin('countries', 'countries.id', '=', 'users.country_id')
 /* ->leftJoin('seller_products', function($join){
@@ -535,7 +535,7 @@ $offile_userslist=[];
 // DB::statement("SET SQL_BIG_SELECTS=1");
 $sellers_list =SellerProduct::leftJoin('users', function($join){
 $join->on('seller_products.user_id', '=', 'users.id');
-$join->orOn('seller_products.user_id', '=', 'users.parent_id');
+//$join->orOn('seller_products.user_id', '=', 'users.parent_id');
 		})
 	   // ->where('seller_products.product_visibility','Yes')
 ->whereIn('users.id',$network_id)
@@ -562,7 +562,7 @@ array_push($category_ids,$value2->id);
 		$sellers_list= $sellers_list->groupby('users.id')->pluck('users.id')->all();
 $network_list =User::leftJoin('buyer_companies', function($join){
 $join->on('buyer_companies.user_id', '=', 'users.id');
-$join->orOn('buyer_companies.user_id', '=', 'users.parent_id');
+//$join->orOn('buyer_companies.user_id', '=', 'users.parent_id');
 })
 ->leftJoin('countries', 'users.country_id', '=', 'countries.id')
 ->leftJoin('company_types', 'buyer_companies.company_type', '=', 'company_types.id')
