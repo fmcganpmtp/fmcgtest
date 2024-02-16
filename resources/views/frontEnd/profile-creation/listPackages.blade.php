@@ -69,17 +69,17 @@
                           @if(($package->package_offer_price != "") && ($package->package_offer_price>0))
                           
                           <span class="del-prc1">
-                          <h5><span class="pak-cur">EUR</span> <del>{{$price[0]}}</del></h5>
+                          <h5><span class="pak-cur">&euro;</span> <del>{{$price[0]}}</del></h5>
                           <h6><b><del>{{$price[1]}}</del></b><br />
                          <span>/pm</span></h6>
                           </span>
                           
-                          <h5><span class="pak-cur">EUR</span> {{$price_offer[0]}}</h5>  
+                          <h5><span class="pak-cur">&euro;</span> {{$price_offer[0]}}</h5>  
                           <h6><b>{{$price_offer[1]}}</b><br />
                           <span>/pm</span></h6>
                           
                           @else
-                          <h5><span class="pak-cur">EUR</span> {{$price[0]}}</h5>
+                          <h5><span class="pak-cur">&euro;</span> {{$price[0]}}</h5>
                           <h6><b>{{$price[1]}}</b><br />
                          <span>/pm</span></h6>
                           

@@ -42,8 +42,8 @@ $today = Carbon::createFromFormat('Y-m-d H:s:i', $today);
                 <?php  $package = $subscription->Package;  ?>
                   <tr>
                     <td><a href="{{ route('PackgeInvoice', ['package_id'=>$subscription->package_id,'subscription_id'=>$subscription->id]) }}"><h5><i class="fa fa-dot-circle-o" aria-hidden="true"></i>{{$subscription->Package->name ?? ''}} </h5></a></td>
-                    <td>EUR {{$package->package_basic_price ?? ''}} </td>
-					 <td>EUR {{$subscription->order_total ?? ''}}</td>
+                    <td>&euro; {{$package->package_basic_price ?? ''}} </td>
+					 <td>&euro; {{$subscription->order_total ?? ''}}</td>
                     <td>
                       <?php 
                       $purchsed_date = date('d - M - Y', strtotime($subscription->created_at)); 

@@ -31,9 +31,9 @@
                            
                            
                           @if(($package->package_offer_price != "") && ($package->package_offer_price>0))
-                           <h4><del> EUR {{$price ?? ''}}</del><b> EUR {{$price_offer ?? ''}}</b><br> /pm </h4>
+                           <h4><del> &euro; {{$price ?? ''}}</del><b> &euro; {{$price_offer ?? ''}}</b><br> /pm </h4>
                            @else
-                           <h4><b> EUR {{$price ?? ''}}</b><br> /pm </h4>
+                           <h4><b> &euro; {{$price ?? ''}}</b><br> /pm </h4>
                            @endif
                            <div class="shk-left-txt">
                               <p> {{$package->package_description ?? ''}} </p>

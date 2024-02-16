@@ -78,7 +78,7 @@
                     <tbody>
                       <tr>
                         <td>{{ $package->name   }}</td>
-                          <td>EUR {{ $basic_price }}</td>
+                          <td>&euro; {{ $basic_price }}</td>
                          <!-- <td>{{ $no_of_accounts }}
                          @if($package->subscription_type=="Extended") (CHF{{ $account_basic_price   }} / Profile) @endif</td>
                         <td>@if($package->subscription_type=="Extended") CHF{{ $profile_cost }} @endif</td>
@@ -105,9 +105,9 @@
       ?>
  </td>
  @if(!empty(Session::get('last_oreder_total')))
- <td>EUR {{ Session::get('last_oreder_total') ?? '' }} </td>
+ <td>&euro; {{ Session::get('last_oreder_total') ?? '' }} </td>
  @endif
-						<td>EUR {{ $grand_total }} </td>
+						<td>&euro; {{ $grand_total }} </td>
                       </tr>
                     </tbody>
                   </table>
@@ -118,7 +118,7 @@
                   <h3>TOTAL</h3>
                   <ul>
                     <li class="sub-ttl-mb">Sub total<b>:</b></li>
-                    <li><span>EUR {{ $grand_total }}</span></li>
+                    <li><span>&euro; {{ $grand_total }}</span></li>
                   </ul>
                   <div class="form-group form-check">
                     <input required type="checkbox" value="yes" class="form-check-input" id="exampleCheck1" name="privacy_check">
