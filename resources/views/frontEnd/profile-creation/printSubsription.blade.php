@@ -13,7 +13,11 @@ function print_fn() {
                             <th style="background:#3498db;padding:10px;color:#fff;border-bottom: 1px solid #ccc; border-left: 1px solid #ccc; border-top: 1px solid #ccc;">Order Date </th>
                             <td style=" padding-left:10px;border-bottom: 1px solid #ccc;border-right: 1px solid #ccc; border-top: 1px solid #ccc;">{{date('d - M - Y', strtotime($subscription->date))}}</td>
                           </tr>
-                          <tr>
+                         <tr>
+                            <th style="background:#3498db;padding:10px;color:#fff;border-bottom: 1px solid #ccc; border-left: 1px solid #ccc; border-top: 1px solid #ccc;">Order Total </th>
+                            <td style=" padding-left:10px;border-bottom: 1px solid #ccc;border-right: 1px solid #ccc; border-top: 1px solid #ccc;">€ {{$subscription->order_total}}</td>
+                          </tr>
+                         <tr>
                                <th style="background:#3498db;padding:10px;color:#fff;border-bottom: 1px solid #ccc; border-left: 1px solid #ccc;">Order Status </th>
                             <td style="border-bottom: 1px solid #ccc; border-right: 1px solid #ccc;padding-left:10px;"><span class="act"><i class="fa fa-check-square-o" aria-hidden="true"></i>&nbsp;{{$subscription->status}}</span></td>
                           </tr>

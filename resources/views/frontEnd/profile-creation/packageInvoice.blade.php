@@ -9,7 +9,15 @@
         <div class="pl-tp">
           <h1> {{$package->name  ?? ''}}<br/>
 <span></span></h1>
-          <h2> <b>(&euro; {{$package->package_basic_price ?? ''}})</b>
+
+           @if(($package->package_offer_price != "") && ($package->package_offer_price>0))
+	        <h2> <b>(<del>€ {{$package->package_basic_price}}</del></small>&nbsp;<small>€ </small>{{$package->package_offer_price}})</b> ({{$package->package_validity}}) </h2>
+          @else
+            <h2> <b>(€ {{$package->package_basic_price ?? ''}})</b> ({{$package->package_validity}}) </h2>
+           @endif
+
+
+          <h2> 
             ({{$package->package_validity}}) </h2>
             </div>
             
@@ -87,6 +95,10 @@
                           <tr>
                             <th>Order Date </th>
                             <td>{{date('d - M - Y', strtotime($subscription->date))}}</td>
+                          </tr>
+                          <tr>
+                            <th>Order Total </th>
+                            <td>€ {{$subscription->order_total}}</td>
                           </tr>
                           <tr>
                             <th>Order Status </th>

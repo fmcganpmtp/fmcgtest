@@ -55,8 +55,8 @@ class PackageController extends Controller
             Session::forget("last_oreder_total");
         }
         $user_id = Auth::guard("user")->user()->id;
-        $userType = Auth::guard("user")->user()->usertype;
-        
+        //$userType = Auth::guard("user")->user()->usertype;
+        $usertype = 'seller';
         $expairy_date = $packagePrice = '';
         
 
@@ -213,8 +213,11 @@ class PackageController extends Controller
         
     }
     public function submitCheckout(Request $request)
-    {
-        $user_id = Auth::guard("user")->user()->id;
+    { 
+        
+        $user_id=Auth::guard("user")->user()->id;
+        if(Auth::guard("user")->user()->seller_type=="Co-Seller")
+        $user_id=Auth::guard("user")->user()->parent_id;
         request()->validate([
             "name" => ["required", "string", "max:255"],
             "email" => [ "required", "string",  "email", "regex:/(.+)@(.+)\.(.+)/i",  "max:255",  ],
@@ -283,7 +286,10 @@ class PackageController extends Controller
                 ["required" => "Please choose number of profiles"]
             );
         }
-        $user_id = Auth::guard("user")->user()->id;
+        
+        $user_id=Auth::guard("user")->user()->id;
+        if(Auth::guard("user")->user()->seller_type=="Co-Seller")
+        $user_id=Auth::guard("user")->user()->parent_id;
         $user = User::find($user_id);
       
         $order_type = $old_pkg_id = "";
@@ -312,16 +318,6 @@ class PackageController extends Controller
                 $old_pkg_id = Session::get("old_pkg_id");
             }
         }
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
         
         
         $auto_renewal = 1;
@@ -378,7 +374,8 @@ class PackageController extends Controller
         $input = [
             "user_id" => $user_id,
             "package_id" => $package_id,
-            "type" => $package->user_type,
+           // "type" => $package->user_type,
+            "type" => 'seller',
             "date" => Carbon::today(),
             "order_id" => $order_id,
             "order_total" => $order_total,
@@ -386,22 +383,22 @@ class PackageController extends Controller
             "auto_renewal" => 1,
 			"status" => "Active",
         ];
-		$package_validity = $EndDate = "";
-		// if(!empty($package->package_validity))
-        // $package_validity = $package->package_validity;
-		// if ($package_validity == "3 months") {
-        //         $EndDate = Carbon::now()->addMonths(3);
-        //     } //add 3 months from date of purchase
-        //     if ($package_validity == "6 months") {
-        //         $EndDate = Carbon::now()->addMonths(6);
-        //     } //add 6 months from date of purchase
-        //     if ($package_validity == "One year") {
-        //         $EndDate = Carbon::now()->addMonths(12);
-        //     } //add 12 months from date of purchase
+			$package_validity = $EndDate = "";
+		if(!empty($package->package_validity))
+        $package_validity = $package->package_validity;
+		if ($package_validity == "3 months") {
+                $EndDate = Carbon::now()->addMonths(3);
+            } //add 3 months from date of purchase
+            if ($package_validity == "6 months") {
+                $EndDate = Carbon::now()->addMonths(6);
+            } //add 6 months from date of purchase
+            if ($package_validity == "One year") {
+                $EndDate = Carbon::now()->addMonths(12);
+            } //add 12 months from date of purchase
 
             // New subscription options
-			$package_validity = 1;
-            $EndDate = Carbon::now()->addMonths(1);
+			//$package_validity = 1;
+           // $EndDate = Carbon::now()->addMonths(1);
 
 			$updt_old = DB::table("subscriptions")
                 ->where("user_id", $user_id)
@@ -417,16 +414,16 @@ class PackageController extends Controller
             $input["expairy_date"] = $EndDate->toDateString(); // carbon date format to noramal date
             if (!$current_endDate->isPast()) {
                 //active packages
-                // if ($package_validity == "3 months") {
-                //     $EndDate1 = $current_endDate->addMonths(3);
-                // }
-                // if ($package_validity == "6 months") {
-                //     $EndDate1 = $current_endDate->addMonths(6);
-                // }
-                // if ($package_validity == "One year") {
-                //     $EndDate1 = $current_endDate->addMonths(12);
-                // }
-                $EndDate1 = $current_endDate->addMonths(1);
+                if ($package_validity == "3 months") {
+                    $EndDate1 = $current_endDate->addMonths(3);
+                }
+                if ($package_validity == "6 months") {
+                    $EndDate1 = $current_endDate->addMonths(6);
+                }
+                if ($package_validity == "One year") {
+                    $EndDate1 = $current_endDate->addMonths(12);
+                }
+               // $EndDate1 = $current_endDate->addMonths(1);
                 $input["expairy_date"] = $EndDate1->toDateString(); // carbon date format to noramal date
             }
             
@@ -450,23 +447,30 @@ class PackageController extends Controller
              //$input["auto_renewal"] = $auto_renewal;
             Subscription::create($input);
         } else {
+            DB::table("subscriptions")
+                ->where("user_id", $user_id)
+                ->where("status", "Active")
+           //     ->where("package_id", Session::get("old_pkg_id"))
+                ->orderBy("id", "desc")
+               // ->take(1)
+                ->update(["status" => "Upgraded"]);  
             Session::forget("last_oreder_total");
             $input["expairy_date"] = $EndDate;
             $input["auto_renewal"] = $auto_renewal;
             Subscription::create($input);
         }
         //$usertype = Package::find($package_id)->user_type;
-        $usertype = 'seller';
-        $input = [
-            "usertype" => $usertype,
-        ];
+       
+        
         Session::forget("old_pkg_id");
         Session::forget("order_type");
         Session::forget("last_oreder_total");
         Session::forget("user_checkout_details");
         DB::table("users")
             ->where("id", $user_id)
-            ->update($input);
+            ->update([
+           "usertype" => 'seller'
+        ]);
             
         return redirect()->route("order.success");
     }
@@ -603,10 +607,12 @@ class PackageController extends Controller
                 return redirect(route("home"));
             }
         }
-        if (Auth::guard("user")->user()->seller_type == "Co-Seller") {
+       /* if (Auth::guard("user")->user()->seller_type == "Co-Seller") {
             return redirect()->route("home");
-        }
-        $userId = Auth::guard("user")->user()->id;
+        }*/
+        $userId=Auth::guard("user")->user()->id;
+        if(Auth::guard("user")->user()->seller_type=="Co-Seller")
+        $userId=Auth::guard("user")->user()->parent_id;
        // $user = User::find($userId);
         $subscriptions = Subscription::where("user_id", $userId)
             ->orderBy("id", "DESC")
@@ -615,39 +621,48 @@ class PackageController extends Controller
         $highestPackage = Package::where("status", 'Active')->orderBy("package_basic_price", "DESC")->first();
         
         if($this->isMobile()) { 
-	    return view( "frontEnd.profile-creation.SubscriptionDetails_mobile",compact("subscriptions") );
+	    return view( "frontEnd.profile-creation.SubscriptionDetails_mobile",compact("subscriptions","highestPackage") );
         } else {
           return view( "frontEnd.profile-creation.SubscriptionDetails",compact("subscriptions","highestPackage") );
     }
     }
     public function UpgradePackage(Request $request)
-    {
+    { 
         $order_type = $request->get("order_type");
-        $old_pkg_id = $request->get("old_pkg_id");
-        Session::put("old_pkg_id", $request->get("old_pkg_id"));
+        $userId=Auth::guard("user")->user()->id;
+        if(Auth::guard("user")->user()->seller_type=="Co-Seller")
+        $userId=Auth::guard("user")->user()->parent_id;
+        $user = User::find($userId);
+        $old_pkg_id = Subscription::where('user_id',$userId)->latest('id')->pluck('package_id')->first();
+        
+       
+       $packagePrice = DB::table("packages")->where("id", $old_pkg_id)->pluck('package_basic_price') ->last(); 
+       
+       // $old_pkg_id = $request->get("old_pkg_id");
+        Session::put("old_pkg_id", $old_pkg_id);
         Session::put("order_type", $request->get("order_type"));
         $package_validity = DB::table("packages")
             ->where("id", $old_pkg_id)
             ->pluck("package_validity")
-            ->first();
-        // if ($package_validity == "One year") {
-        //     $tot_months = 12;
-        // }
-        // if ($package_validity == "6 months") {
-        //     $tot_months = 6;
-        // }
-        // if ($package_validity == "3 months") {
-        //     $tot_months = 3;
-        // }
-        $tot_months = 1;
-        $userId = Auth::guard("user")->user()->id;
-        $user = User::find($userId);
+            ->last();
+         if ($package_validity == "One year") {
+             $tot_months = 12;
+         }
+         if ($package_validity == "6 months") {
+             $tot_months = 6;
+         }
+         if ($package_validity == "3 months") {
+             $tot_months = 3;
+         }
+      //  $tot_months = 1;
+        
         //$orders = $user->Subscription; //orders  of current user
         
         $last_oreder_total = $user->Subscription
             ->where("package_id", $old_pkg_id)
             ->pluck("order_total")
             ->last();
+          
         $startDate = $user->Subscription
             ->where("package_id", $old_pkg_id)
             ->pluck("date")
@@ -663,9 +678,10 @@ class PackageController extends Controller
         $remaining_percentage = ($tot_months - $used_months) / $tot_months;
         $remaining_amount = round($last_oreder_total * $remaining_percentage,2);
         Session::put("last_oreder_total", $remaining_amount);
-        $packagePrice = $request->get("package_basicPrice");
+        
         //$package_ids = $orders->pluck("package_id")->all(); //all package ids purchased
-        $userType = Auth::guard("user")->user()->usertype;
+        //$userType = Auth::guard("user")->user()->usertype;
+		$usertype = 'seller';
         /*$packages = Package::select("*")
             ->where("status", "!=", "deleted")
             ->when($userType == "seller", function ($q) use ($packagePrice) {
@@ -684,7 +700,6 @@ class PackageController extends Controller
             ->where("id", "!=", $old_pkg_id)
             //->whereNotIn('id', $package_ids)
             ->get();*/
-            
             $packages = Package::select("*")
             ->where("status", "!=", "deleted")
             
@@ -703,7 +718,10 @@ class PackageController extends Controller
     }
     public function RenewPackage(Request $request)
     { 
-        $user_id = Auth::guard("user")->user()->id;
+        
+        $user_id=Auth::guard("user")->user()->id;
+        if(Auth::guard("user")->user()->seller_type=="Co-Seller")
+        $user_id=Auth::guard("user")->user()->parent_id;
         Session::forget("last_oreder_total");
         Session::put("old_pkg_id", $request->get("old_pkg_id"));
         Session::put("order_type", $request->get("order_type"));
@@ -764,7 +782,9 @@ class PackageController extends Controller
                 ["required" => "Please choose number of profiles"]
             );
         }
-        $user_id = Auth::guard("user")->user()->id;
+        $user_id=Auth::guard("user")->user()->id;
+        if(Auth::guard("user")->user()->seller_type=="Co-Seller")
+        $user_id=Auth::guard("user")->user()->parent_id;
 		$package_id = $request->get("package_id");
         $accounts_id = $request->get("accounts_id");
         $order_type = $old_pkg_id = "";

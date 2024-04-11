@@ -136,13 +136,18 @@ class AdminkycController extends Controller
             "reason" => "",
         ];
         $count = KycFile::where("id", $request->get("id"))->update($input);
-
+        $kyc = KycFile::findOrFail($request->get("id"));
+        $path = public_path() . "/uploads/KYCFiles/" . $kyc->file_path;
+        $data = $kyc->update(["file_path" => ""]);
+        if (file_exists($path))
+        @unlink($path); 
         $kycdocs_varified = DB::table("kyc_files")
             ->select(DB::raw("count('*') as status_cnt"))
             ->where("user_id", $request->get("user_id"))
             ->where("status", "Active")
             ->pluck("status_cnt")
             ->first();
+            
         $email_varified = DB::table("users")
             ->select(DB::raw("count('*') as status_cnt"))
             ->where("id", $request->get("user_id"))
@@ -182,6 +187,12 @@ class AdminkycController extends Controller
         ];
 
         $count = KycFile::where("id", $request->get("id"))->update($input);
+        
+         $kyc = KycFile::findOrFail($request->get("id"));
+        $path = public_path() . "/uploads/KYCFiles/" . $kyc->file_path;
+        $data = $kyc->update(["file_path" => ""]);
+        if (file_exists($path))
+        @unlink($path); 
 
         return $count;
     }
@@ -194,6 +205,6 @@ class AdminkycController extends Controller
             ->where('users.seller_type','Master')
             ->orderBy('users.name','Asc')
             ->get();
-        return $users->where('doc_cnt','<',3)->take(20);
+        return $users->where('doc_cnt','<',3)->take(100);
     }
 }

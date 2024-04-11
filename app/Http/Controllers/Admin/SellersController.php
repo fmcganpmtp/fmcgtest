@@ -49,11 +49,20 @@ class SellersController extends Controller
 
         $search_key=$request->get('search_key');
         $status=$request->get('status');
+        $company_type= $request->get('company_type');
+        $selected_country_id= $request->get('selected_country_id'); 
+        $category_id= $request->get('category_id');
+        $sub_end_month= $request->get('sub_end_month');
+        $sub_type= $request->get('sub_type');
+        $allcategorylists=Category::select('name','id')->where('parent_id', null)->orderBy('name','asc')->get();
+	    $CompanyType=CompanyType::orderBy('company_type','asc')->get();
+        $country_id = User::select('country_id')->distinct()->where('seller_type','Master')->where('users.status','<>','Deleted')->get()->pluck('country_id')->toArray();
+	    $countries = Country::whereIn('id', $country_id)->orderBy('name','asc')->get();
         $filter=$request->get('filter');
         if($filter=='Excel') 
-               return Excel::download(new SellerExport($search_key,$status), 'Sellers_List.xls');
+               return Excel::download(new SellerExport($search_key,$status,$company_type,$selected_country_id,$category_id,$sub_end_month,$sub_type), 'Users_List.xls');
         else
-                return view('admin.seller.sellers-list');
+                return view('admin.seller.sellers-list',compact('allcategorylists','CompanyType','countries'));
 
     }
     public function create() {
@@ -241,6 +250,7 @@ class SellersController extends Controller
              'about_company' => 'required',
             'position' => 'required',
             'company_image' => 'required', 
+            'profile_pic' => 'required',
             
         ];
         $request->validate($rules);
@@ -285,7 +295,8 @@ class SellersController extends Controller
             ]; 
 
         $input['phone'] =  $request->get('phone');
-        $input['usertype'] = 'seller';
+        //$input['usertype'] = 'seller';
+        $input['usertype'] = 'guest';
         $input['company'] = 'Yes';
         $input['password'] =Hash::make($request->get('default_password'));
         $input['gst_no'] =  $request->get('gst_no');
@@ -477,7 +488,7 @@ class SellersController extends Controller
                  });
 
 
-                 echo json_encode("Seller Added successfully!");
+                 echo json_encode("User Added successfully!");
        
         
     }
@@ -826,7 +837,7 @@ class SellersController extends Controller
                 ->update($input);
         } 
         else $SellerOpeningTime=SellerOpeningTime::create($input);   
-         echo json_encode("Seller Updated successfully!");   
+         echo json_encode("User Updated successfully!");   
     }
 
 public function getpackagenamelist (Request $request)
@@ -950,6 +961,19 @@ public function adminusersellersstatusupdates (Request $request)
         $company_types = CompanyType::select("id", "company_type")->get();
         return view('admin.seller.seller-view',compact('seller','company_types',"categories","seller_OflnCats",'id','varification_status'));
     }
+    
+    public function sellerprofiledetails($id) {
+        $user=$seller = User::find($id);
+        $kycdocs_varified = DB::table("kyc_files")
+            ->select(DB::raw("count('*') as status_cnt"))
+            ->where("user_id", $id)->where("status", "Active")->pluck("status_cnt")
+            ->first(); 
+        $varification_status=($kycdocs_varified==3)?"varified":"Not";
+        $categories = Category::where('parent_id', null)->orderby('name', 'asc')->get(); //dd($categories);
+        $seller_OflnCats = SellerOfflineCategory::select('category_id')->where('user_id', $id)->first();
+        $company_types = CompanyType::select("id", "company_type")->get();
+        return view('admin.seller.seller-profileview',compact('seller','company_types',"categories","seller_OflnCats",'id','varification_status'));
+    }
 
     public function selleredit($id) {
         $seller = User::find($id);  
@@ -961,8 +985,7 @@ public function adminusersellersstatusupdates (Request $request)
         return view('admin.seller.seller-profile',compact('countries',"categories","seller_OflnCats",'seller','SellerOpeningTimes','company_types'));
     }
 
-     public function getsellerslist(Request $request)
-    {  
+    public function getsellerslist(Request $request){  
         $company_types = CompanyType::select("id", "company_type")->get();
         $columnIndex_arr = $request->get('order');
         $columnName_arr = $request->get('columns');
@@ -975,47 +998,73 @@ public function adminusersellersstatusupdates (Request $request)
         $columnName = $columnName_arr[$columnIndex]['data']; // Column name
         $columnSortOrder = $order_arr[0]['dir']; // asc or desc     
         $searchValue=$request->get('search_key');
-        $status=$request->get('status');
+        $status=$request->get('status');       
+        $company_type= $request->get('company_type');
+        $selected_country_id= $request->get('selected_country_id'); 
+        $category_id= $request->get('category_id');
+        $sub_end_month= $request->get('sub_end_month');
+        $sub_type= $request->get('sub_type');
+        
+        $company_types = CompanyType::select("id", "company_type")->get();       
+        
         $totalRecords =User::select('count(*) as allcount')
             ->when($request->get('status')!='', function ($query) use ($request) {
                 $query->where('status',$request->get('status'));
-            })
-            //->where('usertype','seller')
-			->where('seller_type','Master')->where('users.status','<>','Deleted')->count();
-        
-        $totalRecordswithFilter = User::leftJoin('buyer_companies', 'buyer_companies.user_id', '=', 'users.id')
-            ->leftJoin('countries', 'countries.id', '=', 'users.country_id')
-            ->when($request->get('status')!='', function ($query) use ($request) {
-                $query->where('users.status',$request->get('status'));
-            })
-
-            ->when($searchValue!='', function ($query) use ($searchValue) {
-                $query->where(DB::raw('CONCAT_WS(users.name,email,phone,buyer_companies.company_name,countries.name)'), 'LIKE','%'.$searchValue.'%');
-            })
-            //->where('usertype','seller') 
-			->where('seller_type','Master') 
-            ->where('users.status','<>','Deleted')        
-            ->count();       
-
+            })->where('seller_type','Master')->where('users.status','<>','Deleted')->count();
+       
         // Get records, also we have included search filter as well
         $records = User::leftJoin('buyer_companies', 'buyer_companies.user_id', '=', 'users.id')
             ->leftJoin('countries', 'countries.id', '=', 'users.country_id')
-            //->leftJoin('subscriptions', 'subscriptions.user_id', '=', 'users.id')
-            ->select('users.*','buyer_companies.company_name','buyer_companies.company_type as cmp_type','buyer_companies.company_location','buyer_companies.company_street','buyer_companies.company_zip',
-            DB::raw("countries.name as country_name"),DB::raw("(SELECT expairy_date FROM subscriptions WHERE subscriptions.user_id = users.id order BY subscriptions.id DESC limit 1) as expairy_date"))  
-            ->when($request->get('status')!='', function ($query) use ($request) {
-                $query->where('users.status',$request->get('status'));
-            })
-            ->when($searchValue!='', function ($query) use ($searchValue) {
-                $query->where(DB::raw('CONCAT_WS(users.name,email,phone,buyer_companies.company_name,countries.name)'), 'LIKE','%'.$searchValue.'%');
-            })
-            //->where('usertype','seller')
-			->where('seller_type','Master') ->where('users.status','<>','Deleted')       
-            ->orderBy($columnName,$columnSortOrder)
-            ->skip($start)
-            ->take($rowperpage)
-            ->get();
-        $data_arr = array();       
+            ->leftJoin('subscriptions', 'subscriptions.user_id', '=', 'users.id')
+            ->leftJoin('packages', 'subscriptions.package_id', '=', 'packages.id')->select('users.*','buyer_companies.company_name','packages.name as pkg_name','buyer_companies.company_type as cmp_type','buyer_companies.company_location','buyer_companies.company_street','buyer_companies.company_zip',
+            DB::raw("countries.name as country_name"),'subscriptions.expairy_date as expairy_date')->where('subscriptions.package_id', '<>', null)->where('subscriptions.status', '=', 'Active')->where('seller_type','Master')->where('users.status','<>','Deleted');
+        if($request->get('status')!=''){
+            $records = $records->where('users.status',$request->get('status'));
+        } 
+        if($searchValue!=''){
+            $records = $records->where(DB::raw('CONCAT_WS(users.name,email,phone,buyer_companies.company_name,countries.name)'), 'LIKE','%'.$searchValue.'%');
+        } 
+        if($request->get('company_type')!=''){
+            $records = $records->Where(function ($query) use ($company_type) {
+                foreach ($company_type as $term) {
+                    $query->orWhereRaw( 'find_in_set("' . $term . '",buyer_companies.company_type)');
+                }
+            });
+        } 
+        if($request->get('sub_end_month')!=''){ 
+            $records = $records->whereDate('subscriptions.expairy_date', '>=', NOW())
+                    ->where('subscriptions.status','active')
+                    ->whereRaw('extract(month from subscriptions.expairy_date) = ?', [$sub_end_month]);			             
+        }			
+        if($sub_type!=''){         
+            if($sub_type=='free') {
+                $records = $records->where('packages.package_basic_price', '=', 0); 
+            } elseif($sub_type=='paid') {
+                $records = $records->where('packages.package_basic_price', '>', 0); 
+            }       
+        }					
+        if($request->get('selected_country_id')!='')
+            $records = $records->whereIn('users.country_id',$selected_country_id); 
+        $category_ids = [];  
+        $sellers = [];
+        if($category_id!='0'){  
+            $sellers_list = SellerProduct::select('user_id')->distinct()->Where('seller_products.parent_category_id',$category_id)->get()->pluck('user_id')->toArray();
+            $offline_list = SellerOfflineCategory::select('user_id')->distinct()->WhereRaw( 'find_in_set("' . $category_id . '",seller_offline_categories.category_id)')->get()->pluck('user_id')->toArray();
+            if(!empty($sellers_list)&&!empty($offline_list))
+                $combinedArray = array_merge($sellers_list, $offline_list);
+            else
+                $combinedArray = $sellers_list; 
+            $records = $records->whereIn('users.id',$combinedArray);
+        }         
+        
+        $totalRecordswithFilter= $records ->groupby('users.id')->get()->count();
+        
+        $records= $records->orderBy($columnName,$columnSortOrder)
+        ->skip($start)
+        ->take($rowperpage)
+        ->groupby('users.id')
+        ->get();           
+        $data_arr = array();  
         foreach ($records as $record) {
             $status = (
                 ( $record->status=='Active') ? '<span style="color:white;background-color:green;padding:5px;line-height:12px;border-radius:2px;margin-top:5px;display:inline-block;">'.$record->status.'</span>':
@@ -1023,83 +1072,33 @@ public function adminusersellersstatusupdates (Request $request)
                 (($record->status=='Pending') ?'<span style="color:white;background-color:orange;padding:5px;line-height:12px;border-radius:2px;margin-top:5px;display:inline-block;">'.$record->status.'</span>' :
                 (($record->status=='Rejected') ? '<span style="color:white;background-color:purple;padding:5px;line-height:12px;border-radius:2px;margin-top:5px;display:inline-block;">'.$record->status.'</span>' : ""
                 ))));
-			$userId = $record->id;	
-			
+			$userId = $record->id;			
 			$c_types = $c_types_names =[]; 
-                  if($record->cmp_type) { 
-                  
-                   foreach ($company_types as $company_type)
-				   {
-                              $c_types = explode(",",$record->cmp_type);
-                               if(in_array($company_type->id, $c_types))
-                             $c_types_names[] = $company_type->company_type ;
-				  } 
-				  }
-                  $c_types_names =  implode( ', ', $c_types_names );
-			
-			
-			
-			
-			
-            $user = User::find($userId);
-			$sellerProducts = $user->SellerProduct;
-            $parent_cat_id=[];
-            $values = [];
-        foreach ($sellerProducts as $sproduct) {
-            $values[] = trim($sproduct->category_id);
-            if($sproduct->status=="active" && $sproduct->product_visibility=="Yes"){
-                $parent=Category::find($sproduct->category_id);
-    
-                if(!empty( $parent)) 
-                 {  
-                    $parent_id=$parent->id;
-                    while(!empty($parent)) 
-                    {   
-                        $parent = $parent->parent;
-                        if(!empty( $parent)) 
-                            $parent_id=$parent->id;
-                    }
-                    $parent_cat_id[]= $parent_id; 
-                }
+            if($record->cmp_type) {             
+                foreach ($company_types as $company_type){
+                    $c_types = explode(",",$record->cmp_type);
+                    if(in_array($company_type->id, $c_types))
+                        $c_types_names[] = $company_type->company_type ;
+                } 
             }
-        }
-        $parent_cat_id = array_unique($parent_cat_id);
-       
-        $values = array_unique($values);
-
-        $parent_categorylists = Category::whereIn("id", $parent_cat_id)->orderBy('name',"ASC")->get();
-
-        $category_product_count = [];
-        foreach ($values as $row1) {
-            $prdt_count = SellerProduct::where("status", "active")
-                ->where("user_id", $userId)
-                ->WhereRaw('find_in_set("' . $row1 . '",category_id)')
-                ->count();
-            $category_name = Category::find($row1, ["name", "category_pic"]);
-            $category_product_count[] = [
-                "product_count" => $prdt_count,
-                "category" => $category_name,
-            ];
-        }
-        arsort($category_product_count);
-        $category_product_count = array_splice($category_product_count, 0, 3);
-
-        $seller_Ofln_Cats = SellerOfflineCategory::select('category_id')->where('user_id', $userId)->first();
-        if ($seller_Ofln_Cats) 
-            $seller_offine_categorylists = explode(",", $seller_Ofln_Cats->category_id);
-        else 
-            $seller_offine_categorylists = []; 
-        
-        $categorylists = Category::whereIn("id", $parent_cat_id)
-            ->orwhereIn("id", $seller_offine_categorylists)
-            ->where('parent_id',null)
-            ->whereNotNull('name')
-            ->where('name','<>','')
-            ->distinct() 
-            ->orderBy('name','asc')
-            ->pluck("name")
-            ->all();
-        $cats = implode( ', ', $categorylists ); 
+            $c_types_names =  implode( ', ', $c_types_names );	
+			$parent_cat_id = SellerProduct::select('parent_category_id')->distinct()->Where('seller_products.user_id',$userId)->get()->pluck('parent_category_id')->toArray();
+            $seller_Ofln_Cats = SellerOfflineCategory::select('category_id')->where('user_id', $userId)->first();
+            if ($seller_Ofln_Cats) 
+                $seller_offine_categorylists = explode(",", $seller_Ofln_Cats->category_id);
+            else 
+                $seller_offine_categorylists = []; 
+			 
+            $categorylists = Category::whereIn("id", $parent_cat_id)
+                ->orwhereIn("id", $seller_offine_categorylists)
+                ->where('parent_id',null)
+                ->whereNotNull('name')
+                ->where('name','<>','')
+                ->distinct() 
+                ->orderBy('name','asc')
+                ->pluck("name")
+                ->all();
+            $cats = implode( ', ', $categorylists ); 
 			
             $name=$record->name.'<br/> '.$status;
             $address="";
@@ -1111,29 +1110,24 @@ public function adminusersellersstatusupdates (Request $request)
             if($record->company_zip)
                 $address.=$record->company_zip;
                 
-            $package_data = DB::table('subscriptions')
-                                                                   ->leftJoin('order_details', 'subscriptions.order_id', '=', 'order_details.id')
-                                                                   ->leftJoin('packages', 'packages.id', '=', 'order_details.package_id')
-                                                                   ->where('subscriptions.user_id', '=',$userId)
-                                                                   ->where('subscriptions.status','active')
-                                                                   ->whereDate('subscriptions.expairy_date', '>=', Carbon::now())
-                                                                   ->orderBy('subscriptions.id','DESC')
-                                                                   ->first(); 
-                  $product_count_approved = SellerProduct::where("user_id", $userId)->where("status",'<>', "deleted")->count(); 
-                  $product_count_pending = SellerProductTemp::where("user_id", $userId)->where("status",'<>', "deleted")->count(); 
-                  $product_count = $product_count_approved + $product_count_pending; 
-                
-                  $prdts_to_uplod=0;
-                  if(!empty($package_data))
-                    {
-                    $market_uploads = $package_data->market_uploads;    
-	                if($package_data->market_uploads=='')
-                                   $prdts_to_uplod="Unlimited";
-                    elseif($market_uploads>0 && $market_uploads>$product_count)
-                                    $prdts_to_uplod=$market_uploads-$product_count;
-                    else
-                                    $prdts_to_uplod=0;	
-              }
+            $package_data = DB::table('subscriptions')->leftJoin('packages', 'packages.id', '=', 'subscriptions.package_id')
+                            ->where('subscriptions.user_id', '=',$userId)
+                            ->where('subscriptions.status','active')
+                            ->whereDate('subscriptions.expairy_date', '>=', Carbon::now())
+                            ->orderBy('subscriptions.id','DESC')
+                            ->first(); 
+            $product_count_approved = SellerProduct::where("user_id", $userId)->where("status",'<>', "deleted")->count(); 
+            $product_count_pending = SellerProductTemp::where("user_id", $userId)->where("status",'<>', "deleted")->count(); 
+            $product_count = $product_count_approved + $product_count_pending;                 
+            $prdts_to_uplod=0;
+            if(!empty($package_data)){
+                $market_uploads = $package_data->market_uploads;    
+                if($package_data->market_uploads=='')
+                   $prdts_to_uplod="Unlimited";
+                elseif($market_uploads>0 && $market_uploads>$product_count)
+                    $prdts_to_uplod=$market_uploads-$product_count;
+                    	
+            }
             $data_arr[] = array(
                 "id" => $record->id,
                 "name" =>$name,
@@ -1147,8 +1141,9 @@ public function adminusersellersstatusupdates (Request $request)
                 "address" => $address,
                 "created_at" => date('d-m-Y', strtotime($record->created_at)),
                 "country_name" => $record->country_name, 
+                "pkg_name" => $record->pkg_name,                  
                 "subscription" => $record->expairy_date==''? 'Nill': date('d-m-Y', strtotime($record->expairy_date)),);    
-         }
+        }
 
         $response = array(
             "draw" => intval($draw),
@@ -1199,10 +1194,22 @@ public function adminusersellersstatusupdates (Request $request)
         foreach ($records as $record) {
             $arry= explode(".", $record->file_path );
             $type=$arry[count($arry)-1];
-            $imgpath=$type=='pdf'?asset("/images/ic-pdf.jpg"):(($type=='doc'||$type=='docx')?asset("/images/ic-doc.jpg"):asset("/uploads/KYCFiles/")."/".$record->file_path);
+            if($record->status=='In-Active'){
+           // $imgpath=$type=='pdf'?asset("/images/ic-pdf.jpg"):(($type=='doc'||$type=='docx'||$type=='csv'||$type=='xlsx'||$type=='xls')?asset("/images/ic-doc.jpg"):asset("/uploads/KYCFiles/")."/".$record->file_path);
+            if($type=='pdf')
+            $imgpath=asset("/images/ic-pdf.jpg");
+            elseif($type=='csv'|| $type=='xlsx'||$type=='xls' ||$type=='txt')
+            $imgpath=asset('/images/xls.jpg');
+            elseif($type=='doc'||$type=='docx')
+            $imgpath=asset("/images/ic-doc.jpg");
+            else
+            $imgpath=asset("/uploads/KYCFiles/")."/".$record->file_path;
             $imgpath1="'".asset("/uploads/KYCFiles/")."/".$record->file_path."'";
             $strimg='<div class="table-prof" onclick="fnviewdocs('.$imgpath1.')"><img style=" width:60px !important;" class="pr_img" src="'. $imgpath.' "></div>';
-           
+            }
+            else{
+             $strimg='<div class="table-prof" ><img style=" width:60px !important;" class="pr_img" src="'. asset('/images/ic-doc.jpg').' "></div>';   
+            }
 
             $status = (
                 ( $record->status=='Active') ? '<span style="color:white;background-color:green;padding:5px;line-height:12px;border-radius:2px;margin-top:5px;display:inline-block;">'.$record->status.'</span>':

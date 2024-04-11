@@ -299,7 +299,6 @@
   margin: 10px 0 0 20px;
 }
 #frame #sidepanel #search input {
-  font-family: "proxima-nova",  "Source Sans Pro", sans-serif;
   padding: 10px 0 10px 46px;
   width: calc(95% - 0px);
   border: none;
@@ -459,7 +458,6 @@
   color: #f5f5f5;
   cursor: pointer;
   font-size: 0.85em;
-  font-family: "proxima-nova",  "Source Sans Pro", sans-serif;
 }
 @media screen and (max-width: 735px) {
   #frame #sidepanel #bottom-bar button {
@@ -617,7 +615,6 @@
   position: relative;
 }
 #frame .content .message-input .wrap input {
-  font-family: "proxima-nova",  "Source Sans Pro", sans-serif;
   float: left;
   border: none;
   width: calc(100% - 90px);

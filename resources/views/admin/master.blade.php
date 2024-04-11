@@ -86,23 +86,23 @@
 <li class="nav-item"><a class="nav-link" href="{{route('list.currency')}}"><i class="fa fa-money" aria-hidden="true"></i>Currencies</a></li>
 <li class="nav-item"><a class="nav-link" href="{{route('category.list')}}"><i class="fa fa-clone" aria-hidden="true"></i>Categories</a></li>
 <li class="nav-item"><a class="nav-link" href="{{route('admin.kyclist')}}"><i class="fa fa-check-square-o" aria-hidden="true"></i>KYC Verification</a></li>
-<li class="nav-item"><a class="nav-link" href="{{route('admin.sellerslist')}}"><i class="fa fa-sellsy"></i>Sellers List</a></li>
-<li class="nav-item"><a class="nav-link" href="{{route('admin.buyerslist')}}"><i class="fa fa-sort"></i>Buyers List</a></li>
+<li class="nav-item"><a class="nav-link" href="{{route('admin.sellerslist')}}"><i class="fa fa-sellsy"></i>Users List</a></li>
+<!--<li class="nav-item"><a class="nav-link" href="{{route('admin.buyerslist')}}"><i class="fa fa-sort"></i>Buyers List</a></li>-->
 <li class="nav-item"><a class="nav-link" href="{{route('admin.guestlist')}}"><i class="fa fa-sort"></i>Guest List</a></li>
 <li class="nav-item"><a class="nav-link" href="{{route('admin.orderlist')}}"><i class="fa fa-pie-chart"></i>Orders History</a></li>
 <li class="nav-item"><a class="nav-link" href="{{route('admin.advertisementlist')}}"><i class="fa fa-picture-o"></i>Advertisement Listing</a></li>
 <li class="nav-item"><a class="nav-link" href="{{route('list.packges')}}"><i class="fa fa-address-card" aria-hidden="true"></i>Subscription Package Listing</a></li>
 <li class="nav-item"><a class="nav-link" href="{{route('subscription.users')}}"><i class="fa fa-newspaper-o" aria-hidden="true"></i>Subscription Users List</a></li>
-<li class="nav-item"><a class="nav-link" href="{{route('list-products')}}"><i class="fa fa-sort-amount-desc" aria-hidden="true"></i>Products</a></li>
-<li class="nav-item"><a class="nav-link" href="{{route('list-Sellerproducts')}}"><i class="fa fa-sort-amount-desc" aria-hidden="true"></i>Seller Products</a></li>
+<li class="nav-item"><a class="nav-link" href="{{route('list-products')}}"><i class="fa fa-sort-amount-desc" aria-hidden="true"></i>Sample Products</a></li>
+<li class="nav-item"><a class="nav-link" href="{{route('list-Sellerproducts')}}"><i class="fa fa-sort-amount-desc" aria-hidden="true"></i>Products</a></li>
 <li class="nav-item"><a class="nav-link" href="{{route('admin.listVendorProduct')}}"><i class="fa fa-snowflake-o" aria-hidden="true"></i>Product Create Request</a></li>
 <li class="nav-item"><a class="nav-link" href="{{route('admin.profilerequest')}}"><i class="fa fa-address-card" aria-hidden="true"></i>Profile Delete Request</a></li>
 <li class="nav-item"><a class="nav-link" href="{{route('admin.brands')}}"><i class="fa fa-database" aria-hidden="true"></i>Brands</a></li>
 <li class="nav-item"><a class="nav-link" href="{{route('admin.testimonials')}}"><i class="fa fa-file-text-o" aria-hidden="true"></i>Testimonials</a></li>
 <li class="nav-item"><a class="nav-link" href="{{route('admin.newsletters')}}"><i class="fa fa-cogs" aria-hidden="true"></i>Newsletter Subscriptions</a></li>
 <li class="nav-item"><a class="nav-link" href="{{route('admin.promotionalnewsletters')}}"><i class="fa fa-cogs" aria-hidden="true"></i>Promotional Newsletter List</a></li>
-<li class="nav-item"><a class="nav-link" href="{{route('admin.sellerinsight')}}"><i class="fa fa-book" aria-hidden="true"></i></i>Sellers Insight</a></li>
-<li class="nav-item"><a class="nav-link" href="{{route('admin.buyerinsightreport')}}"><i class="fa fa-book" aria-hidden="true"></i></i>Buyers Insight</a></li>
+<li class="nav-item"><a class="nav-link" href="{{route('admin.sellerinsight')}}"><i class="fa fa-book" aria-hidden="true"></i></i>Users Insight</a></li>
+<!--<li class="nav-item"><a class="nav-link" href="{{route('admin.buyerinsightreport')}}"><i class="fa fa-book" aria-hidden="true"></i></i>Buyers Insight</a></li>-->
 <!--<li class="nav-item"><a class="nav-link" href="{{route('stripe.status')}}"><i class="fa fa-cc-stripe" aria-hidden="true"></i></i>Stripe Status</a></li>-->
 <li class="nav-item"><a class="nav-link" href="{{route('admin.socialmedia')}}"><i class="fa fa-bell-o" aria-hidden="true"></i></i>Social Media</a></li>
 <li class="nav-item"><a class="nav-link" href="{{route('admin.settings')}}"><i class="fa fa-cogs" aria-hidden="true"></i>General Settings</a></li>

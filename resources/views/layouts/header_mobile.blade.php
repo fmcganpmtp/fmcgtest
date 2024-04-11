@@ -128,14 +128,16 @@
 									@endif
 								{{--	@endif  --}}
 								{{-- @if($view_composer_profile_menu_visible_criteria['general_companyProfile'] == 1 )--}}
-									<a class="dropdown-item" href="{{route('ViewProfileSeller')}}"> <i class="fa fa-user" aria-hidden="true"></i> My profile </a> 
+									<a class="dropdown-item" href="{{route('MyCompanyProfile')}}"> <i class="fa fa-user" aria-hidden="true"></i> My profile </a> 
 								 {{-- @endif --}}
 									@if((Auth::guard('user')->user()->seller_type!='Co-Seller')  && $view_composer_profile_menu_visible_criteria['flag2'] == true)
 									<a class="dropdown-item" href="{{route('seller.kyc.approval')}}"> <i class="fa fa-clone" aria-hidden="true"></i> KYC approval @if(Auth::guard('user')->user()->varification_status!="varified" )<i class="fa fa-exclamation notific" aria-hidden="true" ></i>@endif</a>
 									@endif
 									@if(($view_composer_profile_menu_visible_criteria['flag_blocked_active'] != true) && $view_composer_profile_menu_visible_criteria['flag2'])
 									{{-- @if($view_composer_profile_menu_visible_criteria['network_expand'] == 1)--}}
-									 <a class="dropdown-item" href="{{route('user.mynetwork')}}"> <i class="fa fa-pencil-square-o" aria-hidden="true"></i>My Networks </a> 
+									{{-- <a class="dropdown-item" href="{{route('user.mynetwork')}}"> <i class="fa fa-pencil-square-o" aria-hidden="true"></i>My Networks </a>--}}
+									 <a class="dropdown-item" href="{{route('companyDB')}}"> <i class="fa fa-pencil-square-o" aria-hidden="true"></i>Company Database </a>
+									 
 									{{-- @endif --}}
 									@if( $view_composer_profile_menu_visible_criteria['general_companyDashboard'] == 1 && Auth::guard('user')->user()->seller_type!='Co-Seller' ) 
 								<!--	<a class="dropdown-item" href="{{route('user.listcosellers')}}"> <i class="fa fa-toggle-on" aria-hidden="true"></i> Manage Co-Users </a> -->
@@ -149,12 +151,11 @@
 									<a class="dropdown-item" href="{{ route('Product.Requests')}}"> <i class="fa fa-tasks" aria-hidden="true"></i> Product requests </a>
 								{{--	@endif--}}
 									@endif
-									@if( Auth::guard('user')->user()->seller_type!='Co-Seller' ) 
+									
 									<a class="dropdown-item" href="{{ route('subscription.details')}}"> <i class="fa fa-tasks" aria-hidden="true"></i> Subscription details </a>
-									@endif
+									
 									<a class="dropdown-item" href="{{route('logout')}}"> <i class="fa fa-sign-out" aria-hidden="true"></i>Log out </a> 
 								</div>
-                              
                               
                               
                               
@@ -168,6 +169,7 @@
 							            </div>
 							          </a>
 							      </li>
+							 <!--     
 							@if( $view_composer_profile_menu_visible_criteria['network_chat'] == 1)      
 							<li class="wish-list"><a href="javascript:void(0)" id="loadChatWindow"><img src="{{ asset('images/chat-ic-03.png') }}"> <br>
 							@if($view_composer_chact_unreadcnt!=0)
@@ -177,8 +179,9 @@
 							@endif
 							</a></li>
 							@else
-                             <li class="wish-list"><a href="javascript:void(0)" onclick="showerrorchat()"><img src="{{ asset('images/chat-ic-03.png') }}"></a>
+                             <li class="wish-list"><a href="javascript:void(0)" onclick="showerrorchat()"><img src="{{ asset('images/chat-ic-03.png') }}"></a></li>
                             @endif
+                            -->
                               </ul>
                               @endif
 							@endif

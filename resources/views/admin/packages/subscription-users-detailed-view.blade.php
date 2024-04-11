@@ -351,13 +351,17 @@ var user_id='<?php echo $user->id;?>';
        "render": function(data,type,full,meta)
       {
         if(full.last_package==full.id){ var acti = '' ; var sus = '';
-            if(full.sub_status!='Active')
+        { var send_rem ='';var edit_exp ='';
+            if(full.sub_status!='Active' && full.sub_status!='Upgraded' && full.sub_status!='Renewed')
             { 
                 acti = '<button class="green_sus_outer" title="Activate" onclick="fnChangStatus('+full.subs_id+','+Active+')"><span class="green_sus">Activate</span></button>'; 
-               }else if(full.sub_status!='Suspended'){ 
-                    sus = '<button  class="red_sus_outer" title="Suspend" onclick="fnChangStatus('+full.subs_id+','+Suspend+')"><span class="red_sus">Suspend</span></button>'; } 
+               //}else if(full.sub_status!='Suspended'){ 
+            }else if(full.sub_status=='Active' && full.sub_status!='Upgraded' && full.sub_status!='Renewed'){ 
+                    sus = '<button  class="red_sus_outer" title="Suspend" onclick="fnChangStatus('+full.subs_id+','+Suspend+')"><span class="red_sus">Suspend</span></button>';  
 				var send_rem ='<button onclick="sendmessage('+full.subs_id+')"  class="change-dt gray_btn_4" style="border:0 none !important;"><i class="fa fa-paper-plane-o" aria-hidden="true"></i>Send reminder</button>';	
                 var edit_exp ='<button onclick="fnchangeexpirydate('+full.subs_id+')"  class="change-dt  gray_btn_4" style="border:0 none !important;"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>Edit subscription expiry date</button>';
+            }
+        }     
 	  return  acti+sus+send_rem+edit_exp;
         }
       else

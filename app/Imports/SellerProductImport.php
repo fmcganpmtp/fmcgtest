@@ -159,6 +159,7 @@ class SellerProductImport implements ToCollection, WithHeadingRow
             $ret = SellerProductTemp::create([
                 "name" => html_entity_decode($row["product_description"]),
                 "product_price" => $product_price,
+                "inserted_by" => Auth::guard("user")->user()->id??"0",
                 "SKU" => $row["sku"],
                 'EAN_GTIN'    => $row["ean_gtin"], 
                 'batch'    => $row["batch"], 
@@ -212,7 +213,7 @@ class SellerProductImport implements ToCollection, WithHeadingRow
             //         ]);
                 
             // }
-
+            $thumbnail = "no";
             $url = $row["gallery"];
             if (!empty($url)) {
                 $urls = array_unique(explode(",", $url)) ;
@@ -228,14 +229,24 @@ class SellerProductImport implements ToCollection, WithHeadingRow
                                     $url="data:image/jpeg;base64,".$url;
                        }
                        
-                       if($i==0)
-                        {    
-                            $thumbnail= "yes";
-                            $i=1;
-                        }
-                        else
-                            $thumbnail = "no";
-
+                       
+                       
+                       
+                       $encode_path=rawurldecode($url);
+                       $handle = @fopen($encode_path, 'r');
+                       // Check if file exists
+                        if($handle) 
+                            {
+                                if($i==0)
+                                    {    
+                                        $thumbnail= "yes";
+                                        $i=1;
+                                    }
+                                    else
+                                    $thumbnail = "no";
+                            
+                            } 
+                          
                         $ret2 = SellerProductImageTemp::create([
                             "product_id" => $product_id,
                             "thumbnail" => $thumbnail,

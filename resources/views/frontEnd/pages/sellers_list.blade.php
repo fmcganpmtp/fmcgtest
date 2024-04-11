@@ -62,11 +62,13 @@ $c_types = $c_types_names =[];
                           @else
                              <a href="javascript:void(0)"  id="expandnetwork'+{{$data->main_id}}+'" onclick="removefromnetwork({{$data->main_id}})" class="cht-ico add-nt rmv"><i class="fa fa-trash-o" aria-hidden="true"></i>Remove from network</a>
                            @endif
+                    <!--
                     @if( $view_composer_profile_menu_visible_criteria['network_chat'] == 1)
                      <a href="javascript:void(0)" class="cht-ico start-chat" onclick="EnableChatRequest({{$data->main_id}})" ><i class="fa fa-comments" aria-hidden="true"></i>Start chat</a>
                      @else
                     <a onclick="showerror()" href="JavaScript:void(0);" class="cht-ico"><i class="fa fa-comments" aria-hidden="true"></i>Start chat</a>
 					  @endif
+					  -->
                     </div></div></div></div></div>
  @endforeach  
  <div class="seller-pagi">

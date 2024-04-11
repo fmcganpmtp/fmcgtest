@@ -15,7 +15,18 @@
 </script> 
 @endif
 
+  <style>
+      
+   .social-media li a img {
+    margin-top: 8px!important;
+}
+.top-social li img {
+    margin-top: 2px;
+}
 
+  </style>
+  
+  
 
 <div class="home-out">
 	@if(!is_null($slider))
@@ -121,7 +132,7 @@
 							<img src="{{ $prd_img }}">
 						</div>
 						<div class="product-title">
-							<h3> {{ strlen($product->name) > 30 ? substr($product->name, 0, 30) . '...' : $product->name}}  </h3>
+							<h3> {{ strlen($product->name) > 23 ? substr($product->name, 0, 23) . '...' : $product->name}}  </h3>
 							@if($validity==true)
 							<h4>
 								@if(strtolower(trim($product->price_on_request)) != strtolower('Price on request'))
@@ -144,7 +155,7 @@
 							</h4>
 							<div class="pro-no-loc">
 								@if(!empty($product->User->country_id))
-								<h5> <i class="fa fa-map-marker" aria-hidden="true"></i> {{ $product->User->Country->name }} </h5>
+								<h5> <i class="fa fa-map-marker" aria-hidden="true"></i> {{ strlen($product->User->Country->name) > 23 ? substr($product->User->Country->name, 0, 23) . '...' : $product->User->Country->name}} </h5>
 								@endif
 							</div>
 							@endif 
@@ -262,11 +273,8 @@
 	<div class="home-reg-middle">
 		<div class="container">
 			<div class="row">
-				<div class="col-lg-1 col-12">
-					<div class="reg-lft">
-					</div>
-				</div>
-				<div class="col-lg-10 col-12">
+			
+				<div class="col-lg-12 col-12">
 					<div class="reg-right">
 						<div class="reg-right-inner">
 							<h4>Welcome to FMCG Land</h4>
@@ -275,7 +283,7 @@
 								your business like nowhere else.
 							</h5>
 							<h6>
-								Enjoy exploring our platform!
+								Enjoy exploring our B2B platform!
 							</h6>
 						</div>
 					</div>
@@ -344,7 +352,7 @@
 											<div class="pro-no-loc">
 												@if(!empty($product->User->country_id))
 												<h5> <i class="fa fa-map-marker" aria-hidden="true"></i>
-													{{ $product->User->Country->name }}  
+													{{ strlen($product->User->Country->name) > 23 ? substr($product->User->Country->name, 0, 23) . '...' : $product->User->Country->name}}  
 												</h5>
 												@endif
 											</div>
@@ -428,7 +436,10 @@
                 $prd_img = URL::asset("/uploads/productRequests/".$data->prod_img); ?>
             <div class="pro-img"> <img src="{{$prd_img}}"> </div>
             <div class="product-title">
-              <h3>{{ strlen($data->prd_name) > 30 ? substr($data->prd_name, 0, 30) . '...' : $data->prd_name}}</h3>
+                              <h4 class="loking-for">We are looking for:</h4>
+
+              <h3>{{ strlen($data->prd_name) > 20 ? substr($data->prd_name, 0, 20) . '...' : $data->prd_name}}</h3>
+              
               <div class="after_login_01">
                 @if($data->company_name!='' && Auth::guard('user')->check())
                     <h3>{{$data->company_name}}</h3>
@@ -443,15 +454,15 @@
                 @if(Auth::guard('user')->check())
                 <div class="req-btns">
                 @if( $view_composer_profile_menu_visible_criteria['general_companyProfile'] == 1)
-                  <a target="_blank" href="{{route('ViewSeller.profile',$data->parent_id)}}" class="req-bl-btn">View Profile</a> 
+                  <a target="_blank" href="{{route('CompanyProfile',$data->parent_id)}}" class="req-bl-btn">View Profile</a> 
                   @else
                   <a  href="javascript:void(0)" onclick="showerrorprofile()" class="req-bl-btn">View Profile</a> 
                  @endif
-                 @if( $view_composer_profile_menu_visible_criteria['network_chat'] == 1)
+                <!-- @if( $view_composer_profile_menu_visible_criteria['network_chat'] == 1)
                 <a href="javascript:void(0)" onclick="EnableChatRequest({{$data->user_id}})"  class="req-bl-btn">Message</a> 
                 @else
                 <a href="javascript:void(0)"  class="req-bl-btn"  onclick="showerrorchat()" >Message </a>
-                @endif
+                @endif -->
                 </div>
                 @endif
  <div class="product-ms-over">
@@ -602,7 +613,7 @@
 											<div class="pro-no-loc">
 												@if(!empty($product->User->country_id))
 												<h5> <i class="fa fa-map-marker" aria-hidden="true"></i>
-													{{ $product->User->Country->name }}  
+													{{ strlen($product->User->Country->name) > 23 ? substr($product->User->Country->name, 0, 23) . '...' : $product->User->Country->name}} 
 												</h5>
 												@endif 
 											</div>
@@ -647,7 +658,7 @@
 				@php
 				$cmp_img = asset('uploads/BuyerCompany/').'/'.$company->company_image;
 				@endphp
-				<a href="{{route('ViewSeller.profile',$company->user_id)}}">
+				<a href="{{route('CompanyProfile',$company->user_id)}}">
 					<div class=" col-12">
 						<div class="company-logo"><img src="{{$cmp_img}}"></div>
 					</div>
@@ -737,6 +748,23 @@
       </div>
     </div>
   </div>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
  
 <script type="text/javascript">
 

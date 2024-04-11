@@ -2,10 +2,9 @@
 @section('title', 'List Packages')
 @section('content')
 <div class="bg-light min-vh-100 d-flex flex-row align-items-center pack-listing">
-
-    
-    
-      <div class="container">
+  <!--new-pack-style-->
+   
+  <div class="container">
     <div class="row">
       <div class="col-lg-12">
         <div class="pack-box-03">
@@ -18,7 +17,7 @@
                 <h3>You are just one step away from the best the FMCG industry has to offer!</h3>
                 <div class="pack-top-content">
                   <p>At FMCG Land we aim to deliver you the best the FMCG industry has to offer, with a personal plan for everybody. From Premium to Free. Get instant access to the leading B2B platform connecting the global FMCG industry. With networking, job postings, and trade show information beyond buying and selling. Grow your business in a comprehensive ecosystem where everyone profits.</p>
-                  <p class="top-padding50">Need any help? Contact us at: <a href="mailto:support@fmgland.com">support@fmgland.com</a></p>
+                  <p class="top-padding50">Need any help? Contact us at: <a href="mailto:support@fmcgland.com">support@fmcgland.com</a></p>
                 </div>
                 <a href="#" class="yellow-btn03">START YOUR PERSONAL PLAN NOW</a> </div>
               <div class="col-lg-6 col-12">
@@ -33,7 +32,11 @@
             <div class="row">
               <div class="col-lg-12">
                 <div class="pack-table">
-<table class="table packageListCoverTable" style="padding:0px; margin:0px;" cellpadding="0" cellspacing="0">
+                    <?php $count = $packages->count(); 
+                          if($count>0) {
+                    
+                    ?>
+<table class="table packageListCoverTable"  cellpadding="0" cellspacing="0">
     <tr>
         <td class="out-tbl" style="margin:0px 0px; padding:0px 0px; ">
             <table class="table table-bordered">
@@ -48,7 +51,7 @@
                       <div class="pack-tble-th">
                         <h4>{{$package->name}} ({{$package->package_validity}})</h4>
                         <div class="dip-tbl">
-                             <?php 
+                          <?php 
                           $validity=12;
                           if($package->package_validity=='One year')
                           $no_of_months = 12;
@@ -66,22 +69,25 @@
                           @if(($package->package_offer_price != "") && ($package->package_offer_price>0))
                           
                           <span class="del-prc1">
-                          <h5><span class="pak-cur">&euro;</span> <del>{{$price[0]}}</del></h5>
+                          <h5><span class="pak-cur">€ </span> <del>{{$price[0]}}</del></h5>
                           <h6><b><del>{{$price[1]}}</del></b><br />
                          <span>/pm</span></h6>
                           </span>
                           
-                          <h5><span class="pak-cur">&euro;</span> {{$price_offer[0]}}</h5>  
+                          <h5><span class="pak-cur">€ </span> {{$price_offer[0]}}</h5>  
                           <h6><b>{{$price_offer[1]}}</b><br />
                           <span>/pm</span></h6>
                           
                           @else
-                          <h5><span class="pak-cur">&euro;</span> {{$price[0]}}</h5>
+                          <h5><span class="pak-cur">€ </span> {{$price[0]}}</h5>
                           <h6><b>{{$price[1]}}</b><br />
                          <span>/pm</span></h6>
                           
                           
                           @endif
+                            
+                            
+                            
                         </div>
                       </div></th>
                     @endforeach
@@ -149,7 +155,7 @@
                         echo $package->market_uploads;
                         else
                         { ?>
-                            <div class="unlimited"><b>Unlimited</b><br />+ service FMCG Land <a href=""><i class="fa fa-info-circle" aria-hidden="true" data-bs-toggle="tooltip" data-bs-placement="top" title="Service"></i></a> </div>
+                            <div class="unlimited un-top"><b>Unlimited</b><br />+ service FMCG Land <a href=""><i class="fa fa-info-circle" aria-hidden="true" data-bs-toggle="tooltip" data-bs-placement="top" title="Service"></i></a> </div>
                         <?php } ?>
                     </td>
                      @endforeach
@@ -195,7 +201,7 @@
                   </tr>
                  <tr  class="blank-tr">
                      <td></td>
-                     	@foreach ($packages as $package)
+                     	@foreach ($packages as $package )
                      <td></td>
                     @endforeach
                  </tr>
@@ -203,8 +209,9 @@
                       <td></td>
                     @foreach ($packages as $package)
                      <td>
-                       
-                       @if($stripe_status=="Enabled" && $package->package_basic_price>0)
+                        
+                        
+                         @if($stripe_status=="Enabled" && $package->package_basic_price>0)
                             <a class="default-btn table-btn" href="{{route('subscription.checkout', ['pkg_id'=>$package->id, 'accounts_id'=>''])}}" ><span>subscribe now</span></a>
                         @else
                             <form method="post" action="{{route('cart.submit')}}" name="direct_submit">
@@ -217,19 +224,21 @@
                             </form>
                             
                            @endif 
-                       
-                       <!-- @if($stripe_status=="Enabled" && $package->package_basic_price>0)
+                        <!--
+                         @if($stripe_status=="Enabled" && $package->package_basic_price>0)
                             <form action="{{route('package.details')}}" method="get"  name="direct_submit1">
                         @else
                             <form method="post" action="{{route('cart.submit')}}" name="direct_submit">
-                        @endif
+                        @endif           
                             @csrf
                             <input type="hidden" name="extended" value="no">
                             <input type="hidden" name="accounts_id" value="">
                             <input type="hidden" name="package_id" value="{{$package->id}}">
-                            <button class="table-btn"><span>subscribe now</span></button>
+                            <button class="table-btn "><span>subscribe now</span></button>
                             </form>
+                            
                             -->
+                          
                     </td>
                     @endforeach
                   </tr>
@@ -239,7 +248,7 @@
        
     </tr>
 </table>
-                 
+ <?php } else echo '<h3 class="no-mor-pkg" style="color:green;"> No more package to upgrade!!</h3>'; ?>                
                   
                       
                      
@@ -255,7 +264,7 @@
                     <div class="col-lg-5 col-12">
                       <h5>Need any assistance?</h5>
                       <p>Don't hesitate to contact us now. Our Support Team will be more than willing to help you out setting up your perfect personal plan.<br/>
-                        <a href="">Contact us now!</a></p>
+                        <a href="{{route('contactus')}}">Contact us now!</a></p>
                     </div>
                   </div>
                 </div>
@@ -266,25 +275,43 @@
       </div>
     </div>
   </div>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-  </div>
+  
+  <!--pack-end-->
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+</div>
 
 @endsection
 
 @section('footer_script')
-
-<script> 
-$fmcg(function(){
+<script>
   $fmcg(".account_li").click(function(){ 
       var accounts_id = $fmcg(this).attr('id');
       var package_id =$fmcg(this).attr('data-id');
@@ -292,6 +319,5 @@ $fmcg(function(){
       $fmcg(this).parents('.drpbuttonli').find('.p1').text($fmcg(this).find('a').text()); 
       $fmcg(this).parents('.drpbuttonli').find('.p1').val($fmcg(this).find('a').text()); 
    });
-});
 </script>
 @endsection

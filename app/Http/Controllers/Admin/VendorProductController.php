@@ -173,7 +173,7 @@ class VendorProductController extends Controller
             $data_arr[] = array(
                 "id" => $record->id,
                 "profile_pic" => $strimg,
-				"categories" => $record->categories,
+                "categories" => $record->categories,
                 "name" => $record->name. '<br>'.$status,
                 "store_name" => $record->company_name,
                 "sellername" => $record->sellername
@@ -202,9 +202,11 @@ class VendorProductController extends Controller
    
  public function viewProduct($productId){
         $product = SellerProductTemp::find($productId); 
+    if(!$product)
+    return redirect() ->route('admin.listVendorProduct')->with('message','Product not exists');
         $company_info = User::find($product->user_id);
         $currency_info = "";
-	$currencies = Currency::all(); //currency list
+    $currencies = Currency::all(); //currency list
     $countries = Country::all(); //country list
         if(!empty($product->currency_id))
         $currency_info = Currency::find($product->currency_id);
@@ -213,9 +215,9 @@ class VendorProductController extends Controller
         if(empty($product)) 
             return redirect()->route('admin.listVendorProduct')->with('message','No Product Found');
             
-        return view('admin/vendor_product/view-vendor-product',compact('product','company_info','currency_info','countries'));  
+        return view('admin/vendor_product/view-vendor-product',compact('product','currencies','company_info','currency_info','countries'));  
 } 
-//deleting temporary product image	 
+//deleting temporary product image   
 public function deleteimage($id){ 
 
         $images=SellerProductImageTemp::findOrFail($id);
@@ -228,10 +230,11 @@ public function deleteimage($id){
 }
 //display edit tempoary product page
 public function editProduct($productId) {
-        
     $product = SellerProductTemp::find($productId);
+    if(!$product)
+    return redirect() ->route('admin.listVendorProduct')->with('message','Product not exists');
     // $varients = SellerProduct::all();
-	$currencies = Currency::all(); 
+    $currencies = Currency::all(); 
     $countries = Country::all(); 
     $product_images = SellerProductImageTemp::where('product_id','=',$productId)->get();
     $categories = Category::where('parent_id', null)->orderBy('name','ASC')->get();
@@ -260,11 +263,12 @@ public function vendorproductapproval(Request $request)
     $seller_products=$request->get('seller_products');
     $status=$request->get('status');
 
-    $cats_path='';
-    if($request->get('category_id')!="")//saving parent and subcategory path
+    $cats_path=$category_parent_id='';
+    if($request->get('category_id')!="")//saving parent and subcategory path in seller product temp table
     {
         $seller_prd_ids=$request->get('seller_products');
         $cat_new_id=$request->get('category_id');
+        $category_parent_id=$cat_new_id;
         $category=Category::find($cat_new_id);
         
         $i=0; 
@@ -289,14 +293,14 @@ public function vendorproductapproval(Request $request)
         return json_encode('Category Added'); //if only category changing
     //updating all product list    
     foreach($seller_products as $item){
-	   $SellerProduct=SellerProductTemp::find($item);
-	   if(!empty($SellerProduct->categories))
-	        $cats_path=$SellerProduct->categories;
-	   else
-	        $cats_path='';
-	if($status=="active") {	//if satus is changing	
-		 
-    if(empty( $SellerProduct->category_id))
+       $SellerProduct=SellerProductTemp::find($item);
+       if(!empty($SellerProduct->categories))   //categories seperated by '>'
+            $cats_path=$SellerProduct->categories;
+       else
+            $cats_path='';
+    if($status=="active") { //if satus is changing
+        
+    if(empty( $SellerProduct->category_id))  //products added by front end form is empty ie; catogories sepertd by '>
     {
         //catgory fetching
         // if(!empty($SellerProduct->categories))
@@ -309,7 +313,7 @@ public function vendorproductapproval(Request $request)
     //{ 
         $prd_ids = $vartnts= $ctrys=  $cats = array();
          //csv > seperated values to create category
-        if (str_contains($NewCategory, '>')) 
+        if (str_contains($NewCategory, '>')) //more than one categories seperated by > in the temp table
         {
                 $parents = explode('>', $NewCategory);
                 $prevperent=null;
@@ -321,9 +325,11 @@ public function vendorproductapproval(Request $request)
 
                     $cats1 = Category::where(DB::raw('lower(name)'),strtolower($data))->where('parent_id',$parent_id)->pluck('id')->first(); 
         
-                    if(!empty($cats1))  
-                        $prevperent=  $parent_id= $cats1;
-                    else
+                    if(!empty($cats1))  // item cat already exists in catgory table
+                       { $prevperent=  $parent_id= $cats1;
+                        if($key==0)
+                            $category_parent_id=$cats1; }
+                    else  // new cat which in not in saved cat lists
                     {
                         $catg1['name'] = trim($data); 
                         $catg1['parent_id'] = $prevperent; 
@@ -331,18 +337,32 @@ public function vendorproductapproval(Request $request)
                         $catg1['slug'] = $seo_url;
                         $catCreate = Category::create($catg1); 
                         $prevperent= $parent_id= $catCreate->id;
+                        if($key==0)
+                            $category_parent_id=$catCreate->id;
                     }
                     
                 }
                 array_push($cats,$prevperent); 
         }
-        else
+        else  //only one category  temp table
         {
-            $cats1 = Category::where(DB::raw('lower(name)'),strtolower(trim($SellerProduct->categories)))->pluck('id')->first();
-			
+            $category_parent_id=  $cats1 = Category::where(DB::raw('lower(name)'),strtolower(trim($SellerProduct->categories)))->pluck('id')->first();
+            
 
-            if(!empty($cats1)) 
+            if(!empty($cats1)) {
                  array_push($cats,$cats1);
+                 $cat_selected = Category::where("id",$cats1)->first();
+
+                
+                 if (!empty($cat_selected)) {
+                 if ($cat_selected->getParentsNames()) {
+                    foreach ($cat_selected->getParentsNames() as $item_selected) {
+                         $category_parent_id= $item_selected->id;
+                    }
+                }   
+               
+            }
+            }
             else
             {
                 $seo_url = $this->create_slug($NewCategory);
@@ -351,6 +371,7 @@ public function vendorproductapproval(Request $request)
                 $catg1['slug'] = $seo_url;
                 $catCreate = Category::create($catg1); 
                 array_push($cats,$catCreate->id);
+                $category_parent_id=$catCreate->id;
             }
         }
     //}
@@ -359,8 +380,21 @@ public function vendorproductapproval(Request $request)
 if(!empty($CatList))
     $categoriesNew= $CatList;
 else 
-    $categoriesNew= $SellerProduct->category_id;
-			 
+  {  $categoriesNew=$category_parent_id= $SellerProduct->category_id;
+   $cat_parent = "";
+            $cat_selected = Category::where("id",$SellerProduct->category_id)->first();
+              if (!empty($cat_selected)) {
+                if ($cat_selected->getParentsNames()) {
+                    foreach ($cat_selected->getParentsNames() as $item_selected) {
+                         $cat_parent = $item_selected->id;
+                     }
+                
+                  $category_parent_id=  $cat_parent;
+                } 
+            }
+  }
+    
+           
 // Brand Insert section below
 $brand_id= "";
 if(isset($SellerProduct->brands)) { 
@@ -386,11 +420,11 @@ if(isset($SellerProduct->brands)) {
 else if(isset($SellerProduct->currency)) { 
 
     $currency_data=Currency::where(DB::raw('lower(symbol)'),strtolower($SellerProduct->currency))->pluck('id')->first(); 
-	
+    
     if(!empty($currency_data)) { 
-	$currency=$currency_data; }
-	elseif($SellerProduct->currency=="" || ($SellerProduct->currency==null) || is_null($SellerProduct->currency)) 
-	{ $currency=null; }
+    $currency=$currency_data; }
+    elseif($SellerProduct->currency=="" || ($SellerProduct->currency==null) || is_null($SellerProduct->currency)) 
+    { $currency=null; }
     else{
         $newcurrency=array('symbol'=>$SellerProduct->currency);
         $currency_data=Currency::create($newcurrency);
@@ -403,7 +437,7 @@ else if(isset($SellerProduct->currency)) {
 // Coutries Insert section below
 $NewCountries= "";
 if(isset($SellerProduct->country_ids)) { 
-	$CountryList = $SellerProduct->country_ids; 
+    $CountryList = $SellerProduct->country_ids; 
 }  
 
 
@@ -432,7 +466,7 @@ if(isset($SellerProduct->product_expiry)) {
     if ($date["error_count"] == 0 && checkdate($date["month"], $date["day"], $date["year"]))
         $product_expiry = date('Y-m-d', strtotime($SellerProduct->product_expiry));
 
-	}
+    }
 if(isset($SellerProduct->BBD)) {      
     $date = date_parse($SellerProduct->BBD);
     if ($date["error_count"] == 0 && checkdate($date["month"], $date["day"], $date["year"]))
@@ -445,11 +479,12 @@ if(isset($SellerProduct->BBD)) {
   
     $ret =  SellerProduct::create([
             'name'     => trim($SellerProduct->name),
-			'currency_id'    => $currency, 
+            'currency_id'    => $currency, 
             'product_price'    => $SellerProduct->product_price, 
             'SKU'    => $SellerProduct->SKU, 
             'EAN_GTIN'    => $SellerProduct->EAN_GTIN, 
             'batch'    => $SellerProduct->batch, 
+            'inserted_by' => $SellerProduct->inserted_by, 
             'leadtime' => $SellerProduct->leadtime, 
             'pcs_box' => $SellerProduct->pcs_box,
             'pcs_pallet' => $SellerProduct->pcs_pallet, 
@@ -457,6 +492,7 @@ if(isset($SellerProduct->BBD)) {
             'stock_count'    => $SellerProduct->stock_count, 
             'label_language'    => $SellerProduct->label_language, 
             'category_id'   => $categoriesNew, 
+            'parent_category_id'   => $category_parent_id, 
             'available_countries'   => $NewCountries, 
             'product_color'    => $SellerProduct->product_color, 
             'product_weight'    => $SellerProduct->product_weight ?? $SellerProduct->product_size ?? '', 
@@ -516,23 +552,24 @@ if(isset($SellerProduct->BBD)) {
             }
         } 
         //downloading live path image to server folder
-        $product_images = 	$SellerProduct->SellerProductImageTemp;	
+        $product_images =   $SellerProduct->SellerProductImageTemp; 
         if($product_images) {
                 $ibr=0;
-        		foreach ($product_images as $product_image) {
-                	$file = "uploads/productImages/";
-                	$url=$product_image->image_path;
-                	$imageExtensions = ['jpg', 'jpeg', 'gif', 'png', 'bmp', 'svg', 'svgz', 'cgm', 'djv', 'djvu', 'ico', 'ief','jpe', 'pbm', 'pgm', 'pnm', 'ppm', 'ras', 'rgb', 'tif', 'tiff', 'wbmp', 'xbm', 'xpm', 'xwd'];        
+                foreach ($product_images as $product_image) {
+                    $file = "uploads/productImages/";
+                    $url=$product_image->image_path;
+                    $imageExtensions = ['jpg', 'jpeg', 'gif', 'png', 'bmp', 'svg', 'svgz', 'cgm', 'djv', 'djvu', 'ico', 'ief','jpe', 'pbm', 'pgm', 'pnm', 'ppm', 'ras', 'rgb', 'tif', 'tiff', 'wbmp', 'xbm', 'xpm', 'xwd'];        
                     $ibr++;
-                	if (!empty($url)) 
+                    $image_path='';
+                    if (!empty($url)) 
                     { 
                         if(filter_var($product_image->image_path, FILTER_VALIDATE_URL) === FALSE)
-                        {   
-                            $validB64 = preg_match("/data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).base64,.*/", $product_image->image_path); 
+                        {
+                            $validB64 = preg_match("/data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).base64,.*/", $product_image->image_path);
                             if($validB64)
                             {//if base64 image convert to image
                                 $imageInfo = explode(";base64,", $product_image->image_path);
-                                $imgExt = str_replace('data:image/', '', $imageInfo[0]);      
+                                $imgExt = str_replace('data:image/', '', $imageInfo[0]);
                                 $image = str_replace(' ', '+', $imageInfo[1]);
                                 $image_name= date("YmdhisU").$ret->id .'.'.$imgExt;
 
@@ -542,17 +579,17 @@ if(isset($SellerProduct->BBD)) {
                             }
                             else
                                 $image_path=$url;
-                            
+
                         }
                         else
-                        { 
+                        {
                             $encode_path=rawurldecode($product_image->image_path);
-                            
+
                             $handle = @fopen($encode_path, 'r');
                             // Check if file exists
-                            if($handle) 
+                            if($handle)
                             {
-                                 //$ext = pathinfo(parse_url($encode_path)['path'], PATHINFO_EXTENSION);	
+                                 //$ext = pathinfo(parse_url($encode_path)['path'], PATHINFO_EXTENSION);        
                                  //if(in_array($ext, $imageExtensions))
                                     $image_path =  $this->grab_image($encode_path,$file,$ibr);
                                  //else
@@ -560,7 +597,7 @@ if(isset($SellerProduct->BBD)) {
                             }
                             else
                                 $image_path='';
-                            
+
                         }
                         if($image_path!='')
                         {
@@ -574,10 +611,10 @@ if(isset($SellerProduct->BBD)) {
                         
                     }
           }
-        }		
+        }  
         $SellerProduct->delete();//temp product deleting
     }
-			
+            
         if($status=="rejected")
         {
             $SellerProduct->status ="rejected";
@@ -628,15 +665,15 @@ public function updateProduct(Request $request) {
         $product = SellerProductTemp::find($productId);
         $category_id = $variants = $currency_id = "";
             if(!empty($request->input('category_id'))) 
-			$category_id = $request->input('category_id');
-		
-			if(!empty($request->input('subcategory_id'))) 
-			$category_id = $request->input('subcategory_id');
-		     
-			if(!empty($request->input('subsubcategory_id'))) 
-			$category_id = $request->input('subsubcategory_id');
-			
-	    $cats_path='';
+            $category_id = $request->input('category_id');
+        
+            if(!empty($request->input('subcategory_id'))) 
+            $category_id = $request->input('subcategory_id');
+             
+            if(!empty($request->input('subsubcategory_id'))) 
+            $category_id = $request->input('subsubcategory_id');
+            
+        $cats_path='';
         if($category_id!="")
         {
             $category=Category::find($category_id);
@@ -676,10 +713,10 @@ public function updateProduct(Request $request) {
         $product_price=null;
         if(!empty($request->input('product_price'))) {
         $product_price  = $request->input('product_price');
-		$product_price = (double) str_replace(',', '', $product_price)   ;
-		$product_price = round($product_price,3);
+        $product_price = (double) str_replace(',', '', $product_price)   ;
+        $product_price = round($product_price,3);
         } 
-		$input['product_price']=$product_price;        
+        $input['product_price']=$product_price;        
         //product price type
         $input['price_on_request']  = 'No';
         if($request->input('price_on_request')!='')
@@ -688,6 +725,7 @@ public function updateProduct(Request $request) {
         if($request->input('price_negotiable')!='')
             $input['price_negotiable'] = $request->input('price_negotiable');
         $input['category_id']=$category_id;
+        $input['parent_category_id']=$category_id;
         $input['categories']= $cats_path;
         $input['variants']=$variants;
         //product image saving
@@ -808,7 +846,7 @@ public function updateProduct(Request $request) {
     
     //saving live path image own server
     public function grab_image($url,$saveto,$ibr){
-		
+        
     // Getting the name
     $name = pathinfo(parse_url($url)['path'], PATHINFO_BASENAME);
                            
@@ -827,10 +865,10 @@ public function updateProduct(Request $request) {
         unlink($saveto_path);
     }
     $fp = fopen($saveto_path,'x');
-	
+    
     fwrite($fp, $raw);
     fclose($fp);
-	return $image_path;
+    return $image_path;
 }
   
 

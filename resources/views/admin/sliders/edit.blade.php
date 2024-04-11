@@ -1,6 +1,6 @@
 @extends('admin.master')
 @section('title', 'Edit Slider')
-@section('breadcrumb') Edit Slider @endsection
+@section('breadcrumb') Edit Slider @endsection  
 @section('content')
 
 
@@ -46,7 +46,7 @@
                                     <label>Image</label>
                                     <div class="input-group control-group increment" >
                                         @if($images->image!='')<img src="{{ asset('/assets/uploads/sliders/'.$images->image) }}" class="img-thumbnail" width="175" />@endif
-                                        <input type="file" name="image[]"  accept="image/png, image/gif, image/jpeg" class="form-control"  style="height: 40px !important; ">
+                                        <input type="file" onchange="update_slid({{$images->id}})" name="old_image[$images->image]"  accept="image/png, image/gif, image/jpeg" class="form-control"  style="height: 40px !important; ">
                                         <div class="input-group-btn">
                                         <button class="btn btn-danger delete_ext" type="button" onclick="removeMedia({{$images->id}})"><i class="fa fa-times-circle" style="color:#fff;"></i></button>
                                         </div>
@@ -157,6 +157,33 @@
   <script src="{{ asset('admin1/js/sb-admin-2.min.js') }}"></script>
 
   <script type="text/javascript">
+  
+  function update_slid(id){
+var data = new FormData();
+//data.append('image_original', this.files[0]);
+data.append('image_original', event.target.files[0]);
+data.append('id', id);
+//var file=event.target.files[0];
+data.append('_token', "{{ csrf_token() }}"); 
+$.ajax({
+        url:'{{route('updateSliderimage')}}',
+        type: 'POST',
+        data : data,
+        enctype : 'multipart/form-data',
+        contentType: false,
+        processData: false,
+        success: function( data ) { 
+            var baseUrl = "{{asset('')}}";
+            var imageUrl = baseUrl + data.image_path;
+            $('.prof_img_original').attr('src', imageUrl);
+          
+        },
+        error: function() {
+          //  alert('Upload Failed');
+        }
+       });
+  }
+  
     $(document).ready(function() {
         $(".btn-success").click(function(){ 
             var html = $("#clone").html();

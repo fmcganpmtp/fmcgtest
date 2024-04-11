@@ -30,7 +30,7 @@
 				@foreach($prof_visited as $data)
             
               <div class="col-lg-3 col-12">
-                <a href="{{route('ViewSeller.profile',['profId'=>$data->profile_id])}}">
+                <a href="{{route('CompanyProfile',['profId'=>$data->profile_id])}}">
 				<div class="seller-bx">
 				<?php if(!empty($data->profile_pic)) $img_path = asset('/uploads/userImages/').'/'.$data->profile_pic;
                     else  $img_path = asset('uploads/defaultImages/default_avatar.png');  ?>

@@ -60,6 +60,12 @@
        
       <div class="row">
          <div class="col-lg-12">
+             
+             <div class="col-lg-9"> </div>
+            <div class="col-lg-3">
+                 <a href="{{route('Product.Requests')}}" class="default-btn crt-rwq">Product Requests</a>
+            </div>
+             
             <div class="pr-bottom ad-pro1" >
 
                   @if(Session::has('product_message')) <div class="alert alert-success">{{Session::get('product_message') }}</div> @endif  

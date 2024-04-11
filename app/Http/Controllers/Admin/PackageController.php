@@ -146,22 +146,26 @@ class PackageController extends Controller
         //total count
         $totalRecords = Subscription::select('count(*) as allcount')->where(function ($query) {
               $query ->where('subscriptions.status', '=', 'Active')
-                     ->orWhere('subscriptions.status', '=', 'Suspended')->orWhere('subscriptions.status', '=', 'Expired');
+                     ->orWhere('subscriptions.status', '=', 'Suspended')
+                    // ->orWhere('subscriptions.status', '=', 'Expired')
+                     ;
            })
             ->leftJoin('packages', 'packages.id', '=', 'subscriptions.package_id')
             ->leftJoin('users', 'users.id', '=', 'subscriptions.user_id')
             ->where('users.status','<>','Deleted')
-            ->where('packages.status','!=','deleted')
+           // ->where('packages.status','!=','deleted')
             ->distinct('user_id')->count();
         //total filtered data count
         $totalRecordswithFilter = Subscription::select('count(*) as allcount')->where(function ($query) {
               $query ->where('subscriptions.status', '=', 'Active')
-                     ->orWhere('subscriptions.status', '=', 'Suspended')->orWhere('subscriptions.status', '=', 'Expired');
+                     ->orWhere('subscriptions.status', '=', 'Suspended')
+                   //  ->orWhere('subscriptions.status', '=', 'Expired')
+                     ;
            })
             ->leftJoin('users', 'users.id', '=', 'subscriptions.user_id')
             ->leftJoin('buyer_companies', 'buyer_companies.user_id', '=', 'users.id')
             ->leftJoin('packages', 'packages.id', '=', 'subscriptions.package_id')
-            ->where('packages.status','!=','deleted')
+           // ->where('packages.status','!=','deleted')
             ->when($searchValue!='', function ($query) use ($searchValue) {
                 $query->where(DB::raw('CONCAT_WS(users.name,users.email,users.phone)'), 'LIKE','%'.$searchValue.'%');
             })
@@ -180,15 +184,17 @@ class PackageController extends Controller
 
         // Get records, also we have included search filter as well
         $records = Subscription::select('subscriptions.*','users.name as user_name','buyer_companies.company_name as company_name',
-        'packages.user_type as user_type','packages.subscription_type')->where(function ($query) {
+        'packages.user_type as user_type','packages.name as pkg_name','packages.subscription_type')->where(function ($query) {
               $query ->where('subscriptions.status', '=', 'Active')
-                     ->orWhere('subscriptions.status', '=', 'Suspended')->orWhere('subscriptions.status', '=', 'Expired');
+                     ->orWhere('subscriptions.status', '=', 'Suspended')
+                    // ->orWhere('subscriptions.status', '=', 'Expired')
+                     ;
            })
             ->leftJoin('users', 'users.id', '=', 'subscriptions.user_id')
             ->leftJoin('buyer_companies', 'buyer_companies.user_id', '=', 'users.id')
             ->leftJoin('packages', 'packages.id', '=', 'subscriptions.package_id')   
             ->orderBy($columnName,$columnSortOrder)
-            ->where('packages.status','!=','deleted')
+           // ->where('packages.status','!=','deleted')
             ->where('users.status','<>','Deleted')
             ->when($searchValue!='', function ($query) use ($searchValue) {
                  $query->where(DB::raw('CONCAT_WS(users.name,users.email,users.phone)'), 'LIKE','%'.$searchValue.'%');
@@ -232,6 +238,7 @@ class PackageController extends Controller
                 "subscription_type" => $record->subscription_type,
                 "user_type" => $record->user_type,
                 "company_name" => $record->company_name,
+                "pkg_name" => $record->pkg_name,
                 "expairy_date" => date('d-m-Y', strtotime($record->expairy_date)),
                 "date" => date('d-m-Y', strtotime($record->date)),
                 "sub_status"=> $record->status,

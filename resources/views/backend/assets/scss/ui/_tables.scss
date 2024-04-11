@@ -1,0 +1,161 @@
+@import "~datatables.net-bs4/css/dataTables.bootstrap4.min.css";
+@import "~datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css";
+@import "~datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css";
+
+.table-responsive {
+  position: relative;
+  min-height: calc(100vh - 150px);
+  padding: 0 20px;
+}
+
+.dataTables_filter {
+  display: none !important;
+}
+
+.table {
+  border-collapse: separate !important;
+  border-spacing: 0 5px !important;
+  thead {
+    th {
+      color: $table-head-color;
+      background: $table-head-bg;
+      padding-top: 5px;
+      padding-bottom: 5px;
+      padding-top: $table-head-padding-y;
+      padding-bottom: $table-head-padding-y;
+      font-size: 14px;
+      border: none;
+      box-sizing: content-box;
+      @media print {
+        background: transparent;
+      }
+    }
+  }
+
+  tbody{
+    tr{
+      background-color: #f7f7f7 !important;
+    }
+
+    td{
+      padding-top: 5px;
+      padding-bottom: 5px;
+      font-size: 15px;
+      border: none;
+      box-sizing: content-box;
+    }
+  }
+
+}
+
+table.dataTable>thead .sorting:before, table.dataTable>thead .sorting:after, table.dataTable>thead .sorting_asc:before, table.dataTable>thead .sorting_asc:after, table.dataTable>thead .sorting_desc:before, table.dataTable>thead .sorting_desc:after, table.dataTable>thead .sorting_asc_disabled:before, table.dataTable>thead .sorting_asc_disabled:after, table.dataTable>thead .sorting_desc_disabled:before, table.dataTable>thead .sorting_desc_disabled:after {
+  bottom: 7px;
+}
+
+.page-link {
+  min-width: 30px;
+  border-radius: 6px;
+  margin: 0 5px;
+  padding: 5px 10px;
+  font-size: 15px;
+  &:focus {
+    box-shadow: none;
+  }
+  &:hover{
+    background-color: lighten($secondary, 2);
+  }
+}
+
+.table-responsive {
+  margin-bottom: $spacer;
+
+  .table {
+    margin-bottom: 0;
+  }
+}
+
+.table-transparent {
+  thead {
+    th {
+      background: transparent;
+    }
+  }
+}
+
+.table-nowrap {
+  > :not(caption) > * > * {
+    white-space: nowrap;
+  }
+}
+
+.table-vcenter {
+  > :not(caption) > * > * {
+    vertical-align: middle;
+  }
+}
+
+.table-center {
+  > :not(caption) > * > * {
+    text-align: center;
+  }
+}
+
+.td-truncate {
+  max-width: 1px;
+  width: 100%;
+}
+
+.table-mobile {
+  @each $breakpoint, $breakpoint-max-widthin in $grid-breakpoints {
+    &#{breakpoint-infix($breakpoint)} {
+      @include media-breakpoint-down($breakpoint) {
+        display: block;
+
+        thead {
+          display: none;
+        }
+
+        tbody,
+        tr {
+          display: flex;
+          flex-direction: column;
+        }
+
+        td {
+          display: block;
+          padding: $table-cell-padding-x $table-cell-padding-y !important;
+          border: none;
+          color: $body-color !important;
+
+          &[data-label] {
+            &:before {
+              @include subheader;
+              content: attr(data-label);
+              display: block;
+            }
+          }
+        }
+
+        tr {
+          border-bottom: 1px solid $table-border-color;
+        }
+
+        .btn {
+          display: block;
+        }
+      }
+    }
+  }
+}
+
+
+ 
+
+table.dataTable.dtr-inline.collapsed>tbody>tr>td.dtr-control:before, table.dataTable.dtr-inline.collapsed>tbody>tr>th.dtr-control:before {
+  background-color: #00bcd4;
+}
+
+table.dataTable.dtr-inline.collapsed>tbody>tr.parent>td.dtr-control:before, table.dataTable.dtr-inline.collapsed>tbody>tr.parent>th.dtr-control:before {
+  content: "-";
+  background-color: $red;
+}

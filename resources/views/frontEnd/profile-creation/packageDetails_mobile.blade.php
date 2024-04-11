@@ -9,9 +9,9 @@
         <div class="pl-tp">
           <h1> {{$package->name  ?? ''}}<br/></h1>
  @if(($package->package_offer_price != "") && ($package->package_offer_price>0))
-	 <h2> <b>(<del>${{$package->package_basic_price}}</del></small>&nbsp;<small>&euro; </small>{{$package->package_offer_price}})</b> ({{$package->package_validity}}) </h2>
+	 <h2> <b>(<del>${{$package->package_basic_price}}</del></small>&nbsp;<small>€ </small>{{$package->package_offer_price}})</b> ({{$package->package_validity}}) </h2>
  @else
-     <h2> <b>(&euro; {{$package->package_basic_price ?? ''}})</b> ({{$package->package_validity}}) </h2>
+     <h2> <b>(€ {{$package->package_basic_price ?? ''}})</b> ({{$package->package_validity}}) </h2>
  @endif
             </div>
           <div class="pans-txt">

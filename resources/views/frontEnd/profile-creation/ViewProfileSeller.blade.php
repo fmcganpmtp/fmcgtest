@@ -47,9 +47,9 @@ function explodHr($opentime)
 		.view_profile{ display:block ; }
 		</style>
 		
-		 @if($errors->any() ||  Session::has('message_not_match'))
+		 @if($errors->any() ||  Session::has('message_not_match') || is_null($user->BuyerCompany->company_image) ||is_null($user->BuyerCompany->about_company))
        
-			<style>
+		<style>
 		.edit_form{ display:block !important; }
 		.view_profile{ display:none !important; }
 		</style>

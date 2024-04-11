@@ -123,12 +123,16 @@
       <div class="col-lg-3">
           
                 <div class="autocomplete form-group sg-list" >
-                  <div class="srch-left-31">
+                <div class="srch-left-31">
                 <input type="text" name="keyword" id='search_keyword' class="form-control no-brdd"  placeholder="Search by Name">
                 <input type="hidden" name="topcategorysearch" id='topcategorysearch' value="{{$search_key}}">
-                        <button type="submit" class="search_keyword_icon"><i class="fa fa-search" aria-hidden="true"></button></i>
+                <button type="submit" class="search_keyword_icon"><i class="fa fa-search" aria-hidden="true"></button></i>
+                 </div>
                 </div>
          </div></div>
+         <div class="col-lg-3">
+         <a href="{{route('Product.Requests')}}" class="default-btn crt-rwq">Product Requests</a>
+      </div>
       <div class="col-lg-3">
           @if($view_composer_profile_menu_visible_criteria['market_createProductRequests'] == 1)
           <a href="{{route('add.productrequest')}}" class="default-btn crt-rwq">Create Product request</a>

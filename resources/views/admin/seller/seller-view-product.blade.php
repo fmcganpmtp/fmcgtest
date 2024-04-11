@@ -1,5 +1,5 @@
 @extends('admin.master')
-@section('title', 'Seller View Product')
+@section('title', 'View Product')
 @section('breadcrumb') View Product @endsection
 @section('content')
    

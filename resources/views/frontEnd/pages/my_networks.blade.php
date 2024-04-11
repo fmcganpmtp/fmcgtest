@@ -416,7 +416,7 @@ getnetworkList(1);
     
  function fnmovetoprofile(userid)
 {
-  window.location="{{route('ViewSeller.profile', ':id')}}".replace(':id', '')+userid;
+  window.location="{{route('CompanyProfile', ':id')}}".replace(':id', '')+userid;
 }   
 
  function addtonetwork(userid)

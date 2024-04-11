@@ -1,13 +1,13 @@
 @extends('admin.master')
-@section('title', 'Seller View')
-@section('breadcrumb') Seller View @endsection
+@section('title', 'User View')
+@section('breadcrumb') User View @endsection
 @section('content')
 
  @if(Session::has('message')) <div class="alert alert-success">{{Session::get('message') }}</div> @endif
   <div class="body flex-grow-1 px-3">
     <div class="container-lg">
       <div class="card-out mb-4 inner-form">
-        <h2>Seller View</h2>
+        <h2>User View</h2>
         <div class="card-body">
           <div class="row">
             <div class="col-lg-12 col-12">

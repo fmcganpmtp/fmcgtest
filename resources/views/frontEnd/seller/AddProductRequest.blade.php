@@ -1,6 +1,11 @@
 @extends('layouts.template')
 @section('title', 'Add Product Request')
 @section('content')
+
+
+<style>
+    .btn-right-sd{float:right}
+</style>
 <sectiion class="seller-page no-bg seller-container">
 
 
@@ -9,11 +14,19 @@
    <div class="container add-req">
        
       <div class="row">
+          
          <div class="col-lg-12">
-        
-               <div class="card prd_diplicate">
-                
-                  @if(Session::has('product_message')) <div class="alert alert-success">{{Session::get('product_message') }}</div> @endif  
+             <div class="card prd_diplicate">
+
+
+<div class="row">
+            <div class="col-lg-9"> </div>
+            <div class="col-lg-3">
+                 <a href="{{route('Product.Requests')}}" class="default-btn crt-rwq btn-right-sd">Product Requests</a>
+            </div>
+            </div>
+            
+            @if(Session::has('product_message')) <div class="alert alert-success">{{Session::get('product_message') }}</div> @endif  
                   <h3>Add Product Request</h3>
                   
 			

@@ -60,10 +60,7 @@ class StripeController extends Controller
     "cvc" => session('user_checkout_details.card_cvc')
 )));*/
 
-        if (
-            session()->missing("package_id") ||
-            session()->missing("accounts_id")
-        ) {
+        if (session()->missing("package_id") ||session()->missing("accounts_id")) {
             return redirect()->route("subscription.details");
         }
         return redirect()->away($session->url);
@@ -72,7 +69,10 @@ class StripeController extends Controller
     {
         
         
-        $user_id = Auth::guard("user")->user()->id;
+        
+        $user_id=Auth::guard("user")->user()->id;
+        if(Auth::guard("user")->user()->seller_type=="Co-Seller")
+        $user_id=Auth::guard("user")->user()->parent_id;
         if((session()->missing('package_id')) || (session()->missing('accounts_id')))  {
         return redirect()->route('subscription.details'); 
         }
@@ -113,6 +113,9 @@ class StripeController extends Controller
             if ($package_validity == "One year") {
                 $Enddate = Carbon::now()->addMonths(12);
             } //add 12 months from date of purchase
+            
+            
+            
             if ($order_type == "Renew") {
             Session::forget("last_oreder_total");
             $input["status"] = "Renewed";
@@ -184,16 +187,28 @@ class StripeController extends Controller
             $input["expairy_date"] = $Enddate; //
             $input["auto_renewal"] = $auto_renewal;
             Subscription::create($input);
-            } else {
+            }
+            else {
+                
+                
+             DB::table("subscriptions")
+                ->where("user_id", $user_id)
+                ->where("status", "Active")
+                ->orderBy("id", "desc")
+               //->take(1)
+                ->update(["status" => "Upgraded"]);   
+                
+                
+                
             Session::forget("last_oreder_total");
             $input["status"] = "Active";
             $input["expairy_date"] = $Enddate;
 			$input["auto_renewal"] =   Session::get('auto_renewal') ?? '1';
 		    Subscription::create($input);
         }
-        $usertype = Package::find(Session::get("package_id"))->user_type;
+       // $usertype = Package::find(Session::get("package_id"))->user_type;
         $input = [
-            "usertype" => $usertype,
+            "usertype" => 'seller',
         ];
         Session::forget("old_pkg_id");
         Session::forget("order_type");

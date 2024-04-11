@@ -83,9 +83,9 @@ class SellerController extends Controller
   public function getSPendingProductlist(Request $request)
     {
         $usertype = Auth::guard("user")->user()->usertype;
-        if ($usertype != "seller") {
+        /*if ($usertype != "seller") {
             return redirect()->route("home");
-        }
+        }*/
         $columnIndex_arr = $request->get("order");
         $columnName_arr = $request->get("columns");
         $order_arr = $request->get("order");
@@ -183,9 +183,9 @@ class SellerController extends Controller
                 }
             });
             
-			
-		$totalRecordswithFilter	= $records->count();
-		$records=$records->orderBy($columnName, $columnSortOrder)
+            
+        $totalRecordswithFilter = $records->count();
+        $records=$records->orderBy($columnName, $columnSortOrder)
             ->skip($start)
             ->take($rowperpage)
             ->get();
@@ -217,7 +217,7 @@ class SellerController extends Controller
                     ->first();
             $data_arr[] = [
                 "id" => $record->id,
-				"status" => ucfirst($record->status),
+                "status" => ucfirst($record->status),
                 "categories" => $strcat,
                 "name" => $record->name,
                 "product_price"=>$record->price_on_request=='Price on request'?'Price on request':$currency.' '.$record->product_price,
@@ -267,14 +267,14 @@ class SellerController extends Controller
         $categories = Category::where("parent_id", null)
             ->orderBy("name")
             ->get();
-        if ($usertype == "seller") {
+        //if ($usertype == "seller") {
             
             if($this->isMobile()) { 
            return view( "frontEnd.seller.AddSellerProduct_mobile",compact("user","varients","countries","categories","Productbrand","currencies"));
         } else {
             return view( "frontEnd.seller.AddSellerProduct",compact("user","varients","countries","categories","Productbrand","currencies"));
         }
-        } 
+        //} 
         }
         else {
             return redirect()->route("home");
@@ -411,10 +411,10 @@ class SellerController extends Controller
             $inp['quantity'] = $request->input('quantity')??'';
             $inp['language'] = $request->input('language')??'';
             $date1  =$date  = Carbon::now();
-			$end_date = $date->addDays(10); 
+            $end_date = $date->addDays(10); 
             $inp['req_date'] = Carbon::now();
             $inp['extend_by_date'] = Carbon::now();
-			$inp['req_end_date'] = $end_date;
+            $inp['req_end_date'] = $end_date;
             $inp['prod_img'] = $imageName;
             
             ProductRequest::create($inp);
@@ -476,7 +476,7 @@ class SellerController extends Controller
             
             
         
-		$product->update($inp);
+        $product->update($inp);
             
              $msg='Product Request Updated!';
             \Session::flash('product_message',$msg);
@@ -507,9 +507,9 @@ class SellerController extends Controller
             $user = User::find($user_id);
             $usertype = Auth::guard("user")->user()->usertype;
             $seller_type=Auth::guard("user")->user()->seller_type;
-			 if (Auth::guard("user")->user()->seller_type != "Master") {
-				$user_id = Auth::guard("user")->user()->parent_id;
-			 }
+             if (Auth::guard("user")->user()->seller_type != "Master") {
+                $user_id = Auth::guard("user")->user()->parent_id;
+             }
         }
        /* if ($usertype != "seller" && $usertype != "buyer") { return redirect()->route("home"); }*/
         $productRequests = ProductRequest::select("product_requests.*")
@@ -539,7 +539,7 @@ class SellerController extends Controller
         $prd_req_cat_ids1 = array_unique($parent_cat_id);           
         $prd_req_cat_ids = Category::whereIn("id", $prd_req_cat_ids1)->orderBy('name','asc')->get();    //all parent cats for top main categories     
                     
-		if(is_null($category_id)){ //url parameter cat_id not exists
+        if(is_null($category_id)){ //url parameter cat_id not exists
              $category_id=[];
               foreach ($productRequests as $sproduct) 
                 {
@@ -615,10 +615,10 @@ class SellerController extends Controller
         $per_page = $request->input("per_page");
         $category_id = [];
          $user_id = Auth::guard("user")->user()->id;
-			 $seller_type=Auth::guard("user")->user()->seller_type;
-			 if (Auth::guard("user")->user()->seller_type != "Master") {
-				$user_id = Auth::guard("user")->user()->parent_id;
-			 }
+             $seller_type=Auth::guard("user")->user()->seller_type;
+             if (Auth::guard("user")->user()->seller_type != "Master") {
+                $user_id = Auth::guard("user")->user()->parent_id;
+             }
         
         
         $search_key = $request->input("search"); 
@@ -626,9 +626,9 @@ class SellerController extends Controller
         $topcategorysearch = $request->input("topcategorysearch");
         //dd($request->input("topcategorysearch"));
         if ($request->input("category_id") != "") //left side checkbox categories
-		{
+        {
             $category_id = explode(",", $request->input("category_id"));
-		    $categorylist = Category::whereIn("parent_id", $category_id)
+            $categorylist = Category::whereIn("parent_id", $category_id)
                             ->pluck("id")->all(); // all subcategories
 
                     foreach ($categorylist as $value) {
@@ -647,8 +647,8 @@ class SellerController extends Controller
                         }
                 }
            
-		
-	}
+        
+    }
         elseif (!is_null($main_category_id)) { 
                      $categorylist = Category::where("parent_id", $main_category_id)
                             ->pluck("id")->all(); // all subcategories
@@ -689,7 +689,7 @@ class SellerController extends Controller
 
             if ($search_key != "") {
                 $products = $products->where("product_requests.product_description", "LIKE",  "%".$search_key . "%");
-				
+                
             }
              
 
@@ -736,7 +736,7 @@ class SellerController extends Controller
                 
 
                 // $country_ids =[]; $countries='';
-		        // if (!empty($data->country_id)) {
+                // if (!empty($data->country_id)) {
                 //     $country_ids = explode(",", $data->country_id);
                 //     $countries = Country::whereIn("id", $country_ids)->pluck("name")->all();
                 // }
@@ -787,10 +787,10 @@ class SellerController extends Controller
         $category_id=$_REQUEST['cat_id']??null;
         if (Auth::guard("user")->check()) {
             $user_id = Auth::guard("user")->user()->id;
-			 $seller_type=Auth::guard("user")->user()->seller_type;
-			 if (Auth::guard("user")->user()->seller_type != "Master") {
-				$user_id = Auth::guard("user")->user()->parent_id;
-			 }
+             $seller_type=Auth::guard("user")->user()->seller_type;
+             if (Auth::guard("user")->user()->seller_type != "Master") {
+                $user_id = Auth::guard("user")->user()->parent_id;
+             }
             $user = User::find($user_id);
             $usertype = Auth::guard("user")->user()->usertype;
         }
@@ -822,7 +822,7 @@ class SellerController extends Controller
         $prd_req_cat_ids1 = array_unique($parent_cat_id);           
         $prd_req_cat_ids = Category::whereIn("id", $prd_req_cat_ids1)->orderBy('name','asc')->get();    //all parent cats for top main       
                     
-		if(is_null($category_id)){ //url parameter cat not exists
+        if(is_null($category_id)){ //url parameter cat not exists
              $category_id=[];
               foreach ($productRequests as $sproduct) 
                 {
@@ -900,14 +900,14 @@ class SellerController extends Controller
         $search_key = $request->input("search"); 
         $type_searchby_text = $request->input("type_searchby_text");
         $user_id = Auth::guard("user")->user()->id;
-			 $seller_type=Auth::guard("user")->user()->seller_type;
-			 if (Auth::guard("user")->user()->seller_type != "Master") {
-				$user_id = Auth::guard("user")->user()->parent_id;
-			 }
+             $seller_type=Auth::guard("user")->user()->seller_type;
+             if (Auth::guard("user")->user()->seller_type != "Master") {
+                $user_id = Auth::guard("user")->user()->parent_id;
+             }
         if ($request->input("category_id") != "") 
-		{
+        {
             $category_id = explode(",", $request->input("category_id"));
-		    $categorylist = Category::whereIn("parent_id", $category_id)
+            $categorylist = Category::whereIn("parent_id", $category_id)
                             ->pluck("id")->all(); // all subcategories
 
                     foreach ($categorylist as $value) {
@@ -926,8 +926,8 @@ class SellerController extends Controller
                         }
                 }
            
-		
-	}
+        
+    }
         elseif (!is_null($main_category_id)) { 
                      $categorylist = Category::where("parent_id", $main_category_id)
                             ->pluck("id")->all(); // all subcategories
@@ -966,7 +966,7 @@ class SellerController extends Controller
 
             if ($search_key != "") {
                 $products = $products->where("product_requests.product_description", "LIKE",  "%".$search_key . "%");
-			 }
+             }
              if ($request->input("country_id") != "") {
                 $country_id = explode(",", $request->input("country_id"));
                 $products = $products->where(function ($query) use (
@@ -1006,7 +1006,7 @@ class SellerController extends Controller
                 $days_remaining = $diff = now()->diffInDays($data->req_end_date);
                  
                 $country_ids =[]; $countries='';
-		        /*if (!empty($data->country_id)) {
+                /*if (!empty($data->country_id)) {
                     $country_ids = explode(",", $data->country_id);
                     $countries = Country::whereIn("id", $country_ids)->pluck("name")->all();
                 }*/
@@ -1099,7 +1099,7 @@ class SellerController extends Controller
         $user_id = Auth::guard("user")->user()->id;
         $usertype = Auth::guard("user")->user()->usertype;
         $user = User::find($user_id);
-        if ($usertype == "seller") {
+       // if ($usertype == "seller") {
             //if not seller redirect to home
             
             if($this->isMobile()) { 
@@ -1107,7 +1107,9 @@ class SellerController extends Controller
             } else {
              return view( "frontEnd.seller.AddExistingSellerProduct", compact("user") );
             }
-        } }
+       // } 
+            
+        }
         else {
             return redirect()->route("home");
         }
@@ -1199,7 +1201,7 @@ class SellerController extends Controller
         if (Auth::guard("user")->user()->seller_type != "Master") {
             $user_id = Auth::guard("user")->user()->parent_id;
         }
-        if ($usertype == "seller") {
+       // if ($usertype == "seller") {
             //if not seller redirect to home
             $available_countries = $category_id = $variants = "";
 
@@ -1229,10 +1231,10 @@ class SellerController extends Controller
         $product_price=null;
         if(!empty($request->input('product_price'))) {
         $product_price  = $request->input('product_price');
-		$product_price = (double) str_replace(',', '', $product_price)   ;
-		$product_price = round($product_price,3);
+        $product_price = (double) str_replace(',', '', $product_price)   ;
+        $product_price = round($product_price,3);
         } 
-		$input['product_price']=$product_price;            
+        $input['product_price']=$product_price;            
             if (!empty($request->input("available_countries"))) {
                 $available_countries = $request->input("available_countries");
                 $available_countries = implode(",", $available_countries);
@@ -1241,7 +1243,9 @@ class SellerController extends Controller
             }
 
             $input["available_countries"] = $available_countries;
+            $input["inserted_by"] = Auth::guard("user")->user()->id;
             $input["category_id"] = $category_id;
+            $input["parent_category_id"] = $request->input("category_id");
             $input["variants"] = $variants;
             $input["user_id"] = $user_id;
             $input["status"] = "pending";
@@ -1326,9 +1330,9 @@ class SellerController extends Controller
              \Session::reflash(); 
             return json_encode($msg);
 
-        } else {
+       /* } else {
             return redirect()->route("home");
-        }
+        }*/
     }
 
     public function addnewSproduct(Request $request)
@@ -1369,7 +1373,7 @@ class SellerController extends Controller
             $user_id = Auth::guard("user")->user()->parent_id;
         }
 
-        if ($usertype == "seller") {
+       // if ($usertype == "seller") {
             //if not seller redirect to home
             $available_countries = $category_id = $variants = $currency_id = "";
             if (!empty($request->input("available_countries"))) {
@@ -1404,11 +1408,11 @@ class SellerController extends Controller
         $product_price=null;
         if(!empty($request->input('product_price'))) {
         $product_price  = $request->input('product_price');
-		$product_price = (double) str_replace(',', '', $product_price)   ;
-		$product_price = round($product_price,3);
-		
+        $product_price = (double) str_replace(',', '', $product_price)   ;
+        $product_price = round($product_price,3);
+        
         } 
-		$input['product_price']=$product_price;            
+        $input['product_price']=$product_price;            
             if(!empty($request->input('currency_id'))) {
             $input['currency_id'] =  $request->input('currency_id');
             }
@@ -1417,6 +1421,7 @@ class SellerController extends Controller
             
             //$input["currency_id"] = $currency_id;
             $input["country_ids"] = $available_countries;
+            $input["inserted_by"] = Auth::guard("user")->user()->id;
             $input["category_id"] = $category_id;
             $input["variants"] = $variants;
             $input["user_id"] = $user_id;
@@ -1447,8 +1452,8 @@ class SellerController extends Controller
             $input['categories']= $cats_path;
             
             $id = SellerProductTemp::create($input)->id;
-			$prev_imgs = $request->input("prev_imgs");
-			$prev_imgs = explode(",", $prev_imgs);
+            $prev_imgs = $request->input("prev_imgs");
+            $prev_imgs = explode(",", $prev_imgs);
             foreach ($prev_imgs as $prev_img_id) {
                 $preve_img = ProductImage::find($prev_img_id);
                 if (!empty($preve_img)) {
@@ -1503,9 +1508,9 @@ class SellerController extends Controller
             \Session::reflash(); 
            return json_encode($msg);
 
-        } else {
+        /*} else {
             return redirect()->route("home");
-        }
+        }*/
     }
     public function deleteSellerProductimage($id)
     {
@@ -1698,6 +1703,7 @@ class SellerController extends Controller
                 "id" => $record->id,
                 "name" => $record->name,
                 "status" => $record->status,
+                "featured_prd" => $record->user_featured_prdct,
                 "product_price"=>$record->price_on_request=='Price on request'?'Price on request':$currency.' '.$record->product_price,
                 "created_at" => date(
                     "d/m/Y   \&\\n\b\s\p\; \&\\n\b\s\p\; \&\\n\b\s\p\;  g:i A",
@@ -1782,7 +1788,7 @@ class SellerController extends Controller
 
         if (!empty($product->category_id)) {
             $category_id = explode(",", $product->category_id);
-		    $categorylist = Category::whereIn("parent_id", $category_id)->where('have_product','Yes')
+            $categorylist = Category::whereIn("parent_id", $category_id)->where('have_product','Yes')
                             ->pluck("id")->all(); // all subcategories
 
                     foreach ($categorylist as $value) {
@@ -1811,9 +1817,11 @@ class SellerController extends Controller
         if (!empty($product->category_id)) {
             $categoryscrum=Category::find($product->category_id);
             array_push($category_id_scrum, $product->category_id);
+            if(!empty($categoryscrum)) {
             if (!is_null($categoryscrum->parent)) {
                 foreach ($categoryscrum->getParentsNames()->reverse() as $item)
                     array_push($category_id_scrum, $item->id);
+            }
             }
             
         }
@@ -2131,6 +2139,47 @@ class SellerController extends Controller
         }
         echo json_encode($Product_data);  
     }
+    
+    public function updateuserproductfeatured(Request $request)
+    { 
+        $id=$request->id;
+        $status=$request->status;
+        $Product = SellerProduct::find($id);
+        $Product_data = SellerProduct::find($id)->update(['user_featured_prdct'=>$status]);
+        //category checking products
+     /*   if($Product->category_id!=''){
+            $parents = collect([]);
+            $parent = Category::where('id', $Product->category_id)->first();
+            //array push
+            while(!is_null($parent)) {
+                $parents->push($parent);
+                $parent = $parent->parent;
+            }
+            $old_category=$parents->pluck('id')->all();
+            $commaarray=implode(",",$old_category);
+            //check and fix value next level category products exist
+            $result= $this->PublicMiddlewareController->getnextlevelproductexist($Product->category_id,$commaarray);
+             if($result==false)
+             {
+                $parent = Category::where('id', $Product->category_id)->first();
+                $parent = $parent->parent;
+                $parents = collect([]);
+                while(!is_null($parent)) {
+                        $parents->push($parent);
+                        $parent = $parent->parent;
+                }
+                $old_category=$parents->pluck('id')->all(); 
+                foreach($old_category as $val){
+                    $result= $this->PublicMiddlewareController->getnextlevelproductexist($val,$val);
+                    // if($result==true)
+                    //     break;
+                }
+                
+            }
+            
+        }*/
+        echo json_encode($Product_data);  
+    }
 
     public function deletePendingSellerimage(Request $request)
     {
@@ -2350,10 +2399,10 @@ class SellerController extends Controller
         $product_price=null;
         if(!empty($request->input('product_price'))) {
         $product_price  = $request->input('product_price');
-		$product_price = (double) str_replace(',', '', $product_price)   ;
-		$product_price = round($product_price,3);
+        $product_price = (double) str_replace(',', '', $product_price)   ;
+        $product_price = round($product_price,3);
         } 
-		$input['product_price']=$product_price;        
+        $input['product_price']=$product_price;        
         
         $input["price_on_request"] = 'No';
         if ($request->input("price_on_request") != "") {
@@ -2384,6 +2433,7 @@ class SellerController extends Controller
 
         $input["available_countries"] = $available_countries;
         $input["category_id"] = $category_id;
+        $input["parent_category_id"] = $request->input("category_id");
         $input["variants"] = $variants;
 
         // if ($request->hasFile("product_image")) {
@@ -2512,10 +2562,10 @@ class SellerController extends Controller
         $product_price=null;
         if(!empty($request->input('product_price'))) {
         $product_price  = $request->input('product_price');
-		$product_price = (double) str_replace(',', '', $product_price)   ;
-		$product_price = round($product_price,3);
+        $product_price = (double) str_replace(',', '', $product_price)   ;
+        $product_price = round($product_price,3);
         } 
-		$input['product_price']=$product_price;		
+        $input['product_price']=$product_price;     
         $input["variants"] = $variants;
         if(!empty($request->input('currency_id'))) {
         $input['currency_id'] =  $request->input('currency_id');
@@ -2530,6 +2580,7 @@ class SellerController extends Controller
             $input["price_negotiable"] = $request->input("price_negotiable");
         }
         $input["category_id"] = $category_id;
+        $input["parent_category_id"] = $request->input("category_id");
         $input["variants"] = $variants;
           $input["country_ids"] = null;
         if (!empty($request->input("country_ids"))) {

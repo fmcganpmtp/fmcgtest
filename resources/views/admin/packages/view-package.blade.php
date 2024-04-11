@@ -24,6 +24,8 @@
                         
                          <label><b>Name</b> : <span class="ad-rol-name">{{$package->name}}</span></label>
                       </div>
+                      
+                      <!--
                       <div class="form-group">
                         <div class="no-over">
                           <label>Package type :<span class="ad-rol-name">{{$package->subscription_type}}</span></label>
@@ -63,7 +65,7 @@
                           <label>User type :: <span class="ad-rol-name">{{$package->user_type}}</span></label>
                       </div>
                       
-                      
+                      -->
                       
                       
                       <div class="form-group">
@@ -82,7 +84,7 @@
                       
                       
                       
-                      
+                     <!-- 
                       
                       <div class="form-group add-mr">
                         <label>Key Features Included :</label>
@@ -102,7 +104,7 @@
                        @endif
                         @endforeach</p>
                       </div>                   
-                      
+                      -->
                       
                       
                        <div class="form-group">
@@ -110,9 +112,40 @@
  
  
    <p>{{$package->package_description}}</p>
- 
- 
-               </div> 
+    </div> 
+    
+    <div class="pkg-det32" >
+                    <h2 class="pkg-det-outhead">GENERAL</h2>
+                <ul>
+                    <li><label class="pkg-det32-title"><span>Access to Company Profile</span><b>:</b></label><label class="pkg-det32-ans"> {{ $package->general_companyProfile==1?'Yes':'No' }}</label></li>
+                    <li><label class="pkg-det32-title"><span>Access to Company Dashboard</span><b>:</b></label><label class="pkg-det32-ans"> {{ $package->general_companyDashboard==1?'Yes':'No' }}</label></li>
+                    <li><label class="pkg-det32-title"><span>Access to Profile Insights</span><b>:</b></label><label class="pkg-det32-ans"> {{ $package->general_profileInsights==1?'Yes':'No' }}</label></li>
+                    <li><label class="pkg-det32-title"><span>Access to Media Options</span><b>:</b></label><label class="pkg-det32-ans"> {{ $package->general_accesToMedia==1?'Yes':'No' }}</label></li>
+                    
+                </ul>
+                   <h2 class="pkg-det-outhead">MARKETPLACE</h2>
+                <ul>
+                    <li><label class="pkg-det32-title"><span>Access to Search & find products</span><b>:</b></label><label class="pkg-det32-ans"> {{ $package->market_Search==1?'Yes':'No' }}</label></li>
+                    <li><label class="pkg-det32-title"><span>Product Uploads</span><b>:</b></label><label class="pkg-det32-ans"> 
+                    <?php 
+                        if($package->market_uploads!='') 
+                        echo $package->market_uploads;
+                        else
+                        { ?>
+                            <strong>Unlimited</strong> 
+                        <?php } ?>
+                    </label></li>
+                    <li><label class="pkg-det32-title"><span>Access to View Product Requests</span><b>:</b></label><label class="pkg-det32-ans"> {{ $package->market_productRequests==1?'Yes':'No' }}</label></li>
+                    <li><label class="pkg-det32-title"><span>Access to Create Product Requests</span><b>:</b></label><label class="pkg-det32-ans"> {{ $package->market_createProductRequests==1?'Yes':'No' }}</label></li>
+                    
+                </ul>
+                <h2 class="pkg-det-outhead">NETWORK FEED</h2>
+                <ul>
+                    <li><label class="pkg-det32-title"><span>Allow Expand your Network</span><b>:</b></label><label class="pkg-det32-ans"> {{ $package->network_expand==1?'Yes':'No' }}</label></li>
+                    <li><label class="pkg-det32-title"><span>Allow Chat with Network</span><b>:</b></label><label class="pkg-det32-ans"> {{ $package->network_chat==1?'Yes':'No' }}</label></li>
+                    
+                </ul>
+                </div> 
                       
                       
                     </div>

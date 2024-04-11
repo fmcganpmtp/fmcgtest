@@ -46,14 +46,16 @@ class UsersInsightController extends Controller
         $columnSortOrder = $order_arr[0]['dir']; // asc or desc     
         $searchValue=$request->get('search_key');
         $totalRecords =User::select('count(*) as allcount')
-            ->where('usertype','seller')->where('seller_type','Master')
+            //->where('usertype','seller')
+            ->where('seller_type','Master')
             ->where('users.status','<>','Deleted')->count();
         
         $totalRecordswithFilter = User::leftJoin('buyer_companies', 'buyer_companies.user_id', '=', 'users.id')
            ->when($searchValue!='', function ($query) use ($searchValue) {
                 $query->where(DB::raw('CONCAT_WS(users.name,email,phone,buyer_companies.company_name)'), 'LIKE','%'.$searchValue.'%');
             })
-            ->where('usertype','seller') ->where('seller_type','Master') 
+            //->where('usertype','seller') 
+            ->where('seller_type','Master') 
             ->where('users.status','<>','Deleted')        
             ->count();       
 
@@ -63,7 +65,8 @@ class UsersInsightController extends Controller
             ->when($searchValue!='', function ($query) use ($searchValue) {
                 $query->where(DB::raw('CONCAT_WS(users.name,email,phone,buyer_companies.company_name)'), 'LIKE','%'.$searchValue.'%');
             })
-            ->where('usertype','seller')->where('seller_type','Master') 
+           // ->where('usertype','seller')
+            ->where('seller_type','Master') 
             ->where('users.status','<>','Deleted')       
            // ->orderBy($columnName,$columnSortOrder)
            // ->skip($start)

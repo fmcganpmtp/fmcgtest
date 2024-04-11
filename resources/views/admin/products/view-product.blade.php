@@ -1,6 +1,6 @@
 @extends('admin.master')
-@section('title', 'View Product')
-@section('breadcrumb') View Product @endsection
+@section('title', 'View Sample Product')
+@section('breadcrumb') View Sample Product @endsection
 @section('content')
    
 
@@ -10,7 +10,7 @@
   <div class="body flex-grow-1 px-3">
     <div class="container-lg">
       <div class="card-out mb-4 inner-form">
-        <h2>Product View</h2>
+        <h2>Sample Product View</h2>
         <div class="card-body">
           <div class="row">
             <div class="col-lg-12 col-12">

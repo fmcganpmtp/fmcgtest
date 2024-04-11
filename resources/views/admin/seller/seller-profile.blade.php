@@ -1,6 +1,6 @@
 @extends('admin.master')
-@section('title', 'Seller Creation')
-@section('breadcrumb') Seller Creation @endsection
+@section('title', 'User Creation')
+@section('breadcrumb') User Creation @endsection
 @section('content')
 <style>
   input[type="time"]::-webkit-calendar-picker-indicator {
@@ -128,7 +128,7 @@
     
     <div class="container-lg">
       <div class="card-out mb-4 inner-form create-prof-new">
-        <h2>{{$duty}} seller profile</h2>
+        <h2>{{$duty}} user profile</h2>
         <div class="card-body">
 
 
@@ -177,7 +177,7 @@
               </div>
               <div class="col-lg-6 col-12">
                       <div class="form-group">
-                        <label>Picture upload</label>
+                        <label>Picture upload<sup>*</sup></label>
                     <div class="file-drop-area form-group">
                       
                       <input type="file"  name="profile_pic" id="imgpicture" class="file-input form-control" accept=".jfif,.jpg,.jpeg,.png,.gif">
@@ -416,7 +416,7 @@ if(!empty(old('accepted_payments',$accepted_payments))){
               <div class="col-lg-6 col-12">
                 <div class="form-group">
                   <div class="file-drop-area form-group">
-                    <label>Picture upload (companies logo/picture)</label>
+                    <label>Picture upload (companies logo/picture)<sup>*</sup></label>
                     <input class="form-control" type="file" id="company_image" name="company_image" id="formFile" accept="image/*">
                     <span id="prf_img"></span>
                   </div>
@@ -791,6 +791,12 @@ if(!empty(old('accepted_payments',$accepted_payments))){
                     $("#prf_img").empty().append("<p style='color:red'>"+errors.errors.company_image[0]+"</p>");
                     else
                       $("#prf_img").empty();
+                      
+                      
+                      if(errors.errors.profile_pic)
+                    $("#txtprofile_pic").empty().append("<p style='color:red'>"+errors.errors.profile_pic[0]+"</p>");
+                    else
+                      $("#txtprofile_pic").empty();
                       
                     if(errors.errors.default_password)
                     $("#txtdefault_password").empty().append("<p style='color:red'>"+errors.errors.default_password[0]+"</p>");

@@ -7,7 +7,7 @@
       <div class="col-lg-12 ">
         <div class="login-page">
           <h2>Reset Password ?</h2>
-          <form action="{{ route('reset.password.post') }}" method="POST">
+          <form action="{{ route('password.reset') }}" method="POST">
             @csrf
             <input type="hidden" name="token" value="{{ $token }}">
             <div class="form-group">

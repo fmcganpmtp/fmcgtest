@@ -438,7 +438,7 @@ function product_search(){
                                    dataItems.product_data.map((item) => {
                                     initial++;
                                     productflag=true;
-                                    var app_path="<?php echo url('view-seller-profile/')?>";
+                                    var app_path="<?php echo url('company-profile/')?>";
                                     
                                    var string= '<div class="col-lg-4 col-12 wow fadeInUp pr-list"><a href="'+app_path+'/'+item.parent_id+'" target="_blank"><div class="product-thumbnail hovereffect"><div class="days-remain">'+item.days_remaining+' Days Remaining</div><div class="pro-img"><a href="'+app_path+'/'+item.parent_id+'" target="_blank"><img src="'+item.product_thumbnail;
                                    string+='"></a></div><div class="product-title"><h5 class="looking-for"><b>We are Looking for:</b></h5> <h3>';
@@ -473,7 +473,7 @@ function product_search(){
                                    string+=' " class="default-btn"> <i class="fa fa-user" aria-hidden="true"></i>Seller profile</a>';
                                    @endif
                                    @if( $view_composer_profile_menu_visible_criteria['network_chat'] == 1)
-                                   string+='<a href="javascript:void(0)" class="default-btn" onclick="EnableChatRequest('+item.user_id+')" ><i class="fa fa-envelope-o" aria-hidden="true"></i>Message </a>';
+                                  // string+='<a href="javascript:void(0)" class="default-btn" onclick="EnableChatRequest('+item.user_id+')" ><i class="fa fa-envelope-o" aria-hidden="true"></i>Message </a>';
                                    @endif
                                    string+='</div>';
                                    string+='<div class="product-ms-over">';

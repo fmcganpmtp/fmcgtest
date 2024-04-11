@@ -66,8 +66,8 @@ FMCG | Wishlist Items
                     @endif
                             <div class="btn-blck">
 							@if(Auth::guard('user')->user()->id != $product->User->id )
-                              <button  href="javascript:void(0)" onclick="EnableChatRequest({{$product->User->id }})" data-bs-target="#exampleModal" type="button" class="btn btn-primary msg1"><i class="fa fa-envelope-o" aria-hidden="true"></i>
-Message</button>
+                       <!--       <button  href="javascript:void(0)" onclick="EnableChatRequest({{$product->User->id }})" data-bs-target="#exampleModal" type="button" class="btn btn-primary msg1"><i class="fa fa-envelope-o" aria-hidden="true"></i>
+Message</button>-->
 
 @endif
                               <!-- <button type="button" class="btn btn-primary expired-btn">Expired</button> -->

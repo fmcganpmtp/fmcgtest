@@ -90,7 +90,7 @@
                     <div class="form-group">
                       
                       <label>File:</label>
-                       <input type="file" name="file_docupload" class="form-control" required>
+                       <input type="file" name="file_docupload" class="form-control" accept=".jfif,.jpg,.JPG,.jpeg,.JPEG,.png,.PNG,.gif,.GIF,.pdf,.doc,.xls,.docx" required>
                     </div>  
                     
                     <button type="submit"  class="bl-btn">Upload</button>
@@ -256,9 +256,12 @@ var $ = jQuery;
        "render": function(data,type,full,meta)
       {
        var full_path='"'+full.file_path+'"';
+       console.log(full.status);
        var str='"Are you Sure?"';
-
+       if(full.status==='In-Active')
        straction="<div class='icon-bx'><button onclick='fnviewdocs("+full.id+","+full_path+")'  style='border: 0 none;'><i class='icon  fa fa-eye'></i></button>"; 
+       else
+       straction="<div class='icon-bx'>";
        if(full.status!='Rejected')
        {   
        if(full.status!='Active')

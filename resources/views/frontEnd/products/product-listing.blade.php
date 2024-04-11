@@ -658,7 +658,7 @@ function product_search(){
                                   let dataItems = JSON.parse(data);
                                     
 
-                                  var app_path="<?php echo url('seller-product-detail/')?>";
+                                  var app_path="<?php echo url('user-product-detail/')?>";
 
                                    var initial=0;
                                    dataItems.product_data.map((item) => {

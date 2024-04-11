@@ -191,14 +191,14 @@ class RegisterController extends Controller
             ->where("id", $user_id)
             ->update(["token_number" => $token]);
         //email verification
-        Mail::send(
+      /*  Mail::send(
             "emails.KYCApprovalMailTemplate",
             ["token" => $token, "user_id" => $user_id],
             function ($message) use ($request) {
                 $message->to($request->get('email'));
                 $message->subject("Verify Email - FMCG");
             }
-        );
+        );*/
         Auth::guard('user')->loginUsingId($user_id);
 
         return redirect(route('user-login'))->with('message','Email_not_verified:'.$email); 

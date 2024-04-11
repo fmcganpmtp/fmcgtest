@@ -13,8 +13,7 @@
             <p>May your journey in FMCG Land be filled with success, growth, and fulfillment.</p>
 			<p>Best of luck,and may the deals be with you! </p>
           <!--  <a href="{{route('home')}}" class="default-btn">Proceed</a>-->
-            @if(Auth::guard('user')->user()->usertype== "seller") <a href="{{route('ViewProfileSeller')}}" class="default-btn">Continue</a>@endif
-            @if(Auth::guard('user')->user()->usertype== "buyer") <a href="{{route('ViewProfileBuyer')}}" class="default-btn">Continue</a>@endif
+           <a href="{{route('MyCompanyProfile')}}" class="default-btn">Continue</a>
              </div>
         </div>
       </div>

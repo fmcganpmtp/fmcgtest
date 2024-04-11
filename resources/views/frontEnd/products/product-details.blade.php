@@ -107,11 +107,12 @@ echo '</span>';
            
            @else
                    @if($logged_id != $seller->id && ($logged_id != $parent_id ) ) 
-                    @if( $view_composer_profile_menu_visible_criteria['network_chat'] == 1)
+                   <div  class="new-price1">Price on Request</div>
+                   <!-- @if( $view_composer_profile_menu_visible_criteria['network_chat'] == 1)
                        <a href="javascript:void(0)" class="" onclick="EnableChatRequest({{$seller->id }})" >Price on Request</a> 
                      @else
                          <a href="javascript:void(0)"   onclick="showerrorchat()" >Price on Request </a>
-                    @endif
+                    @endif -->
                    @else 
                       <div  class="new-price1">Price on Request</div>
                    @endif
@@ -149,7 +150,7 @@ echo '</span>';
                     </span>
                 <ul class="product-info">
 				@if(!empty($seller->BuyerCompany->company_name))
-                  <li> <span>Company:<b>:</b></span>
+                  <li> <span>Company<b>:</b></span>
                   {{ (!$is_active_subscriber ||$usertype=="guest") ? '****' : $seller->BuyerCompany->company_name  ?? 'N/A' }}
                   </li>
 				  @endif
@@ -190,6 +191,7 @@ echo '</span>';
                 @else
                 
 <div class="product-detail-btn shw-btn"  style="display: block;clear: both;padding-top: 20px;"> 
+<!--
 @if( $view_composer_profile_menu_visible_criteria['network_chat'] == 1)
 @if($logged_id != $seller->id && ($seller->id != $parent_id )  )
     <a href="javascript:void(0)" class="default-btn" onclick="EnableChatRequest({{$seller->id }})" ><i class="fa fa-envelope-o" aria-hidden="true"></i>Message </a>
@@ -197,10 +199,10 @@ echo '</span>';
 @else
     <a href="javascript:void(0)" class="default-btn"  onclick="showerrorchat()" ><i class="fa fa-envelope-o" aria-hidden="true"></i>Message </a>
 @endif
-
+-->
 @if($product->status=="active"&& ($logged_id != $seller->id )&& ($seller->id != $parent_id ) )
 @if( $view_composer_profile_menu_visible_criteria['general_companyProfile'] == 1)
-<a href="{{route('ViewSeller.profile',['profId'=>$seller->id])}}" class="default-btn"> <i class="fa fa-user" aria-hidden="true"></i>Seller profile</a> 
+<a href="{{route('CompanyProfile',['profId'=>$seller->id])}}" class="default-btn"> <i class="fa fa-user" aria-hidden="true"></i>Seller profile</a> 
 @else
     <a href="javascript:void(0)" onclick="showerrorprofile()" class="default-btn"> <i class="fa fa-user" aria-hidden="true"></i>Seller profile</a>
 @endif

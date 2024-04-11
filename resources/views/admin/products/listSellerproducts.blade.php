@@ -1,6 +1,6 @@
 @extends('admin.master')
-@section('title', 'Seller Products List')
-@section('breadcrumb') Seller Products @endsection
+@section('title', 'Products List')
+@section('breadcrumb') Products @endsection
 @section('content')
 
 <div class="body flex-grow-1 px-3">
@@ -9,7 +9,7 @@
       <div class="card-out mb-4 inner-form">
      
 	 <div class="row"><div class="col-lg-8 col-12">
-        <h2>Seller Products</h2> </div>
+        <h2>Products</h2> </div>
                 
 				</div>
         @if(Session::has('message')) <div class="alert alert-success">{{Session::get('message') }}</div> @endif

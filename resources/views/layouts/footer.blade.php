@@ -52,7 +52,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="col-lg-3 col-sm-6">
+			<div class="col-lg-2 col-sm-6">
 				<div class="single-footer-widget">
 					<h3>Information</h3>
 					<ul class="import-link">
@@ -65,6 +65,8 @@
 					</ul>
 				</div>
 			</div>
+			
+			<!--
 			@if(count($view_footer_help)>0)
 			<div class="col-lg-2 col-sm-6">
 				<div class="single-footer-widget">
@@ -77,6 +79,7 @@
 				</div>
 			</div>
 			@endif
+			-->
 			<div class="col-lg-3 col-sm-6">
 				<div class="single-footer-widget">
 					<h3>Stay Connected </h3>
@@ -135,7 +138,25 @@
         <script src="{{ asset('js/wow.js')}}"></script>
 		<!-- Custom JS -->
         <script src="{{ asset('js/custom.js')}}"></script>
+        
+        
+        
+        
+        
+
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
 <script>
+
 const elchat = document.createElement('div')
 elchat.innerHTML = "Chat option is disabled as per the current package.Would you like to upgrade package? <a href='{{route('package.listing')}}'>Upgrade</a>"
     function showerrorchat(){
@@ -196,6 +217,15 @@ elMyPrdReq.innerHTML = "My Product request option is disabled as per the current
   swal({
   icon: "error",
   content: elMyPrdReq,
+});
+}
+
+const elGeneral = document.createElement('div')
+elGeneral.innerHTML = "This option is disabled as per the current package.Would you like to upgrade package? <a href='{{route('package.listing')}}'>Upgrade</a>"
+    function showerrorGeneral(){
+  swal({
+  icon: "error",
+  content: elGeneral,
 });
 }
 

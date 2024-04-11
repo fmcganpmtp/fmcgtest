@@ -94,6 +94,7 @@
                 </div>
          </div></div>
           <div class="col-lg-3">
+               <a href="{{route('Product.Requests')}}" class="default-btn crt-rwq">Product Requests</a>
             <!--<div class="autocomplete form-group sg-list" >
       
               <select type="text" placeholder="Select Country" name="available_countries[]" id='available_countries' class="form-control{{ $errors->has('product_dimension') ? ' is-invalid' : '' }}" multiple="multiple">
@@ -103,6 +104,7 @@
               
             </div>-->
             </div>
+            
       <div class="col-lg-3">
           @if($view_composer_profile_menu_visible_criteria['market_createProductRequests'] == 1)
           <a href="{{route('add.productrequest')}}" class="default-btn crt-rwq">Create Product request</a>

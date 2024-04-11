@@ -14,7 +14,9 @@
         
         <div class="card vrfy">
             <h3>Email Verification</h3>
-            @if(Session::has('message')) <div class="alert alert-success">{{Session::get('message') }}</div> @endif
+            @if (session('message')) <div class="alert alert-success">{{ session('message') }}</div> @endif
+            @if(Session::get('status')=='success') <div class="alert alert-success">{{Session::get('message') }}</div> @endif 
+             @if(Session::get('status')=='error') <div class="alert alert-danger">{{Session::get('message') }}</div> @endif 
             <div class="row">
                 
                 
@@ -127,14 +129,22 @@ $file_path_chamber = $kyc->file_path;
 $file_path_chamber_ext = pathinfo($file_path_chamber, PATHINFO_EXTENSION); 
 if($file_path_chamber_ext == "pdf") $chamber_img = asset('/images/ic-pdf.jpg');
 elseif($file_path_chamber_ext == "doc") $chamber_img = asset('/images/ic-doc.jpg');
-elseif($file_path_chamber_ext == "xls") $chamber_img = asset('/images/xls.jpg');
+ 
+elseif($file_path_chamber_ext == "xls" || $file_path_chamber_ext == "csv" || $file_path_chamber_ext == "xlsx" || $file_path_chamber_ext == "txt") $chamber_img = asset('/images/xls.jpg');
 elseif($file_path_chamber_ext == "docx") $chamber_img = asset('/images/ic-doc.jpg');
 else $chamber_img = asset('/uploads/KYCFiles/').'/'.$file_path_chamber;
 
 ?>
               <div class="col-lg-3 col-6">
              	<div class="file-type-bx">
-                	<div class="fil-ic"><a target="_blank" class="chamber_a" href="<?=asset('/uploads/KYCFiles/').'/'.$file_path_vat = $kyc->file_path;?>"><img class="chamber" src="{{ $chamber_img }}"></a>
+             	    
+                	<div class="fil-ic">
+                	    
+                	    @if($status == "In-Active") 
+                	    <a target="_blank" class="chamber_a" href="<?=asset('/uploads/KYCFiles/').'/'.$file_path_vat = $kyc->file_path;?>"><img class="chamber" src="{{ $chamber_img }}"></a>
+                        @else 
+                        <img class="chamber" src="{{asset('/images/ic-doc.jpg')}}">
+                        @endif
                     <div class="appr <?=$cls_appr?> chamber_appr"><i class="<?=$cls_fa?> fa_chamber" aria-hidden="true"></i></div>
                   </div>
                    <h5> Chamber of commerce</h5>
@@ -162,15 +172,21 @@ $file_path_vat = $kyc->file_path;
 $file_path_vat_ext = pathinfo($file_path_vat, PATHINFO_EXTENSION); 
 if($file_path_vat_ext == "pdf") $vat_img = asset('/images/ic-pdf.jpg');
 elseif($file_path_vat_ext == "doc") $vat_img = asset('/images/ic-doc.jpg');
-elseif($file_path_vat_ext == "xls") $vat_img = asset('/images/xls.jpg');
+elseif($file_path_vat_ext == "xls" || $file_path_vat_ext == "csv" || $file_path_vat_ext == "xlsx" || $file_path_vat_ext == "txt") $vat_img = asset('/images/xls.jpg');
 elseif($file_path_vat_ext == "docx") $vat_img = asset('/images/ic-doc.jpg');
 else $vat_img = asset('/uploads/KYCFiles/').'/'.$file_path_vat;
 ?>
 
               <div class="col-lg-3 col-6">
              	<div class="file-type-bx">
-                	<div class="fil-ic"><a target="_blank"  class="vat_a" href="<?=asset('/uploads/KYCFiles/').'/'.$file_path_vat = $kyc->file_path;?>"><img class="vat" src=" {{ $vat_img }}"></a>
-                    
+                	<div class="fil-ic">
+                	    
+                	    
+                        @if($status == "In-Active") 
+                	    <a target="_blank"  class="vat_a" href="<?=asset('/uploads/KYCFiles/').'/'.$file_path_vat = $kyc->file_path;?>"><img class="vat" src=" {{ $vat_img }}"></a>
+                        @else 
+                        <img class="chamber" src="{{asset('/images/ic-doc.jpg')}}">
+                        @endif
                       <div class="appr <?=$cls_appr?> vat_appr"><i class="<?=$cls_fa?>  fa_appr" aria-hidden="true"></i></div>
                     </div>
                          <h5> VAT number </h5>
@@ -199,13 +215,21 @@ $file_path_identification = $kyc->file_path;
 $file_path_identification_ext = pathinfo($file_path_identification, PATHINFO_EXTENSION); 
 if($file_path_identification_ext == "pdf") $identification_img = asset('/images/ic-pdf.jpg');
 elseif($file_path_identification_ext == "doc") $identification_img = asset('/images/ic-doc.jpg');
-elseif($file_path_identification_ext == "docx") $identification_img = asset('/images/ic-doc.jpg');
+
+elseif($file_path_identification_ext == "xls" || $file_path_identification_ext == "csv" || $file_path_identification_ext == "xlsx" || $file_path_identification_ext == "txt")
+$identification_img = asset('/images/ic-doc.jpg');
 elseif($file_path_identification_ext == "xls") $identification_img = asset('/images/xls.jpg');
 else $identification_img = asset('/uploads/KYCFiles/').'/'.$file_path_identification;
 ?>	
               <div class="col-lg-3 col-6">
              	<div class="file-type-bx">
-                	<div class="fil-ic"><a target="_blank"  class="identification_a" href="<?=asset('/uploads/KYCFiles/').'/'.$file_path_vat = $kyc->file_path;?>"><img class="identification" src="{{$identification_img}}"></a>
+                	<div class="fil-ic">
+                	    
+                        @if($status == "In-Active") 
+                	    <a target="_blank"  class="identification_a" href="<?=asset('/uploads/KYCFiles/').'/'.$file_path_vat = $kyc->file_path;?>"><img class="identification" src="{{$identification_img}}"></a>
+                        @else 
+                        <img class="chamber" src="{{asset('/images/ic-doc.jpg')}}">
+                        @endif
                     <div class="appr <?=$cls_appr?> ident_appr"><i class="<?=$cls_fa?>  fa_ident" aria-hidden="true"></i></div>
                     </div>
                     <h5>Identification (Driving license/ passport/ ID)</h5>

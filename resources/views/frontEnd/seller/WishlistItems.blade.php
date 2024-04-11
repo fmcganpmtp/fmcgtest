@@ -9,7 +9,7 @@ FMCG | Wishlist Items
       <div class="col-lg-12">
         <div class="pr-bottom">
           <div class="card">
-            <div class="slr-details buyer-dtl bft">
+            <div class="slr-details buyer-dtl bft wish-page">
               <div class="row">
                 <div class="col-lg-12 col-12">
                 
@@ -66,7 +66,7 @@ FMCG | Wishlist Items
                     @endif
                             <div class="btn-blck">
 							@if(Auth::guard('user')->user()->id != $product->User->id )
-                              <button  href="javascript:void(0)" onclick="EnableChatRequest({{$product->User->id }})" data-bs-target="#exampleModal" type="button" class="btn btn-primary">Message</button>
+                          <!--    <button  href="javascript:void(0)" onclick="EnableChatRequest({{$product->User->id }})" data-bs-target="#exampleModal" type="button" class="btn btn-primary">Message</button>-->
 
 @endif
                               <!-- <button type="button" class="btn btn-primary expired-btn">Expired</button> -->

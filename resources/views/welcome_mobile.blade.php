@@ -315,15 +315,15 @@
                 @if(Auth::guard('user')->check())
                 <div class="req-btns">
                 @if( $view_composer_profile_menu_visible_criteria['general_companyProfile'] == 1)
-                  <a target="_blank" href="{{route('ViewSeller.profile',$data->parent_id)}}" class="req-bl-btn">View Profile</a> 
+                  <a target="_blank" href="{{route('CompanyProfile',$data->parent_id)}}" class="req-bl-btn">View Profile</a> 
                  @else
                   <a  href="javascript:void(0)" onclick="showerrorprofile()" class="req-bl-btn">View Profile</a> 
                  @endif
-                 @if( $view_composer_profile_menu_visible_criteria['network_chat'] == 1)
+               <!--  @if( $view_composer_profile_menu_visible_criteria['network_chat'] == 1)
                 <a href="javascript:void(0)" onclick="EnableChatRequest({{$data->user_id}})"  class="req-bl-btn">Message</a> 
                 @else
                 <a href="javascript:void(0)"  class="req-bl-btn"  onclick="showerrorchat()" >Message </a>
-                @endif
+                @endif -->
                 </div>
                 @endif
  <div class="product-ms-over">
@@ -512,7 +512,7 @@
 				@php
 				$cmp_img = asset('uploads/BuyerCompany/').'/'.$company->company_image;
 				@endphp
-				<a href="{{route('ViewSeller.profile',$company->user_id)}}">
+				<a href="{{route('CompanyProfile',$company->user_id)}}">
 				<div class="partner-logo-C"><img src="{{$cmp_img}}"></div>
 				</a>
 				@endforeach

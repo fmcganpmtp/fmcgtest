@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin; 
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -122,11 +122,15 @@ class SlidersController extends Controller
             }
 
         }
+        
+        
         $old_image_id = $request->old_image_id;
         $counter=0;
         //loop update slider data
         if($old_image_id){
             foreach($request->old_image_id as $image_id){
+             
+                
                 Sliderimage::find($image_id)->update([
                     'title' =>$request->old_title_on_image[$counter],
                     'description' =>$request->old_description[$counter],
@@ -137,6 +141,39 @@ class SlidersController extends Controller
         }
         return redirect()->route('admin.sliders')->with('success','Sliders updated successfully');
     }
+    
+    
+    public function updateSliderimage(Request $request)
+    { 
+        $id = request("id");
+        $extension = request("image_original")->extension(); 
+        $fileName = "slider" . time() . "." . $extension;
+       
+        $destinationPath = public_path() . "/assets/uploads/sliders/";
+        request("image_original")->move($destinationPath, $fileName);
+        $data = [
+            "image" => $fileName,
+        ];
+        $update = DB::table("sliderimages")
+            ->where("id", $id)
+            ->update($data);
+        if ($update) {
+            $response["success"] = true;
+            $response["message"] = "Success! Record Updated Successfully.";
+            $response["image_path"] = "/assets/uploads/sliders/" . $fileName;
+        } else {
+            $response["success"] = false;
+            $response["message"] = "Error! Record Not Updated.";
+        }
+        return $response;
+    }
+    
+    
+    
+    
+    
+    
+    
     //delete slider and image
     public function destroy($id = null)
     { 

@@ -25,17 +25,53 @@ class RequestDeleteController extends Controller
     //function changes status of delete request
     public function adminprofiledelete (Request $request)
     {
-        $status=$request->get('status');
-        $id=$request->get('id');
+        $status=$request->get('status'); 
+        $id=$request->get('id'); 
         $requestdelete=  ProfileAccountDeleteRequest::find($id);
         $requestdelete->status =$status;
         $requestdelete->save();
         if($status=='Deleted')
         {
-            //status changing
-            $User=  User::find($requestdelete->user_id);
+            //status changing 
+            $co_user_id="";
+            $count=0;
+            $User=  User::find($requestdelete->user_id); 
             $User->status ='Deleted';
             $update=$User->save();
+            //if($User->parent_id=="null"){
+                $qry = DB::table('users')
+                    ->where("status", "<>", "Deleted")
+                          ->Where("parent_id", $User->id)
+                          ->where("status",  "Active");
+                          /*->where(function ($query) {
+                            $query ->where("status",  "Active")
+                            ->orWhere("status",  "Invited");
+                            });*/
+                $count =$qry->get()->count();
+                
+          //  } 
+          if($count>0){
+          $co_user_id=$qry->orderby('id','ASC')->pluck('id')->first();
+          DB::table('users')->where('parent_id',$User->id)->update(['parent_id'=>$co_user_id]);
+          DB::table('users')->where('id',$co_user_id)->update(['parent_id'=>null,'seller_type'=>"Master"]);
+          DB::table('subscriptions')->where('user_id',$requestdelete->user_id)->update(['user_id'=>$co_user_id]);
+          DB::table('business_insights')->where('user_id',$requestdelete->user_id)->update(['user_id'=>$co_user_id]);
+          DB::table('buyer_companies')->where('user_id',$requestdelete->user_id)->update(['user_id'=>$co_user_id]);
+          DB::table('company_regions')->where('user_id',$requestdelete->user_id)->update(['user_id'=>$co_user_id]);
+          DB::table('kyc_files')->where('user_id',$requestdelete->user_id)->update(['user_id'=>$co_user_id]);         //wishlist
+          DB::table('mynetworks')->where('user_id',$requestdelete->user_id)->update(['user_id'=>$co_user_id]);
+          DB::table('mynetwork_requests')->where('user_id',$requestdelete->user_id)->update(['user_id'=>$co_user_id]);
+          DB::table('order_details')->where('user_id',$requestdelete->user_id)->update(['user_id'=>$co_user_id]);
+          DB::table('product_requests')->where('user_id',$requestdelete->user_id)->where('parent_id',$requestdelete->user_id)->update(['user_id'=>$co_user_id]);
+          DB::table('seller_offline_categories')->where('user_id',$requestdelete->user_id)->update(['user_id'=>$co_user_id]);
+          DB::table('seller_products')->where('user_id',$requestdelete->user_id)->update(['user_id'=>$co_user_id]);
+          DB::table('seller_product_temps')->where('user_id',$requestdelete->user_id)->update(['user_id'=>$co_user_id]);
+         // DB::table('subscriptions')->where('user_id',$requestdelete->user_id)->update(['user_id'=>$co_user_id]);
+          
+          
+          }
+          else{
+           
             DB::table('users')->where('parent_id',$requestdelete->user_id)->update(['status'=>'Deleted']);
             //deleted user product status changed to deleted
             DB::table('seller_products')->where('user_id', $requestdelete->user_id)->update(array('status' => 'deleted')); 
@@ -79,7 +115,7 @@ class RequestDeleteController extends Controller
                     }
                     
             }
-
+          }
         }
         
         echo json_encode("Status Changed");

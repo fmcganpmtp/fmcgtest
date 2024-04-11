@@ -1,6 +1,6 @@
 @extends('admin.master')
-@section('title', 'View Seller Product')
-@section('breadcrumb') View Seller Product @endsection
+@section('title', 'View  Product')
+@section('breadcrumb') View  Product @endsection
 @section('content')
    
 
@@ -112,7 +112,7 @@
  </div>
                
                 <ul class="product-info">
-                  <li> <span>Company:<b>:</b></span>  {{  $seller->BuyerCompany->company_name  ?? 'N/A' }}</li>
+                  <li> <span>Company<b>:</b></span>  {{  $seller->BuyerCompany->company_name  ?? 'N/A' }}</li>
                   <li> <span>Minimal Order Quantity<b>:</b></span> {{$product->minimal_order ?? "NA"}}</li>
                   <li> <span>Country<b>:</b></span>
                 {{$seller->Country->name ?? ''  }}   

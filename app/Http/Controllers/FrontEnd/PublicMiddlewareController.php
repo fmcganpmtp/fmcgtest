@@ -11,7 +11,7 @@ class PublicMiddlewareController extends Controller
 {
 
  public function checkUserValidity(){
-
+ 
      if(Auth::guard('user')->user()) {
 
                         if(Auth::guard('user')->user()->status=='Deleted'||Auth::guard('user')->user()->status=='Blocked'||Auth::guard('user')->user()->status=='Rejected')
@@ -29,7 +29,7 @@ class PublicMiddlewareController extends Controller
                                             ->where('subscriptions.status','Active')
                                             ->select('subscriptions.id','subscriptions.expairy_date','packages.subscription_type')
                                             ->orderBy('subscriptions.id','DESC')->first();
-                                                   
+                                               
                             if(!empty($package_data)){  
                                 //if( $package_data->subscription_type=='Extended' && $package_data->expairy_date>=date('Y-m-d'))
                                 if( $package_data->expairy_date>=date('Y-m-d'))
@@ -65,7 +65,7 @@ class PublicMiddlewareController extends Controller
                                             ->where('subscriptions.status','Active')
                                             ->select('subscriptions.id','subscriptions.expairy_date','packages.subscription_type')
                                             ->orderBy('subscriptions.id','DESC')->first();
-                                                     
+                                     //dd( $package_data)  ;              
                             if(!empty($package_data)){  
                                 if($package_data->expairy_date>=date('Y-m-d'))
                                     return true;
@@ -97,10 +97,14 @@ class PublicMiddlewareController extends Controller
 
         public function getexpiredsellerslist()
         {
-            $users = DB::select( DB::raw("SELECT distinct users.id FROM users
+          /*  $users = DB::select( DB::raw("SELECT distinct users.id FROM users
                                                     JOIN subscriptions ON subscriptions.user_id = users.id  AND subscriptions.status='Active'
                                                     WHERE users.usertype = 'seller' AND subscriptions.expairy_date > NOW()"
-                                                ));
+                                                ));*/
+           $users = DB::select( DB::raw("SELECT distinct users.id FROM users
+                                                    JOIN subscriptions ON subscriptions.user_id = users.id  AND subscriptions.status='Active'
+                                                    AND subscriptions.expairy_date > NOW()"
+                                                ));                                     
 
             //@TODO : Refactor query to return an array immediately
             $userArray = [];
@@ -113,31 +117,19 @@ class PublicMiddlewareController extends Controller
 
         public function getexpireduserslist()
         {
-
-             $user_list=DB::table('users')->leftJoin('subscriptions', function($join)
-                                               {
-                                                  $join->on('subscriptions.user_id', '=', 'users.id');
-                                                  $join->orOn('subscriptions.user_id', '=', 'users.parent_id');
-                                               })   
-                                            ->leftJoin('order_details', 'subscriptions.order_id', '=', 'order_details.id')
-                                            ->leftJoin('packages', 'packages.id', '=', 'order_details.package_id')
-                                            ->where('users.status','<>','Deleted')
-                                            ->where('subscriptions.status','Active')
-            ->select('users.id',
-           /* DB::raw("(CASE 
-                WHEN users.seller_type='Co-Seller' and packages.subscription_type!='Extended' THEN 'false'  
-                WHEN subscriptions.expairy_date > NOW() THEN 'true' 
-                ELSE 'false' 
-                END ) as expairy"))
-                ->select('users.id',*/
-            DB::raw("(CASE 
-                
-                WHEN subscriptions.expairy_date > NOW() THEN 'true' 
-                ELSE 'false' 
-                END ) as expairy"))
-            ->orderBy('subscriptions.id','DESC')->groupBy('users.id')->get(); 
+            return $user_list=DB::table('users')->leftJoin('subscriptions', function($join)
+                        {
+                            $join->on('subscriptions.user_id', '=', 'users.id');
+                            $join->orOn('subscriptions.user_id', '=', 'users.parent_id');
+                        })   
+                        // ->leftJoin('order_details', 'subscriptions.order_id', '=', 'order_details.id')
+                        // ->leftJoin('packages', 'packages.id', '=', 'order_details.package_id')
+                        ->where('users.status','<>','Deleted')
+                        ->where('subscriptions.status','Active')
+                        ->select('users.id',  DB::raw("(CASE  WHEN subscriptions.expairy_date > NOW() THEN 'true' ELSE 'false' END ) as expairy"))->having('expairy', 'false')
+                        ->orderBy('subscriptions.id','DESC')->groupBy('users.id')->get()->pluck('id'); 
                
-                return $user_list->where('expairy','true')->pluck('id');
+              //  return $user_list->where('expairy','true')->pluck('id');
            
         } 
         

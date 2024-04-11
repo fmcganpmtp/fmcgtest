@@ -94,6 +94,7 @@ class LoginController extends Controller
     }
     public function showUserLoginForm()
     { 
+       session(['link' => url()->previous()]);
        if($this->isMobile()) { 
 		    return view('auth.login_mobile', ['url' => 'user']);
            
@@ -108,7 +109,7 @@ class LoginController extends Controller
 
     public function userLogin(Request $request)
     {
-        
+        //dd($request);
         
         $this->validate($request, [
             'email'   => ['required','email', 'regex:/(.+)@(.+)\.(.+)/i'],
@@ -120,6 +121,7 @@ class LoginController extends Controller
     
         }
         $user = \App\User::where('email', $request->email)->latest('id')->first();
+       // dd($user);
         if (!empty($user) && !\Hash::check($request->password, $user->password)) 
             return back()->withErrors(['password' => 'Invalid Password!']); 
         else
@@ -165,7 +167,13 @@ class LoginController extends Controller
   
           return back()->with('message', 'We have e-mailed your password reset link!');
       }
-      public function showResetPasswordForm($token) {
+      
+     
+      
+      
+      public function showResetPasswordForm($token) { 
+          
+          
           if($this->isMobile()) { 
 		    return view('auth.passwords.forgetPasswordLink_mobile', ['token' => $token]);
            

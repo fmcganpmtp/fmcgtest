@@ -32,16 +32,20 @@ use DB;
             return $slug;
         }
     public function grab_image($url,$saveto,$i){
-		
+	$encode_path=rawurldecode($url);
+                        
+                        $handle = @fopen($encode_path, 'r');
+                        // Check if file exists
+                        if($handle) 
+                        {	
 	$info = pathinfo($url);
-    $img = $info["basename"];
-    $image_path = 'admin_prd'.$i.date("YmdhisU") . "_" . $img;
+    $name = pathinfo(parse_url($encode_path)['path'], PATHINFO_BASENAME);
+    $image_path = 'admin_prd'.$i.date("YmdhisU") . "_" . $name;
     $saveto_path = $saveto.$image_path;
-		
 	$ch = curl_init ($url);
     curl_setopt($ch, CURLOPT_HEADER, 0);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_BINARYTRANSFER,1);
+    curl_setopt($ch, CURLOPT_BINARYTRANSFER,1); 
     $raw=curl_exec($ch); 
     curl_close ($ch);
     if(file_exists($saveto_path)){
@@ -51,6 +55,7 @@ use DB;
 	
     fwrite($fp, $raw);
     fclose($fp);
+                        } else $image_path ='';
 	return $image_path;
 }
         public function collection(Collection $rows)
@@ -369,7 +374,7 @@ if(isset($row['bbd_expiry_date'])) {
                          if($validB64)
                                     continue;
                           else
-                                    $url1="data:image/jpeg;base64,".$url1;
+                           $url1="data:image/jpeg;base64,".$url1;
                             
                             //if base64 image convert to image
                             $imageInfo = explode(";base64,", $url1);
@@ -386,28 +391,25 @@ if(isset($row['bbd_expiry_date'])) {
                     else
                     { 
                         $encode_path=rawurldecode($url1);
-                        
                         $handle = @fopen($encode_path, 'r');
                         // Check if file exists
                         if($handle) 
-                        {
-                             //$ext = pathinfo(parse_url($encode_path)['path'], PATHINFO_EXTENSION);	
-                             //if(in_array($ext, $imageExtensions))
-                                $image_path =  $this->grab_image($encode_path,$file,$i);
-                             //else
-                             //$image_path='';
+                        {  $image_path =  $this->grab_image($encode_path,$file,$i); 
                         }
                         else
                             $image_path='';
                         
                     }
-                    
-                    if($i==0)
-                        $thumbnail= "yes";
-                    else
+                    $encode_path=rawurldecode($url1);
+                        $handle = @fopen($encode_path, 'r');
+                        // Check if file exists
                         $thumbnail = "no";
-
-                     $i++;
+                        if($handle) 
+                        {
+                        if($i==0)
+                        $thumbnail= "yes";
+                        $i++;
+                        }
                         $ret2 = ProductImage::create([
                             "product_id" => $product_id,
                             "thumbnail" => $thumbnail,

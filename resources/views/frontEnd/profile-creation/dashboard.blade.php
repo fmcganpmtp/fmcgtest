@@ -28,7 +28,7 @@
               
               <div class="col-lg-3 col-6">
                
-              <a href="{{route('user.mynetwork')}}">
+              <a href="{{route('companyDB')}}">
                 <div class="item-block bx2">
                   <div class="dash-ic"><img src="{{asset('assets/images/category-ic.png')}}"></div>
                   <h4>
@@ -172,7 +172,7 @@ $fmcg.ajax({
                                    dataItems.loadProducts.map((item) => {
                                     initial++;
                                    
-                                    var app_path="<?php echo url('seller-product-detail/')?>";
+                                    var app_path="<?php echo url('user-product-detail/')?>";
                                     var item_url="{{route('view.Sproduct', ':prd_id')}}";
                                 string+='<div class="col-lg-3 col-12 wow fadeInUp">';
                                 string+='<a  href='+app_path+'/'+item.prd_id+' >';

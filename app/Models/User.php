@@ -12,7 +12,7 @@ use Illuminate\Notifications\Notifiable;
         protected $guard = 'user';
 
         protected $fillable = [
-            'name', 'email','order_total', 'password','username','phone','profile_pic','about','hide_promo_email','surname','position','country_id','usertype','company','address','seller_type','parent_id','token_number','varification_status','email_status'
+            'name', 'email','order_total', 'password','username','phone','status','profile_pic','about','hide_promo_email','surname','position','country_id','usertype','company','address','seller_type','parent_id','token_number','varification_status','email_status'
         ];
 
         protected $hidden = [
@@ -20,6 +20,9 @@ use Illuminate\Notifications\Notifiable;
         ];
         function BuyerCompany() {
             return $this->hasOne('App\Models\BuyerCompany')->withDefault();
+        }
+        function CompanyRegion() {
+            return $this->hasOne('App\Models\CompanyRegion')->withDefault();
         }
         function OrderDetail() {
             return $this->hasMany('App\Models\OrderDetail','user_id','id');
@@ -38,6 +41,9 @@ use Illuminate\Notifications\Notifiable;
         }
         function SellerProduct() {
             return $this->hasMany('App\Models\SellerProduct','user_id','id');
+        }
+        function InsertedBy() {
+            return $this->hasMany('App\Models\SellerProduct','inserted_by','id');
         }
         function SellerOpeningTime() {
             return $this->hasMany('App\Models\SellerOpeningTime','seller_id','id');

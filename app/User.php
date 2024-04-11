@@ -15,7 +15,7 @@ use App\Http\Middleware\TrustHosts;
         protected $guard = 'user';
 
         protected $fillable = [
-            'name', 'email','order_total', 'password','username','phone','profile_pic','about','hide_promo_email','surname','position','country_id','usertype','company','address','seller_type','parent_id','token_number'
+            'name', 'email','order_total', 'password','username','phone','status','profile_pic','about','hide_promo_email','surname','position','country_id','usertype','company','address','seller_type','parent_id','token_number'
         ];
 
         protected $hidden = [
@@ -23,6 +23,9 @@ use App\Http\Middleware\TrustHosts;
         ];
         function BuyerCompany() {
             return $this->hasOne('App\Models\BuyerCompany')->withDefault();
+        }
+        function CompanyRegion() {
+            return $this->hasOne('App\Models\CompanyRegion')->withDefault();
         }
         function OrderDetail() {
             return $this->hasMany('App\Models\OrderDetail','user_id','id');

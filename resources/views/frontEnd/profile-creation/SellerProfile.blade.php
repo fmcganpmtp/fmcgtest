@@ -274,7 +274,7 @@ $fmcg.ajax({
                                    var string ='';
                                    dataItems.loadProducts.map((item) => {
                                     initial++;
-                                    var app_path="<?php echo url('seller-product-detail/')?>";
+                                    var app_path="<?php echo url('user-product-detail/')?>";
                                 string+='<div class="col-lg-3 col-12 wow fadeInUp">';
                                 string+='<a  href='+app_path+'/'+item.prd_id+' >';
                                 string+='<div class="product-thumbnail hovereffect">';

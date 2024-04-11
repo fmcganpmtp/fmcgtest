@@ -36,8 +36,18 @@ Route::get('/logout', '\App\Http\Controllers\Auth\LoginController@logout')->name
  //Frontend password reset forgot password
 Route::get('/forgot-password', 'App\Http\Controllers\Auth\LoginController@showForgetPasswordForm')->name('forget.password.get');
 Route::post('/forgot-password', 'App\Http\Controllers\Auth\LoginController@submitForgetPasswordForm')->name('forget.password.post'); 
-Route::get('/reset-password/{token}', 'App\Http\Controllers\Auth\LoginController@showResetPasswordForm')->name('reset.password.get');
-Route::post('reset-password', 'App\Http\Controllers\Auth\LoginController@submitResetPasswordForm')->name('reset.password.post');
+//Route::get('/reset-password/{token}', 'App\Http\Controllers\Auth\LoginController@showResetPasswordForm')->name('reset.password.get');
+//Route::post('reset-password', 'App\Http\Controllers\Auth\LoginController@submitResetPasswordForm')->name('reset.password.post');
+
+Route::get('/add-password', 'App\Http\Controllers\FrontEnd\ProfileController@addPasswordForm')->name('addPasswordForm');
+Route::post('/add-password', 'App\Http\Controllers\FrontEnd\ProfileController@savePasswordForm')->name('savePasswordForm');
+// Password reset routes...
+Route::get('password/reset/{token}', 'App\Http\Controllers\Auth\LoginController@showResetPasswordForm')->name('password.request');
+Route::post('password/reset', 'App\Http\Controllers\Auth\LoginController@submitResetPasswordForm')->name('password.reset');
+Route::post('employees/password/reset', 'App\Http\Controllers\FrontEnd\ProfileController@submitForgetPasswordEmployees')->name('employeesPassword.reset');
+Route::post('loademployees-compProfile', 'App\Http\Controllers\FrontEnd\ProfileController@loadEmployeesCompProf')->name('loadEmployeesCompProf');
+
+
 
 //chat
 Route::post('/get-my-contacts','App\Http\Controllers\FrontEnd\MessageController@getMyContacts')->name('chat.getMyContacts');
@@ -55,6 +65,10 @@ Route::get('/success', 'App\Http\Controllers\FrontEnd\StripeController@success')
 Route::post('/newsletter-subscription', 'App\Http\Controllers\FrontEnd\ProfileController@NewsletterSubscription')->name('newsletter.subscription'); 
 
 Route::get('buildmenustructure', 'App\Http\Controllers\FrontEnd\PagesController@buildmenustructure')->name('buildmenustructure');
+Route::get('/my-network2', 'App\Http\Controllers\FrontEnd\PagesController@myNetwork2')->name('myNetwork2');
+Route::get('/profile2', 'App\Http\Controllers\FrontEnd\PagesController@profile2')->name('profile2');
+Route::get('/pwreset', 'App\Http\Controllers\FrontEnd\PagesController@pwreset')->name('pwreset');
+Route::get('/profileEdit2', 'App\Http\Controllers\FrontEnd\PagesController@profileEdit2')->name('profileEdit2');
 
 Route::view('/home', 'home');
 Route::view('/user', 'user');
@@ -66,7 +80,7 @@ Route::get('autocompleteSproductFrontend', 'App\Http\Controllers\FrontEnd\Produc
 Route::get('/list-categories/{categoryId}', 'App\Http\Controllers\FrontEnd\CategoryController@ListCategories')->name('list.categories');
 
 //Seller Products
-Route::get('/seller-products', 'App\Http\Controllers\FrontEnd\SellerController@SellerProductList')->name('seller.products')->middleware('auth:user');
+Route::get('/user-products', 'App\Http\Controllers\FrontEnd\SellerController@SellerProductList')->name('seller.products')->middleware('auth:user');
 
 
 
@@ -80,13 +94,14 @@ Route::get('/headsearch', 'App\Http\Controllers\FrontEnd\PagesController@headsea
 
 Route::get('getSellerproductlistFrontEnd', 'App\Http\Controllers\FrontEnd\SellerController@getSellerproductlist')->name('getSellerproductlistFrontEnd')->middleware('auth:user');
 Route::get('/getSPendingProductlist', 'App\Http\Controllers\FrontEnd\SellerController@getSPendingProductlist')->name('getSPendingProductlist');
-Route::get('/add-seller-product', 'App\Http\Controllers\FrontEnd\SellerController@AddSellerProduct')->name('add.seller.product')->middleware('auth:user');
+Route::get('/add-user-product', 'App\Http\Controllers\FrontEnd\SellerController@AddSellerProduct')->name('add.seller.product')->middleware('auth:user');
 Route::get('/add-existing-product', 'App\Http\Controllers\FrontEnd\SellerController@AddUsingExistingProduct')->name('existing.product')->middleware('auth:user');
 Route::post('updateuserproductvisibility', 'App\Http\Controllers\FrontEnd\SellerController@updateselerproductvisibility')->name('updateuserproductvisibility')->middleware('auth:user');
-Route::get('/edit-seller-product/{productId}', 'App\Http\Controllers\FrontEnd\SellerController@EditSellerProduct')->name('edit.sellerProduct')->middleware('auth:user');
-Route::get('/edit-pending-seller-product/{productId}', 'App\Http\Controllers\FrontEnd\SellerController@EditPendingSellerProduct')->name('edit.pending.sellerProduct')->middleware('auth:user');
-Route::get('/seller-product-detail/{productId}', 'App\Http\Controllers\FrontEnd\SellerController@SellerProductDetails')->name('view.Sproduct');
-Route::get('/seller-pending-product-detail/{productId}', 'App\Http\Controllers\FrontEnd\SellerController@SellerPendingProductDetails')->name('view.pending.Sproduct');
+Route::post('updateuserproductfeatured', 'App\Http\Controllers\FrontEnd\SellerController@updateuserproductfeatured')->name('updateuserproductfeatured')->middleware('auth:user');
+Route::get('/edit-user-product/{productId}', 'App\Http\Controllers\FrontEnd\SellerController@EditSellerProduct')->name('edit.sellerProduct')->middleware('auth:user');
+Route::get('/edit-pending-user-product/{productId}', 'App\Http\Controllers\FrontEnd\SellerController@EditPendingSellerProduct')->name('edit.pending.sellerProduct')->middleware('auth:user');
+Route::get('/user-product-detail/{productId}', 'App\Http\Controllers\FrontEnd\SellerController@SellerProductDetails')->name('view.Sproduct');
+Route::get('/user-pending-product-detail/{productId}', 'App\Http\Controllers\FrontEnd\SellerController@SellerPendingProductDetails')->name('view.pending.Sproduct');
 
 Route::get('/add-product-request', 'App\Http\Controllers\FrontEnd\SellerController@AddProductRequest')->name('add.productrequest')->middleware('auth:user');
 Route::post('insertproductrequest', 'App\Http\Controllers\FrontEnd\SellerController@insertproductrequest')->name('insertproductrequest');
@@ -148,6 +163,8 @@ Route::post('addnewSproduct', 'App\Http\Controllers\FrontEnd\SellerController@ad
 Route::post('loadreview', 'App\Http\Controllers\FrontEnd\SellerController@loadreview')->name('loadreview');
 
 Route::post('loadproducts', 'App\Http\Controllers\FrontEnd\ProfileController@loadproducts')->name('loadproducts');
+Route::post('loadproducts-compProfile', 'App\Http\Controllers\FrontEnd\ProfileController@loadproductsCompProf')->name('loadproductsCompProf');
+//Route::post('loadRegions', 'App\Http\Controllers\FrontEnd\ProfileController@loadRegions')->name('loadRegions');
 
 Route::post('resend_veryfication_email', 'App\Http\Controllers\FrontEnd\ProfileController@resend_veryfication_email')->name('resend_veryfication_email'); 
 
@@ -217,8 +234,8 @@ Route::post('/update-seller', 'App\Http\Controllers\FrontEnd\ProfileController@U
 Route::post('/update-company', 'App\Http\Controllers\FrontEnd\ProfileController@UpdateCompany')->name('update.company');
 
 //Profile Pages
-Route::get('/seller-profile', 'App\Http\Controllers\FrontEnd\ProfileController@SellerProfile')->name('seller.profile')->middleware('auth:user');
-Route::get('/seller-dashboard', 'App\Http\Controllers\FrontEnd\ProfileController@SellerDashboard')->name('seller.dashboard')->middleware('auth:user');
+Route::get('/user-profile', 'App\Http\Controllers\FrontEnd\ProfileController@SellerProfile')->name('seller.profile')->middleware('auth:user');
+Route::get('/user-dashboard', 'App\Http\Controllers\FrontEnd\ProfileController@SellerDashboard')->name('seller.dashboard')->middleware('auth:user');
 Route::get('/buyer-dashboard', 'App\Http\Controllers\FrontEnd\ProfileController@BuyerDashboard')->name('buyer.dashboard')->middleware('auth:user');
 Route::get('/view-profile-buyer', 'App\Http\Controllers\FrontEnd\ProfileController@ViewProfileBuyer')->name('ViewProfileBuyer')->middleware('auth:user');	
 Route::get('/business-insight', 'App\Http\Controllers\FrontEnd\ProfileController@BusinessInsight')->name('BusinessInsight')->middleware('auth:user');
@@ -229,17 +246,30 @@ Route::get('getbusinessproducts','App\Http\Controllers\FrontEnd\ProfileControlle
 Route::get('getbusinessCategories','App\Http\Controllers\FrontEnd\ProfileController@getbusinessCategories')->name('getbusinessCategories');
 
 Route::get('/view-profile-guest', 'App\Http\Controllers\FrontEnd\ProfileController@ViewProfileGuest')->name('ViewProfileGuest')->middleware('auth:user');	
-Route::get('/view-seller-profile/{profId}', 'App\Http\Controllers\FrontEnd\ProfileController@ViewSellerProfile')->name('ViewSeller.profile')->middleware('auth:user');
-Route::get('/view-profile-seller', 'App\Http\Controllers\FrontEnd\ProfileController@ViewProfileSeller')->name('ViewProfileSeller')->middleware('auth:user');
+Route::get('/view-user-profile/{profId}', 'App\Http\Controllers\FrontEnd\ProfileController@ViewSellerProfile')->name('ViewSeller.profile')->middleware('auth:user');
+Route::get('/view-profile-user', 'App\Http\Controllers\FrontEnd\ProfileController@ViewProfileSeller')->name('ViewProfileSeller')->middleware('auth:user');
+
+Route::get('/company-profile', 'App\Http\Controllers\FrontEnd\ProfileController@CompanyProfile')->name('MyCompanyProfile')->middleware('auth:user');
+Route::get('/company-profile/{profId}', 'App\Http\Controllers\FrontEnd\ProfileController@CompanyProfile')->name('CompanyProfile')->middleware('auth:user');
 Route::get('/buyer-profile', 'App\Http\Controllers\FrontEnd\ProfileController@BuyerProfile')->name('buyer.profile')->middleware('auth:user');
 Route::get('/guest-profile', 'App\Http\Controllers\FrontEnd\ProfileController@GuestProfile')->name('guest.profile')->middleware('auth:user');
 Route::get('profile_to_network', 'App\Http\Controllers\FrontEnd\ProfileController@profile_to_network')->name('profile_to_network')->middleware('auth:user');
+Route::post('update-image','App\Http\Controllers\FrontEnd\ProfileController@update_image')->name('update-image');
+Route::post('/updateSellerEmployee', 'App\Http\Controllers\FrontEnd\ProfileController@updateSellerEmployee')->name('updateSellerEmployee');
+Route::get('/abt1removeimage','App\Http\Controllers\FrontEnd\ProfileController@remove_abtimage1')->name('abt1.removeImage');
+Route::get('/abt2removeimage','App\Http\Controllers\FrontEnd\ProfileController@remove_abtimage2')->name('abt2.removeImage');
 
+Route::post('/add_newCo_employees', 'App\Http\Controllers\FrontEnd\ProfileController@addNewEmployees')->name('addNewEmployees')->middleware('auth:user');
+Route::post('/deleteCoEmployee','App\Http\Controllers\FrontEnd\ProfileController@deleteEmployee')->name('deleteCoEmployee');
 Route::post('userproductbulkdelete','App\Http\Controllers\FrontEnd\SellerController@userproductbulkdelete')->name('userproductbulkdelete')->middleware('auth:user');
 //mynetwork
 Route::get('/my-network', 'App\Http\Controllers\FrontEnd\PagesController@mynetwork')->name('user.mynetwork')->middleware('auth:user');
+Route::get('/company-database', 'App\Http\Controllers\FrontEnd\PagesController@companyDB')->name('companyDB')->middleware('auth:user');
+
 
 Route::post('sellers_list', 'App\Http\Controllers\FrontEnd\PagesController@getsellerslist_search')->name('sellers.get-more-sellers');
+Route::post('company-dbs', 'App\Http\Controllers\FrontEnd\PagesController@companyDbs')->name('company-dbs');
+Route::post('my-nw-lists', 'App\Http\Controllers\FrontEnd\PagesController@myNwLists')->name('my-nw-lists');
 Route::post('network_contacts', 'App\Http\Controllers\FrontEnd\PagesController@getnetwork_users_list')->name('sellers.network-contacts');
 Route::get('/revokeFrom_network', 'App\Http\Controllers\FrontEnd\PagesController@revokeFrom_network')->name('revokeFrom_network')->middleware('auth:user');
 
@@ -272,6 +302,17 @@ Route::post('update-kyc-doc','App\Http\Controllers\FrontEnd\ProfileController@Up
 
 //Ajax profile image update
 Route::post('update-image','App\Http\Controllers\FrontEnd\ProfileController@update_image')->name('update-image');
+Route::post('update-Compimage','App\Http\Controllers\FrontEnd\ProfileController@updateCompimage')->name('updateCompimage');
+Route::post('updateProfimage','App\Http\Controllers\FrontEnd\ProfileController@updateProfimage')->name('updateProfimage');
+Route::post('update-Compbanner','App\Http\Controllers\FrontEnd\ProfileController@updateCompbanner')->name('updateCompbanner');
+Route::post('updateAbtimg1','App\Http\Controllers\FrontEnd\ProfileController@updateAbtimg1')->name('updateAbtimg1');
+Route::post('update-abtimg2','App\Http\Controllers\FrontEnd\ProfileController@updateAbtimg2')->name('updateAbtimg2');
+Route::post('updateSellerProfimage','App\Http\Controllers\Admin\SlidersController@updateSliderimage')->name('updateSliderimage');
+Route::post('/updateCompProf', 'App\Http\Controllers\FrontEnd\ProfileController@updateCompProf')->name('updateCompProf');
+Route::post('/updateCompAbout', 'App\Http\Controllers\FrontEnd\ProfileController@updateCompAbout')->name('updateCompAbout');
+Route::post('/updateCompanyRegions', 'App\Http\Controllers\FrontEnd\ProfileController@updateCompanyRegions')->name('updateCompanyRegions');
+
+
 //Ajax Company image update
 Route::post('update-company-image','App\Http\Controllers\FrontEnd\ProfileController@UpdateCompanyImage')->name('update.company.image');
 
@@ -281,6 +322,7 @@ Route::post('/update-seller-profile', 'App\Http\Controllers\FrontEnd\ProfileCont
 
 //Reset password for user
 Route::post('reset-user-password', 'App\Http\Controllers\FrontEnd\ProfileController@submitUserResetPasswordForm')->name('user.pw.reset');
+Route::post('reset-password', 'App\Http\Controllers\FrontEnd\ProfileController@UserResetPassword')->name('UserResetPassword');
 
 Route::get('admin/list-kycs','App\Http\Controllers\Admin\AdminController@ListKycs')->name('list.user.kycs')->middleware('auth:admin');
 Route::get('admin/kyc-approve/{userId}','App\Http\Controllers\Admin\AdminController@kycApprove')->name('kyc.approve')->middleware('auth:admin');
@@ -301,7 +343,7 @@ Route::post('/deleteprofileimage','App\Http\Controllers\Admin\AdminController@de
 
 
 //--------------- admin Insight Reports
-Route::get('/admin/seller/insight-report', 'App\Http\Controllers\Admin\UsersInsightController@index')->name('admin.sellerinsight')->middleware('auth:admin');
+Route::get('/admin/user/insight-report', 'App\Http\Controllers\Admin\UsersInsightController@index')->name('admin.sellerinsight')->middleware('auth:admin');
 Route::get('getsellersinsightlist','App\Http\Controllers\Admin\UsersInsightController@getsellersinsightlist')->name('getsellersinsightlist')->middleware('auth:admin');
 
 Route::get('/admin/buyer/insight-report', 'App\Http\Controllers\Admin\UsersInsightController@buyerindex')->name('admin.buyerinsightreport')->middleware('auth:admin');
@@ -403,8 +445,8 @@ Route::post('ajaxextendexpirydate','App\Http\Controllers\Admin\PackageController
 Route::get('/admin/packages/senderRemainder/{id}', 'App\Http\Controllers\Admin\PackageController@senderRemainder')->name('admin.senderRemainder')->middleware('auth:admin');
 
 //------------------Admin/Product Settings--
-Route::get('/admin/products/list', 'App\Http\Controllers\Admin\ProductController@listProducts')->name('list-products')->middleware('auth:admin');
-Route::get('/admin/SellerProducts/list', 'App\Http\Controllers\Admin\ProductController@listSellerProducts')->name('list-Sellerproducts')->middleware('auth:admin');
+Route::get('/admin/sample-products/list', 'App\Http\Controllers\Admin\ProductController@listProducts')->name('list-products')->middleware('auth:admin');
+Route::get('/admin/Product/list', 'App\Http\Controllers\Admin\ProductController@listSellerProducts')->name('list-Sellerproducts')->middleware('auth:admin');
 
 Route::get('getproductlist', 'App\Http\Controllers\Admin\ProductController@getproductlist')->name('getproductlist')->middleware('auth:admin');
 Route::get('getSellerProductlist', 'App\Http\Controllers\Admin\ProductController@getSellerProductlist')->name('getSellerProductlist')->middleware('auth:admin');
@@ -417,8 +459,8 @@ Route::get('/admin/products/edit-Sellerproduct/{productId}','App\Http\Controller
 Route::post('/update-product','App\Http\Controllers\Admin\ProductController@updateProduct')->name('update.product')->middleware('auth:admin');
 Route::get('/admin/products/delete-product/{productId}','App\Http\Controllers\Admin\ProductController@deleteProduct')->name('delete.product')->middleware('auth:admin');
 Route::get('/admin/products/delete-Sellerproduct/{productId}','App\Http\Controllers\Admin\ProductController@deleteSellerProduct')->name('delete.Sellerproduct')->middleware('auth:admin');
-Route::get('/admin/products/view/{productId}','App\Http\Controllers\Admin\ProductController@viewProduct')->name('view.product')->middleware('auth:admin');
-Route::get('/admin/Sellerproducts/view/{productId}','App\Http\Controllers\Admin\ProductController@viewSellerProduct')->name('view.Sellerproduct')->middleware('auth:admin');
+Route::get('/admin/sample-products/view/{productId}','App\Http\Controllers\Admin\ProductController@viewProduct')->name('view.product')->middleware('auth:admin');
+Route::get('/admin/product/view/{productId}','App\Http\Controllers\Admin\ProductController@viewSellerProduct')->name('view.Sellerproduct')->middleware('auth:admin');
 Route::get('/admin/products/uploadcsvfile','App\Http\Controllers\Admin\ProductController@uploadcsvfile')->name('product.csvfileupload')->middleware('auth:admin');
 
 
@@ -527,24 +569,25 @@ Route::post('userkycupload','App\Http\Controllers\Admin\SellersController@userky
 Route::get('availableusers','App\Http\Controllers\Admin\AdminkycController@availbleUsers')->name('available.users');
 
 //------------------Admin/Sellers List
-Route::get('/admin/sellers/list', 'App\Http\Controllers\Admin\SellersController@index')->name('admin.sellerslist')->middleware('auth:admin');
+Route::get('/admin/user/list', 'App\Http\Controllers\Admin\SellersController@index')->name('admin.sellerslist')->middleware('auth:admin');
 Route::get('getsellerslist','App\Http\Controllers\Admin\SellersController@getsellerslist')->name('getsellerslist')->middleware('auth:admin');
-Route::get('/admin/seller/view/{sellerid}', 'App\Http\Controllers\Admin\SellersController@sellerdetails')->name('admin.sellerview')->middleware('auth:admin');
+Route::get('/admin/user/view/{sellerid}', 'App\Http\Controllers\Admin\SellersController@sellerdetails')->name('admin.sellerview')->middleware('auth:admin');
+Route::get('/admin/user/profileview/{sellerid}', 'App\Http\Controllers\Admin\SellersController@sellerprofiledetails')->name('seller.profileview')->middleware('auth:admin');
 
-Route::get('/admin/seller/product/create/{sellerid}', 'App\Http\Controllers\Admin\SellersController@sellerproductcreate')->name('admin.sellerproduct_create')->middleware('auth:admin');
-
+Route::get('/admin/user/product/create/{sellerid}', 'App\Http\Controllers\Admin\SellersController@sellerproductcreate')->name('admin.sellerproduct_create')->middleware('auth:admin');
+ 
 Route::post('/saveseller-product','App\Http\Controllers\Admin\SellersController@savesellerProduct')->name('save.seller_product')->middleware('auth:admin');
 
-Route::get('/admin/seller/edit/{sellerid}', 'App\Http\Controllers\Admin\SellersController@selleredit')->name('admin.selleredit')->middleware('auth:admin');
+Route::get('/admin/user/edit/{sellerid}', 'App\Http\Controllers\Admin\SellersController@selleredit')->name('admin.selleredit')->middleware('auth:admin');
 
 Route::get('getsellerdocslist','App\Http\Controllers\Admin\SellersController@getsellerdocslist')->name('getsellerdocslist')->middleware('auth:admin');
 Route::get('getsellerproductslist','App\Http\Controllers\Admin\SellersController@getsellerproductslist')->name('getsellerproductslist')->middleware('auth:admin');
 Route::get('/admin/seller/product/view/{productId}','App\Http\Controllers\Admin\SellersController@viewProduct')->name('seller.view.product')->middleware('auth:admin');
-Route::get('/admin/seller/product/edit/{productId}','App\Http\Controllers\Admin\SellersController@editProduct')->name('seller.edit.product')->middleware('auth:admin');
+Route::get('/admin/product/edit/{productId}','App\Http\Controllers\Admin\SellersController@editProduct')->name('seller.edit.product')->middleware('auth:admin');
 Route::post('/seller/update/product','App\Http\Controllers\Admin\SellersController@updateProduct')->name('seller.update.product')->middleware('auth:admin');
 Route::get('/admin/seller/products/delete/{productId}','App\Http\Controllers\Admin\SellersController@deleteProduct')->name('seller.delete.product')->middleware('auth:admin');
 Route::post('sellersstatusupdates','App\Http\Controllers\Admin\SellersController@sellersstatusupdates')->name('sellersstatusupdates')->middleware('auth:admin');
-Route::get('/admin/seller/create', 'App\Http\Controllers\Admin\SellersController@create')->name('sellerprofile.create')->middleware('auth:admin');
+Route::get('/admin/user/create', 'App\Http\Controllers\Admin\SellersController@create')->name('sellerprofile.create')->middleware('auth:admin');
 Route::post('/admin/seller/store', 'App\Http\Controllers\Admin\SellersController@store')->name('sellerprofile.store')->middleware('auth:admin');
 Route::post('adminresetpassword','App\Http\Controllers\Admin\SellersController@adminresetpassword')->name('adminresetpassword')->middleware('auth:admin');
 Route::get('getpackagenamelist','App\Http\Controllers\Admin\SellersController@getpackagenamelist')->name('getpackagenamelist')->middleware('auth:admin');
@@ -555,7 +598,7 @@ Route::post('adminassignpackagetoadmin','App\Http\Controllers\Admin\SellersContr
 
 //------------------Admin/Buyers List
 Route::get('/admin/buyer/list', 'App\Http\Controllers\Admin\BuyersController@index')->name('admin.buyerslist')->middleware('auth:admin');
-Route::get('getbuyerslist','App\Http\Controllers\Admin\BuyersController@getbuyerslist')->name('getsellerslist')->middleware('auth:admin');
+Route::get('getbuyerslist','App\Http\Controllers\Admin\BuyersController@getbuyerslist')->name('getbuyerslist')->middleware('auth:admin');
 Route::get('/admin/buyer/create', 'App\Http\Controllers\Admin\BuyersController@create')->name('buyerprofile.create')->middleware('auth:admin');
 Route::post('/admin/buyer/store', 'App\Http\Controllers\Admin\BuyersController@store')->name('buyerprofile.store')->middleware('auth:admin');
 Route::get('/admin/buyer/view/{sellerid}', 'App\Http\Controllers\Admin\BuyersController@buyerdetails')->name('admin.buyerview')->middleware('auth:admin');

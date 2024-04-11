@@ -22,7 +22,7 @@
                       <label>Company Name:</label>
                       <input type="text" id="company_name" class="form-control" >
                     </div>
-                    <div class="col-lg-2 col-12">
+                    <!--<div class="col-lg-2 col-12">
                       <div class="form-group">
                         <label>User type:</label>
                         <select id="user_type" class="form-control">
@@ -31,16 +31,16 @@
                       <option value="Buyer">Buyer</option>
                     </select>
                       </div>
-                    </div>
+                    </div>-->
                     <div class="col-lg-2 col-12">
-                      <div class="form-group">
+                    <!--  <div class="form-group">
                         <label>Packages:</label>
                         <select id="Package" class="form-control">
                       <option value="">All</option>
                       <option value="Extended">Extended</option>
                       <option value="Standard">Standard</option>
                     </select>
-                      </div>
+                      </div>-->
                     </div>
                     <div class="col-lg-2 col-12">
                       <button type="button" id="btnsearch" class="bl-btn flt-right top-mrg"><i class="fa fa-search" aria-hidden="true"></i> Search</button>
@@ -56,7 +56,7 @@
                           <th>Sl no</th>
                           <th>Name</th>
                           <th>Company</th>
-                          <th> Type</th>
+                          <!--<th> Type</th>-->
                           <th>Package</th>
                           <th>Subscription date</th>
                           <th>Expiry date</th>
@@ -150,6 +150,9 @@ var id = '12';
 var viewurl="{{route('admin.subscriptionusersdetails', ':id')}}";
 
 
+ $('#company_name').change(function(){
+    dataTable.draw();
+  });
  $('#btnsearch').click(function(){
     dataTable.draw();
   });
@@ -196,7 +199,7 @@ var viewurl="{{route('admin.subscriptionusersdetails', ':id')}}";
     },
      
       {
-       "targets":8, 
+       "targets":7, 
        "orderable": false,
        "data":"user_id",
        "render": function(data,type,full,meta)
@@ -219,8 +222,8 @@ var viewurl="{{route('admin.subscriptionusersdetails', ':id')}}";
           { data: 'id' },
           { data: 'user_name' },
           { data: 'company_name' },
-          { data: 'user_type' } ,  
-          { data: 'subscription_type' } ,  
+        //  { data: 'user_type' } ,  
+          { data: 'pkg_name' } ,  
           { data: 'date' },
           { data: 'expairy_date' },
           ]

@@ -7,7 +7,7 @@
     <div class="container-lg">
       <div class="card-out mb-4 inner-form">
       @if(Session::has('message')) <div class="alert alert-success">{{Session::get('message') }}</div> @endif
-        <h2>Sellers Insight Report</h2>
+        <h2> Insight Report</h2>
         <div class="card-body">
           <div class="row">
             <div class="col-lg-12 col-12">

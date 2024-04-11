@@ -78,9 +78,20 @@
                 <div class="price"> <span class="new-price">
                      @if(strtolower(trim($product->price_on_request)) != strtolower('Price on request'))
                         <?php 
-                        $currency = '$';
-                   if(!empty($product->currency))
-                   $currency = $product->currency;
+                        $currency_display = '$';
+                   if(!empty($product->currency_id))
+                   { 
+                       if(!empty($currencies))
+                                 { 
+                                    foreach ($currencies as $currency)
+                                    {
+                                    if( $currency->id==$product->currency_id)
+                                    $currency_display =$currency->symbol;
+                                    }
+                                    
+                                  }
+                  // $currency = $product->Currency->symbol;
+                   }
 			       $prod_price = $product->product_price;
                     $no_of_dec =0;
                    if (strpos($prod_price, ".") !== false) {
@@ -90,9 +101,9 @@
 
                   
                    if($no_of_dec==1)
-                   echo $currency.'&nbsp;'.rtrim(rtrim(number_format($product->product_price,3), '0'), '.').'0';
+                   echo $currency_display.'&nbsp;'.rtrim(rtrim(number_format($product->product_price,3), '0'), '.').'0';
                    else 
-                   echo $currency.'&nbsp;'.rtrim(rtrim(number_format($product->product_price,3), '0'), '.');
+                   echo $currency_display.'&nbsp;'.rtrim(rtrim(number_format($product->product_price,3), '0'), '.');
                         ?>
                         
                         

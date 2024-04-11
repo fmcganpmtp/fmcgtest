@@ -133,6 +133,7 @@
                     <th>Price</th>
                     <th>Image</th>
                     <th>Visibility</th>
+                    <th>Featured</th>
                     <th>Time and date</th>
                     <th> Actions</th>
                   </tr>
@@ -185,7 +186,7 @@
                 <li>Wait for the Admin approval for displaying products in the platform.</li>
              </ul>
              
-             <a href="{{ asset('/excel/').'/'.'sample.csv' }}" class="default-btn"> <i class="fa fa-file-excel-o" aria-hidden="true"></i>
+             <a href="{{ asset('/excel/').'/'.'sample.xlsx' }}" class="default-btn"> <i class="fa fa-file-excel-o" aria-hidden="true"></i>
 Download</a>
                 </div>
                 </div>
@@ -433,8 +434,9 @@ Upload</button>
           return '<div class="custom-control custom-checkbox"><input id="'+full.id+'" type="checkbox" class="custom-control-input clsallcheck"  onclick="fnPushId('+full.id+')"></div>' +(meta.row + meta.settings._iDisplayStart + 1);
       }
     },
-     {
+      {
        "targets":7, 
+       "orderable": false,
        "render": function(data,type,full,meta)
       {
 
@@ -447,10 +449,28 @@ Upload</button>
           unchecked="checked";
         else
           unchecked="";
-        return  '<div class="switch-field"><input type="radio" id="radio_visi-'+full.id+'" name="switch_visi-'+full.id+'" value="Yes" '+checked+' onchange="fnproduct_visbility('+full.id+')" /><label for="radio_visi-'+full.id+'">On</label><input type="radio" id="radio_visi-1'+full.id+'" name="switch_visi-'+full.id+'"  value="No" '+unchecked+' onchange="fnproduct_visbility('+full.id+')"/> <label for="radio_visi-1'+full.id+'">Off</label></div>';      }
+         return  '<div class="switch-field"><input type="radio" id="radio_visi-'+full.id+'" name="switch_visi-'+full.id+'" value="Yes" '+checked+' onchange="fnproduct_visbility('+full.id+')" /><label for="radio_visi-'+full.id+'">On</label><input type="radio" id="radio_visi-1'+full.id+'" name="switch_visi-'+full.id+'"  value="No" '+unchecked+' onchange="fnproduct_visbility('+full.id+')"/> <label for="radio_visi-1'+full.id+'">Off</label></div>';
+      }
+    },{
+       "targets":8, 
+       "orderable": false,
+       "render": function(data,type,full,meta)
+      {
+
+        if(full.featured_prd=="Yes")
+          checked="checked";
+        else
+          checked="";
+
+        if(full.featured_prd=="No")
+          unchecked="checked";
+        else
+          unchecked="";
+         return  '<div class="switch-field"><input type="radio" id="radio_featud-'+full.id+'" name="feature_prd-'+full.id+'" value="Yes" '+checked+' onchange="fnproduct_featured('+full.id+')" /><label for="radio_featud-'+full.id+'">On</label><input type="radio" id="radio_featud-1'+full.id+'" name="feature_prd-'+full.id+'"  value="No" '+unchecked+' onchange="fnproduct_featured('+full.id+')"/> <label for="radio_featud-1'+full.id+'">Off</label></div>';
+      }
     },
     {
-       "targets":9, 
+       "targets":10, 
        "orderable": false,
        "render": function(data,type,full,meta)
       {
@@ -471,6 +491,7 @@ Upload</button>
           { data: 'product_price',className: "text-right" },
           { data: 'strimg' },
           { data: 'product_visibility' },
+          { data: 'featured_prd' },
           { data: 'created_at' },
           { data: '' },
            
@@ -479,7 +500,63 @@ Upload</button>
  
 </script>
 <script type="text/javascript">
- 
+   function fnproduct_featured(id){
+
+    var status=$fmcg("input[name='feature_prd-"+id+"']:checked").val();
+    swal({
+    title:"Do you want to continue ? " ,
+    text: "",
+    icon: "warning",
+    buttons: true,
+    dangerMode: true,
+  })
+  .then((willDelete) => {
+    if (willDelete) {
+      // $fmcg(".loaderajax").show();
+      $fmcg.ajax({
+         url: "{{url('updateuserproductfeatured')}}",
+            type: "post",
+            data:{ 
+                _token:'{{ csrf_token() }}',
+                  id: id,
+                  status: status,
+            },
+            async:true,
+            cache: false,
+            dataType: 'json',
+            success: function(data){
+                // $fmcg(".loaderajax").hide();
+              if(data)
+                  swal("Changed to featured product", "", "success");
+              else
+                  swal("Error On Submission", "", "error");
+                
+          } ,
+          error: function(XMLHttpRequest, textStatus, errorThrown) { 
+              // $fmcg(".loaderajax").hide();
+            swal(errorThrown, "", "error");
+          }  
+
+        })
+    } 
+    else {
+        
+           var cur_status=$fmcg("input[name='switch_visi-"+id+"']:checked").val();
+           if(cur_status=='Yes')
+              {
+                $fmcg("#radio_visi-"+id).prop('checked',false);
+                $fmcg("#radio_visi-1"+id).prop('checked',true);
+              }
+           else
+              {
+                $fmcg("#radio_visi-"+id).prop('checked',true);
+                $fmcg("#radio_visi-1"+id).prop('checked',false);
+              }
+          
+        }
+    });  
+
+  }
  function showerror(){
     $fmcg('.err-shw').css('display','block');
 }

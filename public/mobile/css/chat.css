@@ -299,7 +299,7 @@
   margin: 10px 0 0 20px;
 }
 #frame #sidepanel #search input {
-  font-family: "proxima-nova",  "Source Sans Pro", sans-serif;
+ 
   padding: 10px 0 10px 46px;
   width: calc(95% - 0px);
   border: none;
@@ -324,63 +324,63 @@
 #frame #sidepanel #search input:-moz-placeholder {
   color: #f5f5f5;
 }
-#frame #sidepanel #contacts {
+#frame #sidepanel #contacts_chat {
   height: calc(100% - 177px);
   overflow-y: scroll;
   overflow-x: hidden;
 }
 @media screen and (max-width: 735px) {
-  #frame #sidepanel #contacts {
+  #frame #sidepanel #contacts_chat {
     height: calc(100% - 149px);
     overflow-y: scroll;
     overflow-x: hidden;
   }
-  #frame #sidepanel #contacts::-webkit-scrollbar {
+  #frame #sidepanel #contacts_chat::-webkit-scrollbar {
     display: none;
   }
 }
-#frame #sidepanel #contacts.expanded {
+#frame #sidepanel #contacts_chat.expanded {
   height: calc(100% - 334px);
 }
-#frame #sidepanel #contacts::-webkit-scrollbar {
+#frame #sidepanel #contacts_chat::-webkit-scrollbar {
   width: 8px;
   background: #2c3e50;
 }
-#frame #sidepanel #contacts::-webkit-scrollbar-thumb {
+#frame #sidepanel #contacts_chat::-webkit-scrollbar-thumb {
   background-color: #243140;
 }
-#frame #sidepanel #contacts ul li.contact {
+#frame #sidepanel #contacts_chat ul li.contact {
   position: relative;
   padding: 10px 0 15px 0;
   font-size: 0.9em;
   cursor: pointer;
 }
 @media screen and (max-width: 735px) {
-  #frame #sidepanel #contacts ul li.contact {
+  #frame #sidepanel #contacts_chat ul li.contact {
     padding: 6px 0 46px 8px;
   }
 }
-#frame #sidepanel #contacts ul li.contact:hover {
+#frame #sidepanel #contacts_chat ul li.contact:hover {
   background: #32465a;
 }
-#frame #sidepanel #contacts ul li.contact.active {
+#frame #sidepanel #contacts_chat ul li.contact.active {
   background: #32465a;
   border-right: 5px solid #435f7a;
 }
-#frame #sidepanel #contacts ul li.contact.active span.contact-status {
+#frame #sidepanel #contacts_chat ul li.contact.active span.contact-status {
   border: 2px solid #32465a !important;
 }
-#frame #sidepanel #contacts ul li.contact .wrap {
+#frame #sidepanel #contacts_chat ul li.contact .wrap {
   width: 88%;
   margin: 0 auto;
   position: relative;
 }
 @media screen and (max-width: 735px) {
-  #frame #sidepanel #contacts ul li.contact .wrap {
+  #frame #sidepanel #contacts_chat ul li.contact .wrap {
     width: 100%;
   }
 }
-#frame #sidepanel #contacts ul li.contact .wrap span {
+#frame #sidepanel #contacts_chat ul li.contact .wrap span {
   position: absolute;
   left: 0;
   margin: 4px 0 0 -2px;
@@ -390,41 +390,41 @@
   border: 2px solid #2c3e50;
   background: #95a5a6;
 }
-#frame #sidepanel #contacts ul li.contact .wrap span.online {
+#frame #sidepanel #contacts_chat ul li.contact .wrap span.online {
   background: #2ecc71;
 }
-#frame #sidepanel #contacts ul li.contact .wrap span.away {
+#frame #sidepanel #contacts_chat ul li.contact .wrap span.away {
   background: #f1c40f;
 }
-#frame #sidepanel #contacts ul li.contact .wrap span.offline {
+#frame #sidepanel #contacts_chat ul li.contact .wrap span.offline {
   background: #ccc;
 }
-#frame #sidepanel #contacts ul li.contact .wrap span.busy {
+#frame #sidepanel #contacts_chat ul li.contact .wrap span.busy {
   background: #e74c3c;
 }
-#frame #sidepanel #contacts ul li.contact .wrap img {
+#frame #sidepanel #contacts_chat ul li.contact .wrap img {
   width: 40px;
   border-radius: 50%;
   float: left;
   margin-right: 10px;
 }
 @media screen and (max-width: 735px) {
-  #frame #sidepanel #contacts ul li.contact .wrap img {
+  #frame #sidepanel #contacts_chat ul li.contact .wrap img {
     margin-right: 0px;
   }
 }
-#frame #sidepanel #contacts ul li.contact .wrap .meta {
+#frame #sidepanel #contacts_chat ul li.contact .wrap .meta {
   padding: 5px 0 0 0;
 }
 @media screen and (max-width: 735px) {
-  #frame #sidepanel #contacts ul li.contact .wrap .meta {
+  #frame #sidepanel #contacts_chat ul li.contact .wrap .meta {
     display: none;
   }
 }
-#frame #sidepanel #contacts ul li.contact .wrap .meta .name {
+#frame #sidepanel #contacts_chat ul li.contact .wrap .meta .name {
   font-weight: 600;
 }
-#frame #sidepanel #contacts ul li.contact .wrap .meta .preview {
+#frame #sidepanel #contacts_chat ul li.contact .wrap .meta .preview {
   margin: 5px 0 0 0;
   padding: 0 0 1px;
   font-weight: 400;
@@ -436,7 +436,7 @@
   -webkit-transition: 1s all ease;
   transition: 1s all ease;
 }
-#frame #sidepanel #contacts ul li.contact .wrap .meta .preview span {
+#frame #sidepanel #contacts_chat ul li.contact .wrap .meta .preview span {
   position: initial;
   border-radius: initial;
   background: none;
@@ -459,7 +459,7 @@
   color: #f5f5f5;
   cursor: pointer;
   font-size: 0.85em;
-  font-family: "proxima-nova",  "Source Sans Pro", sans-serif;
+  
 }
 @media screen and (max-width: 735px) {
   #frame #sidepanel #bottom-bar button {
@@ -617,7 +617,7 @@
   position: relative;
 }
 #frame .content .message-input .wrap input {
-  font-family: "proxima-nova",  "Source Sans Pro", sans-serif;
+ 
   float: left;
   border: none;
   width: calc(100% - 90px);
@@ -680,7 +680,7 @@
     border: 1px solid #ccc;
  }
 #frame #sidepanel{ background: none }
-#contacts ul{ list-style:none;padding: 0px 0px; margin: 10px; background:#fff; border-radius:4px; border:1px solid #ccc; }
+#contacts_chat ul{ list-style:none;padding: 0px 0px; margin: 10px; background:#fff; border-radius:4px; border:1px solid #ccc; }
 
 #frame #sidepanel{ color: #000; }
 
@@ -722,21 +722,21 @@
     max-width: 130px;
 }
 
-#contacts li{ font-size: 13px; }
+#contacts_chat li{ font-size: 13px; }
 
 .name {
     color: #64a1ca; text-transform:capitalize;margin-bottom:6px;
 }
 
-#frame #sidepanel #contacts ul li.contact .wrap{ width: 90%; }
+#frame #sidepanel #contacts_chat ul li.contact .wrap{ width: 90%; }
 
-#frame #sidepanel #contacts ul li{background:#f1f2f6;     border: 1px solid #dfe4ea;
+#frame #sidepanel #contacts_chat ul li{background:#f1f2f6;     border: 1px solid #dfe4ea;
 }
 
-#frame #sidepanel #contacts ul li.contact .wrap img{ width: 30px; height: 30px; }
-#frame #sidepanel #contacts ul li.contact .wrap .meta .preview{ font-size: 13px; }
+#frame #sidepanel #contacts_chat ul li.contact .wrap img{ width: 30px; height: 30px; }
+#frame #sidepanel #contacts_chat ul li.contact .wrap .meta .preview{ font-size: 13px; }
 
-#frame #sidepanel #contacts ul li.contact:hover{background:#ecf0f1;}
+#frame #sidepanel #contacts_chat ul li.contact:hover{background:#ecf0f1;}
 
 #frame .content .messages ul li{ }
 
@@ -772,7 +772,7 @@
 }
 
 .chat-close{padding: 10px; float: right; cursor: pointer; background: #ecf0f1;}
-#contacts ul{ border: none; }
+#contacts_chat ul{ border: none; }
 
 #frame .content .messages ul li.replies p {  }
 
@@ -783,7 +783,7 @@
     border: 3px solid #dfe4ea;
 }
 
-#frame #sidepanel #contacts ul li.contact .wrap img {
+#frame #sidepanel #contacts_chat ul li.contact .wrap img {
     width: 30px;
     height: 30px;    border: 3px solid #dfe4ea;
 
@@ -870,19 +870,19 @@
     margin: 3px 8px 0 0;
 }
 
-#frame #sidepanel #contacts ul li{margin-bottom:2px; background:none;}
+#frame #sidepanel #contacts_chat ul li{margin-bottom:2px; background:none;}
 .name {
     color: #64a1ca;
     text-transform: capitalize;
     margin-bottom: 3px;
 }
 
-#frame #sidepanel #contacts ul li.contact .wrap .meta {
+#frame #sidepanel #contacts_chat ul li.contact .wrap .meta {
     padding: 0px 0 0 0;
 }
-#frame #sidepanel #contacts ul li.contact .wrap .meta .preview{margin-top:0px;}
+#frame #sidepanel #contacts_chat ul li.contact .wrap .meta .preview{margin-top:0px;}
 
-#frame #sidepanel #contacts ul li.contact {
+#frame #sidepanel #contacts_chat ul li.contact {
     position: relative;
     padding: 10px 0 10px 0;
     font-size: 0.9em;
@@ -912,15 +912,15 @@
 
 /*14.02*/
 
-#frame #sidepanel #contacts ul li.contact .wrap img {
+#frame #sidepanel #contacts_chat ul li.contact .wrap img {
     width: 60px!important;
     height: 60px!important;margin-top:3px;
 }
 
 
-#contacts .name{ margin-bottom:0px; margin-top:-5px;}
+#contacts_chat .name{ margin-bottom:0px; margin-top:-5px;}
 
-#frame #sidepanel #contacts ul li{padding:5px;}
+#frame #sidepanel #contacts_chat ul li{padding:5px;}
 
 
 .hide_button{ overflow:hidden;margin-bottom:0px;}
@@ -934,7 +934,7 @@
 
 .meta p{font-size:12px;}
 
-#frame #sidepanel #contacts ul li.contact {
+#frame #sidepanel #contacts_chat ul li.contact {
 
     padding: 10px 0 5px 0;
 
@@ -944,7 +944,7 @@
 
 
 
-#frame #sidepanel #contacts ul li { border:0px;
+#frame #sidepanel #contacts_chat ul li { border:0px;
 
     border-bottom: 1px solid #dfe4ea;
 }
@@ -1078,7 +1078,7 @@ element.style {
 }
 
 
-#frame #sidepanel #contacts {
+#frame #sidepanel #contacts_chat {
     height: calc(100% - 177px);
     overflow-y: auto;
     overflow-x: hidden;
@@ -1146,7 +1146,7 @@ element.style {
 
 
 
-#frame #sidepanel #contacts {
+#frame #sidepanel #contacts_chat {
     height: calc(100% - 108px);
 }
 
@@ -1304,7 +1304,7 @@ element.style {
 
 
 
-#contacts p{line-break: anywhere;!important;}
+#contacts_chat p{line-break: anywhere;!important;}
 
 #frame .content .messages ul li.replies p{line-break: anywhere;!important;}
 
@@ -1323,21 +1323,21 @@ element.style {
 
 /*
 
-#frame #sidepanel #contacts .meta {
+#frame #sidepanel #contacts_chat .meta {
   position: relative;
   font-size: 14px;
   color: black; text-align:left;
   width: 70%; 
 }
 
-#frame #sidepanel #contacts .meta {
+#frame #sidepanel #contacts_chat .meta {
   position: relative;
   word-wrap: break-word;
   overflow: hidden;
   max-height: 30px; 
 }
 
-#frame #sidepanel #contacts .meta::after {
+#frame #sidepanel #contacts_chat .meta::after {
   content: "...";
   position: absolute;
   right: -12px; 
@@ -1366,12 +1366,12 @@ element.style {
     display: block;margin-top:-3px;font-size:13px;}
 
  #frame #sidepanel #profile{padding:6px;} 
-#frame #sidepanel #contacts ul li.contact{overflow:hidden;} 
+#frame #sidepanel #contacts_chat ul li.contact{overflow:hidden;} 
  
 
-#frame #sidepanel #contacts ul li.contact .wrap img{height:30px!important; width:30px!important;}
+#frame #sidepanel #contacts_chat ul li.contact .wrap img{height:30px!important; width:30px!important;}
 
-#frame #sidepanel #contacts ul li.contact {
+#frame #sidepanel #contacts_chat ul li.contact {
     padding: 13px 0 5px 0;
 }
 
@@ -1412,7 +1412,7 @@ element.style {
     margin-left: 5px;
 }
 
-#frame #sidepanel #contacts{ height:100%!important;}
+#frame #sidepanel #contacts_chat{ height:100%!important;}
 
 
 #frame .content {
@@ -1508,7 +1508,7 @@ element.style {
 
 #frame .content .message-input{padding-left:0px;}
 
-#frame #sidepanel #contacts ul li.contact .wrap .meta {
+#frame #sidepanel #contacts_chat ul li.contact .wrap .meta {
   
     margin-left: 44px;
 }
@@ -1731,28 +1731,142 @@ element.style {
 
 
 
-#frame #sidepanel #contacts ul li.contact .wrap .meta {
+#frame #sidepanel #contacts_chat ul li.contact .wrap .meta {
     display: block;
 }
 
 
-#frame #sidepanel #contacts ul li.contact .wrap .meta p{margin-bottom:3px;line-height:15px;
+#frame #sidepanel #contacts_chat ul li.contact .wrap .meta p{margin-bottom:3px;line-height:15px;
 }
 
 
 
+
+#frame .content .contact-profile {
+  height: 45px !important;
+}
+
+#frame .content .contact-profile {
+  height: 45px !important;
+  padding-top: 5px;
+}
+
+#frame .content .contact-profile {
+  width: 99%;
+  margin-left: 2px;}
+
+.message-input textarea{border:1px solid #ccc;}
+
+
+
+
+.emoji-picker {
+
+  width: 94%!important;
+}
+
+.emoji-button {
+  right: 2px;  bottom: -13px;
+
 }
 
 
+#frame .content .message-input .wrap .attachment {
+  right: 42px;
+}
+#attachment_cntr a{color:#333;}
+
+#attachment_cntr {
+  bottom: -9px !important;right: 68px !important;
+}
+#attachment_cntr {
+  max-width: 165px !important;
+}
+#attachment_cntr a .fa {
+  margin-right: 6px;
+  margin-left: 4px;
+}
+
+#frame .content .message-input .wrap .attachment {
+  bottom: -5px;
+}
+
+#frame .content .message-input {
+  padding-left: 0px;
+  border-top: 1px solid #ccc;
+  padding-top: 10px;
+}
+
+.message-input textarea{background:#dadada;}
+#frame #sidepanel #profile{height:45px;}
 
 
+#frame #sidepanel #search input {
+ 
+  width: calc(95.6% - 0px);margin-top:6px;
+
+}
+.searchcancel {
+  top: 68px;
 
 
+}
 
 
+#frame #sidepanel #profile .wrap {
+  height: 22px;
+  margin-top: 5px;
+}
 
 
+#frame #sidepanel #search label {
+  position: absolute;
+  margin: 15px 0 0 20px;
+}
+
+#frame .content .message-input {
+  margin-left: 0px;padding-right:1px;
 
 
+}
+
+.nw-proC{}
+
+/*07.08*/
 
 
+#frame .content .message-input{background: #dadada;padding-top:0px;}
+#frame .content .message-input{margin-bottom:5px;}
+.message-input textarea {
+  border:none;
+}
+
+.message-input textarea {border: 1px solid #ccc;
+}
+
+.message-input textarea{border-radius:5px;}
+#frame .content .message-input{border-radius:5px;}
+
+.emoji-button {
+  cursor: pointer;
+  position: absolute;
+  right: 0;
+  top: auto;
+  bottom: -12px;
+  margin: 5px;
+  z-index: 1555;
+
+}
+
+#attachment_cntr {
+  font-size: 12px;
+  right: 90px;
+  max-width: 130px;
+  max-height: 23px !important;
+  border: none;
+  z-index: 10;
+  background: no-repeat;
+  color: #fff !important;border:none!important;
+}
+
+.emoji-picker{position:fixed!important;}

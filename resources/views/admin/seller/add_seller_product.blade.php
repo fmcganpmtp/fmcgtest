@@ -7,7 +7,7 @@
   <div class="body flex-grow-1 px-3">
     <div class="container-lg">
       <div class="card-out mb-4 inner-form">
-        <h2>Seller Product Creation</h2>
+        <h2> Product Creation</h2>
         <div class="card-body">
           <div class="row">
             <div class="col-lg-12 col-12">

@@ -113,11 +113,12 @@ echo '</span>';
                    @if(strtolower(trim($product->price_negotiable)) == strtolower('Negotiable')) (Price Negotiable) @endif
 			@else
                 @if($logged_id != $seller->id && ($logged_id != $parent_id ) ) 
-                    @if( $view_composer_profile_menu_visible_criteria['network_chat'] == 1)
+                <div  class="new-price1">Price on Request</div>
+                    <!-- @if( $view_composer_profile_menu_visible_criteria['network_chat'] == 1)
                        <a href="javascript:void(0)" class="" onclick="EnableChatRequest({{$seller->id }})" >Price on Request</a> 
                      @else
                          <a href="javascript:void(0)"   onclick="showerrorchat()" >Price on Request </a>
-                    @endif
+                    @endif -->
                 @else 
                       <div  class="new-price1">Price on Request</div>
                 @endif
@@ -179,6 +180,7 @@ echo '</span>';
 		  <a class="subscr default-btn" href="{{route('package.listing')}}"><i class="fa fa-telegram" aria-hidden="true"></i>SUBSCRIBE TO SEE PRODUCT DETAILS  </a> 
 		  </div>
           @else
+          <!--
                 @if( $view_composer_profile_menu_visible_criteria['network_chat'] == 1)
                 @if($logged_id != $seller->id && ($seller->id != $parent_id )  )
                     <a href="javascript:void(0)" class="default-btn" onclick="EnableChatRequest({{$seller->id }})" ><i class="fa fa-envelope-o" aria-hidden="true"></i>Message </a>
@@ -186,9 +188,10 @@ echo '</span>';
                 @else
                         <a href="javascript:void(0)" class="default-btn"  onclick="showerrorchat()" ><i class="fa fa-envelope-o" aria-hidden="true"></i>Message </a>
                 @endif
+                -->
                 @if($product->status=="active"&& ($logged_id != $seller->id ) && ($seller->id != $parent_id ) )
                 @if( $view_composer_profile_menu_visible_criteria['general_companyProfile'] == 1)
-                   <a href="{{route('ViewSeller.profile',['profId'=>$seller->id])}}" class="default-btn"> <i class="fa fa-user" aria-hidden="true"></i>Seller profile</a> 
+                   <a href="{{route('CompanyProfile',['profId'=>$seller->id])}}" class="default-btn"> <i class="fa fa-user" aria-hidden="true"></i>Seller profile</a> 
                 @else
                 <a href="javascript:void(0)" onclick="showerrorprofile()" class="default-btn"> <i class="fa fa-user" aria-hidden="true"></i>Seller profile</a>
                 @endif

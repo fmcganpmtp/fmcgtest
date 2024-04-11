@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class BuyerCompany extends Model 
 {   
     
-    protected $fillable = ['user_id','profile_keywords','company_name','registration_number','company_type','company_street','company_zip','tax_reg_no','about_company','registration_no','company_location','company_land','opening_hours', 'company_image','deliver_options','languages_speak','accepted_payments','gst_no','registration_no' ];
+    protected $fillable = ['user_id','profile_keywords','company_website','campany_banner','company_email','more_info_email','company_phone','comp_about_img1','comp_about_img2','company_name','registration_number','company_type','company_street','company_zip','tax_reg_no','about_company','registration_no','company_location','company_land','opening_hours', 'company_image','deliver_options','languages_speak','accepted_payments','gst_no','registration_no' ];
    
 function SellerOpeningTime() {
             return $this->hasMany('App\Models\SellerOpeningTime','seller_id','user_id');

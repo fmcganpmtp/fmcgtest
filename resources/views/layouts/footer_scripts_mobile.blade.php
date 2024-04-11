@@ -190,7 +190,8 @@
 	 
 	function fnmovetoprofile(userid)
 	{
-	var url_path="{{route('ViewSeller.profile', ':id')}}".replace(':id', '')+userid;
+//	var url_path="{{route('ViewSeller.profile', ':id')}}".replace(':id', '')+userid;
+	var url_path="{{route('CompanyProfile', ':id')}}".replace(':id', '')+userid;
 	window.open(url_path, '_blank');
 	}      
 	 

@@ -1,6 +1,6 @@
 @extends('admin.master')
-@section('title', 'Products List')
-@section('breadcrumb') Products @endsection
+@section('title', 'Sample Products List')
+@section('breadcrumb') Sample Products @endsection
 @section('content')
 
 <div class="body flex-grow-1 px-3">
@@ -9,7 +9,7 @@
       <div class="card-out mb-4 inner-form">
      
 	 <div class="row"><div class="col-lg-8 col-12">
-        <h2>Products</h2> </div>
+        <h2>Sample Products</h2> </div>
                 <div class="col-lg-4 col-12"><a href="{{route('create.product')}}" class="bl-btn flt-right">Create Products</a></div>
 				
 				</div>

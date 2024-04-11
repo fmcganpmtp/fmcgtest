@@ -83,6 +83,7 @@
 	<!--<script src="{{asset('/mobile/js/wow.js')}}"></script>-->
 	<script src="{{ asset('/mobile/js/category-menu.js')}}"></script>
 <script>
+
 const elchat = document.createElement('div')
 elchat.innerHTML = "Chat option is disabled as per the current package.Would you like to upgrade package? <a href='{{route('package.listing')}}'>Upgrade</a>"
     function showerrorchat(){
@@ -100,7 +101,6 @@ elprof.innerHTML = "Profile view is disabled as per the current package.Would yo
   content: elprof,
 });
 }
-
 
 const elnetwork = document.createElement('div')
 elnetwork.innerHTML = "Expand Your Network option is disabled as per the current package. Would you like to upgrade package? <a href='{{route('package.listing')}}'>Upgrade</a>"
@@ -120,17 +120,6 @@ elinsight.innerHTML = "Insight option is disabled as per the current package. Wo
 });
 }
 
-
-
-const elCrProdReq = document.createElement('div')
-elCrProdReq.innerHTML = "Create Product request  is disabled as per the current package. Would you like to upgrade package? <a href='{{route('package.listing')}}'>Upgrade</a>"
-    function showerrorPrdReq(){
-  swal({
-  icon: "error",
-  content: elCrProdReq,
-});
-}
-
 const elProdReq = document.createElement('div')
 elProdReq.innerHTML = "Product request  is disabled as per the current package. Would you like to upgrade package? <a href='{{route('package.listing')}}'>Upgrade</a>"
     function showerrorPrdReq(){
@@ -140,12 +129,30 @@ elProdReq.innerHTML = "Product request  is disabled as per the current package. 
 });
 }
 
+const elCrProdReq = document.createElement('div')
+elCrProdReq.innerHTML = "Create Product request  is disabled as per the current package. Would you like to upgrade package? <a href='{{route('package.listing')}}'>Upgrade</a>"
+    function showerrorCrPrdReq(){
+  swal({
+  icon: "error",
+  content: elCrProdReq,
+});
+}
+
 const elMyPrdReq = document.createElement('div')
 elMyPrdReq.innerHTML = "My Product request option is disabled as per the current package. Would you like to upgrade package? <a href='{{route('package.listing')}}'>Upgrade</a>"
     function showerrorMyPrdReq(){
   swal({
   icon: "error",
   content: elMyPrdReq,
+});
+}
+
+const elGeneral = document.createElement('div')
+elGeneral.innerHTML = "This option is disabled as per the current package.Would you like to upgrade package? <a href='{{route('package.listing')}}'>Upgrade</a>"
+    function showerrorGeneral(){
+  swal({
+  icon: "error",
+  content: elGeneral,
 });
 }
 

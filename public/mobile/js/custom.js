@@ -559,6 +559,94 @@ $('.testimonial-s').owlCarousel({
 		},
 	});
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	// product request
+	$('.product-req-slider').owlCarousel({
+		loop: true,
+		margin: 8,
+		nav: true,
+		dots: false,
+		autoplay: false,
+		smartSpeed: 1000,
+		autoplayHoverPause: true,
+		navText: [
+			"<i class='ri-arrow-left-s-line'></i>",
+			"<i class='ri-arrow-right-s-line'></i>",
+		],
+		responsive: {
+			0: {
+				items: 3,
+			},
+			414: {
+				items: 3,
+			},
+			576: {
+				items: 3,
+			},
+			768: {
+				items: 2,
+			},
+			992: {
+				items: 3,
+			},
+			1200: {
+				items: 4,
+			},
+		},
+	});
+
+
+
+
+
+
+// special-season-slider
+	$('.special-season-slider').owlCarousel({
+		loop: true,
+		margin: 8,
+		nav: true,
+		dots: false,
+		autoplay: true,
+		smartSpeed: 1000,
+		autoplayHoverPause: true,
+		navText: [
+			"<i class='ri-arrow-left-s-line'></i>",
+			"<i class='ri-arrow-right-s-line'></i>",
+		],
+		responsive: {
+			0: {
+				items: 3,
+			},
+			414: {
+				items: 3,
+			},
+			576: {
+				items: 3,
+			},
+			768: {
+				items: 2,
+			},
+			992: {
+				items: 3,
+			},
+			1200: {
+				items: 4,
+			},
+		},
+	});
+
+	
+	
+	
+	
 	// Click Event JS
 	$('.go-top').on('click', function() {
 		$("html, body").animate({ scrollTop: "0" }, 50);

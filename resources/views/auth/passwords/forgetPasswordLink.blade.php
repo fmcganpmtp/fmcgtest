@@ -21,10 +21,9 @@
               <div class="log-right">
               
               <h2>Reset Password ?</h2>
-              <form action="{{ route('reset.password.post') }}" method="POST">
+              <form action="{{ route('password.reset') }}" method="POST">
                           @csrf
                           <input type="hidden" name="token" value="{{ $token }}">
-  
                           <div class="form-group row">
                               <label for="email_address" class="col-md-4 col-form-label text-md-right">E-Mail Address</label>
                               <div class="col-md-6">

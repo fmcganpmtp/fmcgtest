@@ -780,7 +780,7 @@
                 contentType: false,
                 success: function(data) {
                     $(".loaderajax").hide();
-                    var url1="{{url('/admin/seller/view',$product->user_id)}}";
+                    var url1="{{url('/admin/user/view',$product->user_id)}}";
                     window.location.href=url1;
                 },
                 error: function (xhr) {

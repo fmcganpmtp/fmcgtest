@@ -9,7 +9,7 @@ FMCG | About Us
 
 
 <?php ?>
-
+<!--
 <div class="page-title-area">
   <div class="container">
     <div class="page-title-content">
@@ -19,7 +19,7 @@ FMCG | About Us
       </ul>
     </div>
   </div>
-</div>
+</div>-->
 
 
 

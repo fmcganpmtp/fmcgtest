@@ -49,8 +49,8 @@ $today = Carbon::createFromFormat('Y-m-d H:s:i', $today);
                 <?php  $package = $subscription->Package;  ?>
                   <tr>
                     <td><a href="{{ route('PackgeInvoice', ['package_id'=>$subscription->package_id,'subscription_id'=>$subscription->id]) }}"><h5><i class="fa fa-dot-circle-o" aria-hidden="true"></i>{{$subscription->Package->name ?? ''}} </h5></a></td>
-                    <td>&euro; {{$package->package_basic_price ?? ''}} </td>
-					 <td>&euro; {{$subscription->order_total ?? ''}}</td>
+                    <td>€ {{$package->package_basic_price ?? ''}} </td>
+					 <td>€ {{$subscription->order_total ?? ''}}</td>
                     <td>
                       <?php 
                       $purchsed_date = date('d - M - Y', strtotime($subscription->created_at)); 
@@ -95,7 +95,7 @@ $today = Carbon::createFromFormat('Y-m-d H:s:i', $today);
 		        $current_acc_id = $subscription->OrderDetail->accounts_id;
                 $pac_acc=[];
 		        if(!empty($package->PackageAccount)){
-		        foreach($package->PackageAccount as $pac_account)
+		        foreach($package->PackageAccount as $pac_account) 
 		        { 
 			      array_push($pac_acc,$pac_account->id);
 		        } } ?>
@@ -109,7 +109,9 @@ $today = Carbon::createFromFormat('Y-m-d H:s:i', $today);
                      @endif
 					   <?php } 
 					   else { ?>	
+					   <?php //if($highestPackage->id!=$package->id) { ?>
 					    <a href="{{ route('upgrade.package',['package_basicPrice'=>$package->package_basic_price,'order_type'=>'Upgrade','old_pkg_id'=>$package->id])}} " class="btn btn-outline-success">Upgrade</a>
+                       <?php// } ?>
                      @if($package->status=='deleted')
                         <a  onclick="sweetAlert('This Package is no longer available.', '', 'error');"  href="#"  class="btn btn-outline-info">Renew </a>
                     @elseif($dates_remining<=15)

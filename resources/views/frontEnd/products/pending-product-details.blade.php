@@ -149,7 +149,7 @@
                 
                  <ul class="product-info">
 				@if(!empty($seller->BuyerCompany->company_name))
-                  <li> <span>Company:<b>:</b></span>
+                  <li> <span>Company<b>:</b></span>
                   {{ (!$is_active_subscriber ||$usertype=="guest") ? '****' : $seller->BuyerCompany->company_name  ?? 'N/A' }}
                   </li>
 				  @endif

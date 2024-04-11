@@ -49,7 +49,7 @@ class GuestExport implements FromCollection,ShouldAutoSize,WithHeadings
 
      public function headings() :array
     {
-        return [" SL No"," SELLER NAME ", " COMPANY NAME"," EMAIL"," PHONE"," CREATED AT"," ADDRESS"," COUNTRY NAME"];
+        return [" SL No"," NAME ", " COMPANY NAME"," EMAIL"," PHONE"," CREATED AT"," ADDRESS"," COUNTRY NAME"];
     }
 
      public function registerEvents(): array

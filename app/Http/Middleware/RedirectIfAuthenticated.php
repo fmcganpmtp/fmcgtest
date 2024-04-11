@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 use App\Models\OrderDetail;
+use App\Models\BuyerCompany;
 use App\Providers\RouteServiceProvider;
 use Closure;
 use Illuminate\Http\Request;
@@ -113,8 +114,23 @@ class RedirectIfAuthenticated
 
 
                     $user =OrderDetail::where('user_id',$id)->first(); 
-                    if(!empty($user) || Auth::guard('user')->user()->seller_type=='Co-Seller')
-                            return redirect(route('home')); 
+                    if(is_null(Auth::guard('user')->user()->BuyerCompany->company_image) ||is_null(Auth::guard('user')->user()->BuyerCompany->about_company))
+                            return redirect(route('MyCompanyProfile'));
+                    elseif(!empty($user) || Auth::guard('user')->user()->seller_type=='Co-Seller')
+                    {       //check logged out from admin
+                            $prev_url = url('').'/login/admin';
+                            $prev_url1 = url('').'/login/user';
+                            
+                            
+                            
+                            if (session()->has('link') && (session('link') != $prev_url) && (session('link') != $prev_url1) )
+                                return redirect(session('link'));
+                            else
+                                return redirect(route('home'));
+                                //
+                            session()->forget('link');
+                            
+                    }
                     else
                             return redirect(route('package.listing')); 
                     }
