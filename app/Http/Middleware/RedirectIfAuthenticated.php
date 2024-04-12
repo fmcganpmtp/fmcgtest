@@ -33,11 +33,8 @@ class RedirectIfAuthenticated
                     return redirect(RouteServiceProvider::ADMIN);
                 }
                 else {
-                    if(Auth::guard('user')->user()) {
-                        
-                        $id = Auth::guard('user')->user()->id;
-                        
-                        
+                    if(Auth::guard('user')->user()) {                        
+                        $id = Auth::guard('user')->user()->id;   
                         if(Auth::guard('user')->user()->email_status=="No")
                         { 
 
@@ -114,7 +111,58 @@ class RedirectIfAuthenticated
 
 
                     $user =OrderDetail::where('user_id',$id)->first(); 
-                    if(is_null(Auth::guard('user')->user()->BuyerCompany->company_image) ||is_null(Auth::guard('user')->user()->BuyerCompany->about_company))
+                    
+                    
+                    
+                    
+                    
+                    $package_data = DB::table('subscriptions')
+                                            ->leftJoin('order_details', 'subscriptions.order_id', '=', 'order_details.id')
+                                            ->leftJoin('packages', 'packages.id', '=', 'order_details.package_id')
+                                           /// ->leftJoin('package_accounts', 'package_accounts.id', '=', 'order_details.accounts_id')
+                                            ->where('subscriptions.user_id', '=',$id)
+                                            ->where('subscriptions.status','Active')
+                                            ->select('subscriptions.id','subscriptions.expairy_date','packages.subscription_type')
+                                            ->orderBy('subscriptions.id','DESC')->first();
+								if(!empty($package_data)){  
+									if( $package_data->expairy_date>=date('Y-m-d'))
+									{
+									    
+										if(is_null(Auth::guard('user')->user()->BuyerCompany->company_image) ||is_null(Auth::guard('user')->user()->BuyerCompany->about_company))
+											return redirect(route('MyCompanyProfile'));
+										
+										
+										//check logged out from admin
+										$prev_url = url('').'/login/admin';
+										$prev_url1 = url('').'/login/user';
+										if (session()->has('link') && (session('link') != $prev_url) && (session('link') != $prev_url1) )
+											return redirect(session('link'));
+										else
+											return redirect(route('home'));
+										session()->forget('link');
+                            
+									}
+									else
+										return redirect(route('package.listing')); 
+									}
+                                
+                                else
+                                { 
+                                   return redirect(route('package.listing')); 
+                                }
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                  /*  if(is_null(Auth::guard('user')->user()->BuyerCompany->company_image) ||is_null(Auth::guard('user')->user()->BuyerCompany->about_company))
                             return redirect(route('MyCompanyProfile'));
                     elseif(!empty($user) || Auth::guard('user')->user()->seller_type=='Co-Seller')
                     {       //check logged out from admin
@@ -132,7 +180,7 @@ class RedirectIfAuthenticated
                             
                     }
                     else
-                            return redirect(route('package.listing')); 
+                            return redirect(route('package.listing')); */
                     }
                     
                 }
