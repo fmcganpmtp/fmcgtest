@@ -180,7 +180,7 @@ const el1 = document.createElement('div')
    @endif
    if(network_expand!=1 || user_type =="Co-Seller")
    {
-       $fmcg(".seller-pagi").addClass("filter-blur");
+       //$fmcg(".seller-pagi").addClass("filter-blur");
        $fmcg(".ntwrk-pagi").addClass("filter-blur");
    }
    var urlP= "{{ route('view.Sproduct',0) }}";
@@ -365,10 +365,9 @@ const el1 = document.createElement('div')
      $fmcg.each( responseData.user_data, function( key, product ) {
        var cssClass=(counter>1 && (network_expand!=1 || user_type =="Co-Seller")) ? 'filter-blur':'';
    
-       eachProduct='<div class="col-lg-4 col-12 my-cdb-out'+product.main_id+' '+cssClass+'">';
-       if(counter>1 && (network_expand!=1 || user_type =="Co-Seller")) //add link to blur cells
-       eachProduct=eachProduct+'<a  href="{{route('package.listing')}}" >';
-       eachProduct=eachProduct+'<div class="nt-wrk-gray-bx"><div class="row"><div class="col-lg-4 col-12"><div class="nt-wrk-gr-img">';
+       eachProduct='<div class="col-lg-4 col-12 my-cdb-out'+product.main_id+' ">';
+	   eachProduct=eachProduct+'<div class="gray-bor-box">';
+       eachProduct=eachProduct+'<div class="nt-wrk-gray-bx '+cssClass+'"><div class="row"><div class="col-lg-4 col-12"><div class="nt-wrk-gr-img">';
        if(network_expand==1 && user_type !="Co-Seller")
        eachProduct=eachProduct+'<img src="'+product.company_image+'" onclick="fnmovetoprofile1('+product.main_id+')" style="cursor: pointer;">';
        else
@@ -455,18 +454,14 @@ const el1 = document.createElement('div')
          }
          
          else if(user_type === "Co-Seller"){
-        // eachProduct=eachProduct+'<a onclick="showerrorCoSeller()" href="JavaScript:void(0);" class="green-button">Connect</a>';
-        eachProduct=eachProduct+'<a  href="{{route('package.listing')}}" class="green-button">Connect</a>';
-        
+         eachProduct=eachProduct+'<a onclick="showerrorCoSeller()" href="JavaScript:void(0);" class="green-button">Add to Network</a>';
          }
          else{
-         //eachProduct=eachProduct+'<a onclick="showerror()" href="JavaScript:void(0);" class="green-button">Connect</a>';
-         eachProduct=eachProduct+'<a  href="{{route('package.listing')}}" class="green-button">Connect</a>';
+         eachProduct=eachProduct+'<a onclick="showerror()" href="JavaScript:void(0);" class="green-button">Add to Network</a>';
          }
        counter++;
-       //eachProduct=eachProduct+'<div class="filter-layer"></div>';
-       if(counter>1 && (network_expand!=1 || user_type =="Co-Seller")) //close link on blur cells
-	   eachProduct=eachProduct+'</a>';
+       eachProduct=eachProduct+'<div class="filter-layer"></div>';
+	   eachProduct=eachProduct+'</div>';
        $fmcg('#company_db_list').append(eachProduct);
    
      });
@@ -490,8 +485,7 @@ const el1 = document.createElement('div')
               if(network_expand==1 && user_type !="Co-Seller")
                  pgntion=pgntion+'<li class="page-item"><a class="page-link" href="'+link_data.url+'">'+pgntion_label+'</a></li>';
               else
-                 pgntion=pgntion+'<li class="page-item"><a class="page-link" href="{{route('package.listing')}}">'+pgntion_label+'</a></li>';
-                 //pgntion=pgntion+'<li class="page-item"><span class="page-link"  style="cursor: context-menu;">'+pgntion_label+'</span></li>';
+                 pgntion=pgntion+'<li class="page-item"><span class="page-link"  style="cursor: context-menu;">'+pgntion_label+'</span></li>';
    });
        }
    pgntion=pgntion+'</nav></ul>';	  
@@ -499,7 +493,7 @@ const el1 = document.createElement('div')
      var tot = responseData.user_qry.links.length-2;
    if(network_expand==1 && user_type !="Co-Seller")  
    pgntion=pgntion+'<input type="text" name="page_number" id="pg_number" onchange="my_sellers_search()" max="'+responseData.user_qry.links.length+'">of '+responseData.last_page+' items.';
-  // pgntion=pgntion+'<div class="filter-layer"></div>';
+   pgntion=pgntion+'<div class="filter-layer"></div>';
    }
    }   
    
@@ -536,7 +530,7 @@ const el1 = document.createElement('div')
    var tot = responseData.user_qry.links.length-2;
    if(network_expand==1 && user_type !="Co-Seller")
    pgntion1=pgntion1+'<input type="text" name="page_number" id="pg_number1" onchange="my_net_contact()" max="'+responseData.user_qry.links.length+'">of '+responseData.last_page+' items.';
-//   pgntion1=pgntion1+'<div class="filter-layer"></div>';
+   pgntion1=pgntion1+'<div class="filter-layer"></div>';
    }
    $fmcg(".ntwrk-pagi").empty().html(pgntion1);
    
@@ -551,12 +545,9 @@ const el1 = document.createElement('div')
      $fmcg.each( responseData.user_data, function( key, product ) {
        var cssClass=(counter>1 && network_expand!=1) ? 'filter-blur':'';
    
-       eachProduct='<div class="col-lg-4 col-12 my-nw-out'+product.main_id+' '+cssClass+'">';
-       if((network_expand!=1 || user_type =="Co-Seller")) //add link to blur cells
-       eachProduct=eachProduct+'<a  href="{{route('package.listing')}}" >';
-       
-       
-       eachProduct=eachProduct+'<div class="nt-wrk-gray-bx"><div class="row"><div class="col-lg-4 col-12"><div class="nt-wrk-gr-img">';
+       eachProduct='<div class="col-lg-4 col-12 my-nw-out'+product.main_id+' ">';
+	   eachProduct=eachProduct+'<div class="gray-bor-box">';
+       eachProduct=eachProduct+'<div class="nt-wrk-gray-bx '+cssClass+'"><div class="row"><div class="col-lg-4 col-12"><div class="nt-wrk-gr-img">';
        if(network_expand==1 && user_type !="Co-Seller")
        eachProduct=eachProduct+'<img src="'+product.company_image+'" onclick="fnmovetoprofile1('+product.main_id+')" style="cursor: pointer;">';
        else
@@ -636,16 +627,13 @@ const el1 = document.createElement('div')
                eachProduct=eachProduct+'<li><div class="gr-img-bx"><img src="'+urlD+'"></div></li>';
            }
        }
-       eachProduct=eachProduct+'</ul>';
-       //eachProduct=eachProduct+'<div class="filter-layer"></div>';
-       eachProduct=eachProduct+'</div>';  
+       eachProduct=eachProduct+'</ul><div class="filter-layer"></div></div>';  
        if(network_expand==1 && user_type !="Co-Seller")
         eachProduct=eachProduct+'<a href="javascript:void(0)" id="expandnetwork'+product.main_id+'" onclick="removefromnetwork('+product.main_id+')" class="btn abt1_remove"><span class="red_round red_round_network remove-input-field"><i class="fa fa-minus-circle" aria-hidden="true"></i></span></a>';
       else
         eachProduct=eachProduct+'<a href="javascript:void(0)" id="expandnetwork"  class="btn abt1_remove"><span class="red_round red_round_network remove-input-field"><i class="fa fa-minus-circle" aria-hidden="true"></i></span></a>';
        counter++;
-        if((network_expand!=1 || user_type =="Co-Seller")) // end a tag non previlaged users
-        eachProduct=eachProduct+'</a>';
+	   eachProduct=eachProduct+'</div>';
        $fmcg('#network_list').append(eachProduct);
        
       
