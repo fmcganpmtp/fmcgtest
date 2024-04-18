@@ -22,9 +22,13 @@ use App\Models\CompanyType;
 use App\Models\SellerOpeningTime;
 use App\Models\NewsletterSubscription;
 use App\Models\OrderDetail;
+use App\Models\ProfileAccountDeleteRequest;
 use App\Models\Subscription;
+use App\Models\BusinessInsight;
+use App\Models\Mynetworks;
+use App\Models\CompanyRegion;
 use App\Models\Productbrand;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Validator;     
 use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -35,6 +39,7 @@ use App\Exports\PromoNewsletterExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\FrontEnd\PublicMiddlewareController;
+use Illuminate\Support\Str;
 
 class SellersController extends Controller
 {
@@ -78,6 +83,100 @@ class SellersController extends Controller
 		$currencies =Currency::select('id','shortcode','symbol')->get();
         $Productbrand = Productbrand::get();
         return view('admin.seller.add_seller_product',compact('categories','Productbrand','seller_id','currencies'));
+    }
+    public function deleteAdmnCoEmployee(Request $request)
+    { 
+        
+        $id=$request->empId; 
+        $user = User::find($id);
+        $user->delete();
+        
+        $co_user_id="";
+            $count=0;
+                $qry = DB::table('users')
+                    ->where("status", "<>", "Deleted")
+                          ->Where("parent_id", $id)
+                          ->where("status",  "Active");
+          $count =$qry->get()->count();                
+          $new_master='';
+          $master_deleted=""; 
+          if($count>0){
+          $co_user_id=$qry->orderby('id','ASC')->pluck('id')->first();
+          $new_master=$co_user_id; 
+          DB::table('users')->where('parent_id',$user->id)->update(['parent_id'=>$co_user_id]);
+          DB::table('users')->where('id',$co_user_id)->update(['parent_id'=>null,'seller_type'=>"Master"]);
+          DB::table('subscriptions')->where('user_id',$id)->update(['user_id'=>$co_user_id]);
+          DB::table('business_insights')->where('user_id',$id)->update(['user_id'=>$co_user_id]);
+          DB::table('buyer_companies')->where('user_id',$id)->update(['user_id'=>$co_user_id]);
+          DB::table('company_regions')->where('user_id',$id)->update(['user_id'=>$co_user_id]);
+          DB::table('kyc_files')->where('user_id',$id)->update(['user_id'=>$co_user_id]);         //wishlist
+          DB::table('mynetworks')->where('user_id',$id)->update(['user_id'=>$co_user_id]);
+          DB::table('mynetwork_requests')->where('user_id',$id)->update(['user_id'=>$co_user_id]);
+          DB::table('order_details')->where('user_id',$id)->update(['user_id'=>$co_user_id]);
+          DB::table('product_requests')->where('user_id',$id)->where('parent_id',$id)->update(['user_id'=>$co_user_id]);
+          DB::table('seller_offline_categories')->where('user_id',$id)->update(['user_id'=>$co_user_id]);
+          DB::table('seller_products')->where('user_id',$id)->update(['user_id'=>$co_user_id]);
+          DB::table('seller_product_temps')->where('user_id',$id)->update(['user_id'=>$co_user_id]);
+         // DB::table('subscriptions')->where('user_id',$id)->update(['user_id'=>$co_user_id]);
+          
+          
+          }
+          else{
+             if($user->seller_type=="Master" )
+             $master_deleted="yes";
+           DB::table('users')->where('parent_id',$id)->update(['status'=>'Deleted']);
+            //deleted user product status changed to deleted
+            DB::table('seller_products')->where('user_id', $id)->update(array('status' => 'deleted')); 
+
+            $seller_active_products=SellerProduct::where('user_id',$id)->get();
+            $unique_category=[];
+
+            foreach ($seller_active_products as $key => $value) {
+                if(!in_array($value->category_id, $unique_category)) 
+                    array_push($unique_category,$value->category_id);
+            }
+            foreach ($unique_category as $value) {
+                    $parents = collect([]);
+                    $parent = Category::where('id', $value)->first();
+                    //array push
+                    while(!is_null($parent)) {
+                        $parents->push($parent);
+                        $parent = $parent->parent;
+                    }
+                    $old_category=$parents->pluck('id')->all();
+                    $commaarray=implode(",",$old_category);
+                    //check and fix value next level category products exist
+                    $result= $this->PublicMiddlewareController->getnextlevelproductexist($value,$commaarray);
+                     if($result==false)
+                     {
+                        $parent = Category::where('id', $value)->first();
+                        if(!empty($parent->parent))
+                            $parent = $parent->parent;
+                        $parents = collect([]);
+                        while(!is_null($parent)) {
+                                $parents->push($parent);
+                                $parent = $parent->parent;
+                        }
+                        $old_category=$parents->pluck('id')->all(); 
+                        foreach($old_category as $val){
+                            $result= $this->PublicMiddlewareController->getnextlevelproductexist($val,$val);
+                            // if($result==true)
+                            //     break;
+                        }
+                        
+                    }
+                    
+            }
+          }
+     $response = [
+            
+            "new_master" => $new_master,
+            "master_deleted" => $master_deleted,
+            
+        ];
+        echo json_encode($response);
+            
+   // echo json_encode("User Deleted!");
     }
     public function savesellerProduct(Request $request){
         $data = $request->validate([
@@ -963,7 +1062,13 @@ public function adminusersellersstatusupdates (Request $request)
     }
     
     public function sellerprofiledetails($id) {
+		
         $user=$seller = User::find($id);
+        if (empty($user)) {
+            return redirect()
+                ->route("admin.sellerslist")
+                ->with("message", "User not Exists");
+        }
         $kycdocs_varified = DB::table("kyc_files")
             ->select(DB::raw("count('*') as status_cnt"))
             ->where("user_id", $id)->where("status", "Active")->pluck("status_cnt")
@@ -972,8 +1077,90 @@ public function adminusersellersstatusupdates (Request $request)
         $categories = Category::where('parent_id', null)->orderby('name', 'asc')->get(); //dd($categories);
         $seller_OflnCats = SellerOfflineCategory::select('category_id')->where('user_id', $id)->first();
         $company_types = CompanyType::select("id", "company_type")->get();
-        return view('admin.seller.seller-profileview',compact('seller','company_types',"categories","seller_OflnCats",'id','varification_status'));
+		$clientIP = \Request::ip();
+        $profile_visit_count = BusinessInsight::where("profile_id",$id)->distinct('user_id')->count();
+		
+		//$active_users=$this->PublicMiddlewareController->getexpireduserslist(); 
+        $network_ids = Mynetworks::where("user_id", $id)
+                        ->pluck("mynetwork_id")->first();
+		$product_count = SellerProduct::where("user_id", $id)
+        ->where("status", "active")
+        ->where("status","<>", "deleted")
+        ->count();				
+        if($network_ids!='')
+        {
+                $arrayData=explode(',', rtrim($network_ids,','));
+                $network_count=User::whereIn('id',$arrayData)->count();  
+        }
+        else
+        $network_count=0; 
+        $countries = Country::select("id","continent", "name")->get();      
+        $active_region=$user->CompanyRegion->active_countries??"";
+        $active_reg = explode(',',$active_region); 
+        $active_reg_list = Country::select('*')
+            ->whereIn("id", $active_reg)
+            ->get();  
+        $expand_regions=$user->CompanyRegion->expand_countries??"";
+        $expand_reg = explode(',',$expand_regions);
+        $expand_reg_list = Country::select('*')
+            ->whereIn("id", $expand_reg)
+            ->get(); 
+        $all_continents = Country::distinct() 
+            ->where('continent','<>','')
+            ->where('continent', '<>', null)
+            ->orderBy('continent','asc')
+            ->pluck("continent")
+            ->all();     
+        $active_continents = Country::whereIn("id", $active_reg)
+            ->distinct() 
+            ->orderBy('continent','asc')
+            ->pluck("continent")
+            ->all();    
+        $remainining_toexpand = Country::whereNotIn("id", $active_reg)
+            ->distinct() 
+            ->orderBy('continent','asc')
+           // ->pluck("continent")
+            ->get();	    
+        $expand_continents = Country::whereIn("id", $expand_reg)
+            ->distinct() 
+            ->orderBy('continent','asc')
+            ->pluck("continent")
+            ->all();    
+            
+       // $active_users=$this->PublicMiddlewareController->getexpireduserslist(); 	 
+        
+        
+         $parent_cat_id = SellerProduct::distinct()->where('seller_products.user_id',$id)->where("seller_products.status", "active")->where('seller_products.product_visibility','Yes')->pluck('parent_category_id')->toArray();
+         
+        //$parent_categorylists = Category::whereIn("id", $parent_cat_id)->orderBy('name',"ASC")->get();
+         
+        $category_product_count = 0 ;
+        $seller_Ofln_Cats = SellerOfflineCategory::select('category_id')->where('user_id', $id)->first();
+        if ($seller_Ofln_Cats) 
+            $seller_offine_categorylists = explode(",", $seller_Ofln_Cats->category_id);
+        else 
+            $seller_offine_categorylists = []; 
+        if(!empty($seller_offine_categorylists)&&!empty($parent_cat_id))
+        $combinedArray = array_merge($seller_offine_categorylists, $parent_cat_id);
+        else if(!empty($seller_offine_categorylists))
+        $combinedArray = $seller_offine_categorylists;
+        else
+        $combinedArray = $parent_cat_id;
+        $categorylists = Category::whereIn("id", $combinedArray) 
+            ->where('parent_id',null)
+            ->whereNotNull('name')
+            ->where('name','<>','')
+            ->distinct() 
+            ->orderBy('name','asc')
+            ->pluck("name")
+            ->all();
+        
+        
+		
+        return view('admin.seller.seller-profileview',compact('seller','categorylists','remainining_toexpand',"active_reg_list","expand_reg_list","active_continents","all_continents","expand_continents",'countries','product_count','network_count','profile_visit_count','company_types',"categories","seller_OflnCats",'id','varification_status'));
     }
+
+   
 
     public function selleredit($id) {
         $seller = User::find($id);  
@@ -1147,7 +1334,8 @@ public function adminusersellersstatusupdates (Request $request)
 
         $response = array(
             "draw" => intval($draw),
-            "iTotalRecords" => $totalRecords,
+            //"iTotalRecords" => $totalRecords,
+            "iTotalRecords" => $totalRecordswithFilter,
             "iTotalDisplayRecords" => $totalRecordswithFilter,
             "aaData" => $data_arr,
         );
@@ -1495,7 +1683,606 @@ public function adminusersellersstatusupdates (Request $request)
         else
             echo json_encode("Status Not Changed");
     }  
+    
+    public function updateAdmCompimage(Request $request)
+    {
+        $validator = $request->validate([
+                'company_image' => 'required|image|mimes:jpeg,png,bmp,gif,svg|max:1024',
+            ]);
+        $extension = request("company_image")->extension();
+        $fileName = "company_pic" . time() . "." . $extension;
+        $destinationPath = public_path() . "/uploads/BuyerCompany";
+        request("company_image")->move($destinationPath, $fileName);
+        $data = [
+            "company_image" => $fileName,
+        ];
 
+        
+        
+        $user_id=$request->get('user_id');
+        $update = BuyerCompany::where('user_id',$user_id)->update($data);
+        if ($update) {
+            $response["success"] = true;
+            $response["message"] = "Success! Record Updated Successfully.";
+            $response["image_path"] = "uploads/BuyerCompany/" . $fileName;
+        } else {
+            $response["success"] = false;
+            $response["message"] = "Error! Record Not Updated.";
+        }
+        return $response;
+    }
+    public function offlineCategoriesAdmin(request $request) {
+        
+        
+        $userId = $user_id = $request->user_id;
+        if($user_id){
+        $user = User::find($user_id);
+        $sellerProducts = $user->SellerProduct;
+        $values = [];
+		if ($user->seller_type != "Master") {
+            $user = User::find($user->parent_id);
+        }
+       
+        $parent_cat_id=[];
+        foreach ($sellerProducts as $sproduct) {
+            $values[] = trim($sproduct->category_id);
+            if($sproduct->status=="active" && $sproduct->product_visibility=="Yes"){
+                $parent=Category::find($sproduct->category_id);
+    
+                if(!empty( $parent)) 
+                 {  
+                    $parent_id=$parent->id;
+                    while(!empty($parent)) 
+                    {   
+                        $parent = $parent->parent;
+                        if(!empty( $parent)) 
+                            $parent_id=$parent->id;
+                    }
+                    $parent_cat_id[]= $parent_id; 
+                }
+            }
+        }
+        $parent_cat_id = array_unique($parent_cat_id);
+       
+        $values = array_unique($values);
+
+        $categories = $parent_categorylists = Category::where('name','Like',$request->term.'%')->where('parent_id', null)->whereNotIn("id", $parent_cat_id)->orderBy('name',"ASC")
+                                              ->select("id","name")
+                                              ->get();
+        }
+        else
+        $categories = $parent_categorylists = Category::where('name','Like',$request->term.'%')->where('parent_id', null)->orderBy('name',"ASC")
+                                              ->select("id","name")
+                                              ->get();
+        return $categories;
+}
+    public function updateAdmProfimage(Request $request)
+    {
+        $validator = $request->validate([
+            "image_original" => "required|image|mimes:jpeg,png,bmp,gif,svg",
+        ]);
+        $extension = request("image_original")->extension();
+        $fileName = "user_pic" . time() . "." . $extension;
+       $destinationPath = public_path() . "/uploads/userImages";
+        request("image_original")->move($destinationPath, $fileName);
+        $data = [
+             "profile_pic" => $fileName,
+        ];
+
+         $user_id = Auth::guard("user")->user()->id;
+        $update = User::find($user_id)->update($data);
+        if ($update) {
+            $response["success"] = true;
+            $response["message"] = "Success! Record Updated Successfully.";
+            $response["image_path"] = "uploads/userImages/" . $fileName;
+        } else {
+            $response["success"] = false;
+            $response["message"] = "Error! Record Not Updated.";
+        }
+        return $response;
+    }
+    
+    public function updateAdmCompbanner(Request $request)
+    {
+        
+        $validator = $request->validate([
+                'image_banner' => 'required|image|mimes:jpeg,png,bmp,gif,svg|max:1024',
+            ]);
+            
+            
+        
+        $extension = request("image_banner")->extension();
+        $fileName = "company_banner" . time() . "." . $extension;
+        $destinationPath = public_path() . "/uploads/BuyerCompanyBanner";
+        request("image_banner")->move($destinationPath, $fileName);
+        $data = [
+            "campany_banner" => $fileName,
+        ];
+
+        
+        $user_id=$request->get('user_id');
+        $update = DB::table("buyer_companies")
+            ->where("user_id", $user_id)
+            ->update($data);
+        if ($update) {
+            $response["success"] = true;
+            $response["message"] = "Success! Record Updated Successfully.";
+            $response["image_path"] = "uploads/BuyerCompanyBanner/" . $fileName;
+        } else {
+            $response["success"] = false;
+            $response["message"] = "Error! Record Not Updated.";
+        }
+        return $response;
+    }
+    
+    public function updateAdmAbtimg1(Request $request)
+    { 
+        $validator = $request->validate([
+                'about_image1' => 'required|image|mimes:jpeg,png,bmp,gif,svg|max:1024',
+            ]);
+        $extension = request("about_image1")->extension();
+        $fileName = "company_abt" . time() . "." . $extension;
+       
+        $destinationPath = public_path() . "/uploads/BuyerCompanyBanner";
+        request("about_image1")->move($destinationPath, $fileName);
+        $data = [
+            "comp_about_img1" => $fileName,
+        ];
+
+        
+        $user_id=$request->get('user_id'); 
+        $update = DB::table("buyer_companies")
+            ->where("user_id", $user_id)
+            ->update($data);
+        if ($update) {
+            $response["success"] = true;
+            $response["message"] = "Success! Record Updated Successfully.";
+            $response["image_path"] = "uploads/BuyerCompanyBanner/" . $fileName;
+        } else {
+            $response["success"] = false;
+            $response["message"] = "Error! Record Not Updated.";
+        }
+        return $response;
+    }
+    
+    public function updateAdmAbtimg2(Request $request)
+    { 
+        $validator = $request->validate([
+                'about_image2' => 'required|image|mimes:jpeg,png,bmp,gif,svg|max:1024',
+            ]);
+        $extension = request("about_image2")->extension();
+        $fileName = "company_abt" . time() . "." . $extension;
+       
+        $destinationPath = public_path() . "/uploads/BuyerCompanyBanner";
+        request("about_image2")->move($destinationPath, $fileName);
+        $data = [
+            "comp_about_img2" => $fileName,
+        ];
+
+        
+        $user_id=$request->get('user_id');
+        $update = DB::table("buyer_companies")
+            ->where("user_id", $user_id)
+            ->update($data);
+        if ($update) {
+            $response["success"] = true;
+            $response["message"] = "Success! Record Updated Successfully.";
+            $response["image_path"] = "uploads/BuyerCompanyBanner/" . $fileName;
+        } else {
+            $response["success"] = false;
+            $response["message"] = "Error! Record Not Updated.";
+        }
+        return $response;
+    }
+    public function updateAdmCompProf(Request $request)
+    { 
+        
+        $userId=$request->get('user_id');
+        $user = User::find($userId);
+        $profile_pic = $user->profile_pic??'';
+        $company_image = $user->BuyerCompany->company_image;
+        $rules=[
+                "company_email" => [
+                    "required",
+                    "email",
+                    "regex:/(.+)@(.+)\.(.+)/i",
+                    Rule::unique("buyer_companies")
+                        ->ignore($userId, 'user_id')
+                        //->ignore($userId)
+                        ->where(function ($query) {
+                            return $query;
+                            //->where("status", "<>", "Deleted");
+                        }),
+                ],
+                
+               /* "more_info_email" => [
+                    "required",
+                    "email",
+                    "regex:/(.+)@(.+)\.(.+)/i",
+                    
+                ],*/
+                
+                
+                "country_id" => "required",
+                "offline_categories" => "required",
+                "company_phone" => [
+                    "required",
+                    'regex:/^(^([+]+)(\d+)?$)$/',
+                    Rule::unique("buyer_companies")
+                        ->ignore($userId, 'user_id')
+                        ->where(function ($query) {
+                            return $query;
+                            //->where("status", "<>", "Deleted");
+                        }),
+                ],
+                "company_name" => "required",
+                "company_type" => "required",
+                "company_street" => "required",
+                // 'company_zip' => 'required|regex:/\b\d{5}\b/',
+                "company_zip" => "required",
+                "company_location" => "required",
+            ];
+            if($company_image=='')
+            $rules['image'] = "required";
+            $request->validate($rules);
+        
+
+
+
+        $offline_categories = $request->get("offline_categories");
+        $sOflinCats = SellerOfflineCategory::where("user_id", $userId)->first();
+        $of_cats = '';
+        if(!empty($offline_categories)){
+        foreach($offline_categories as $offline_category) {
+            $of_cats = $of_cats .$offline_category . ","; }
+        }
+        if (empty($sOflinCats)) {
+         SellerOfflineCategory::create([
+                "user_id" => $userId,
+                "category_id" => $of_cats,
+            ]);
+       } else {
+           $sOflinCats->update(["category_id" => $of_cats]);
+        }
+
+        
+
+       
+        //$input["email"] = $request->get("email");
+        //["phone"] = $request->get("phone");
+        $input["country_id"] = $request->get("country_id");
+       // $input["usertype"] = "seller";
+        $input["company"] = "Yes";
+
+      /*  if ($user->email != $input["email"]) {   //new email status change
+            $input["email_status"] = "No";
+            $input["varification_status"] = "not varified";
+        }*/
+
+        DB::table("users")
+            ->where("id", $userId)
+            ->update($input);
+            
+        if($user->country_id!=$input["country_id"])    
+        {
+            $coUser_list=User::where('parent_id',$userId)->get();
+	    	foreach ($coUser_list as $key => $value1) 
+	    		DB::table('users')->where('id',$value1->id)->update(['country_id'=>$input["country_id"]]);	    	
+        }
+        
+        $c_types = '';
+        if(!empty($request->get("company_type"))){
+        foreach($request->get("company_type") as $company_type) {
+            $c_types = $c_types .$company_type . ","; }
+        }
+        
+        $input = [
+            "user_id" => $userId,
+            "company_email" => $request->get("company_email"),
+            "more_info_email" => $request->get("more_info_email"),
+            "company_phone" => $request->get("company_phone"),
+            "company_name" => $request->get("company_name"),
+            "company_type" => $c_types,
+            "company_street" => $request->get("company_street"),
+            "company_zip" => $request->get("company_zip"),
+            "company_location" => $request->get("company_location"),
+            "company_land" => $request->get("company_land"),
+            "company_website" => $request->get("company_website"),
+            
+            
+        ];
+        // Check seller company already or not if exists update else create
+
+        $user = BuyerCompany::where("user_id", "=", $userId)->first();
+        if (isset($user->id)) {
+            $id = $user->id;
+            $sellercmpy = DB::table("buyer_companies")
+                ->where("id", $id)
+                ->update($input);
+        } else {
+            $sellercmpy = BuyerCompany::create($input);
+        }
+
+        
+
+         echo json_encode("Profile Updated");
+    }
+    public function updateAdmCompAbout(Request $request)
+    { 
+        //dd($request);
+        $userId=$request->get('user_id'); 
+        $user = User::find($userId);
+        $rules=[ "about_company" => "required", ];
+        $request->validate($rules);
+        $keywords_removed=[];
+        if(!empty($request->get("about_company")))
+        {
+            $profile_keywords=$request->get("about_company");
+            $profile_keywords = strtr($profile_keywords, array('.' => '', ',' => ''));
+            $keywords = explode(" ", $profile_keywords);
+            $omit_words = array('a','is','was','should','at','and'); 
+            $keywords_removed=array_diff($keywords,$omit_words); 
+            array_unique($keywords_removed);
+            $keywords_removed = implode(',', $keywords_removed);
+            
+        } 
+        else $keywords_removed=$user->BuyerCompany->profile_keywords;
+        $input = [];
+        $fileName2 = $fileName ="";
+        $destinationPath = public_path() . "/uploads/BuyerCompanyBanner";
+        
+        
+        $input = [
+            "user_id" => $userId,
+            "about_company" => $request->get("about_company"),
+            "profile_keywords" => $keywords_removed,
+            
+        ];
+        if(request("comp_about_img1")) {
+        $extension = request("comp_about_img1")->extension();
+        $fileName = "company_abt" . time() . "." . $extension;
+        $input["comp_about_img1"] =  $fileName;
+        request("comp_about_img1")->move($destinationPath, $fileName);
+        }
+        if(request("comp_about_img2")) {
+        $extension2 = request("comp_about_img2")->extension();
+        $fileName2 = "company_abt" . time() . "." . $extension2;
+        $input["comp_about_img2"] =  $fileName2;
+        request("comp_about_img2")->move($destinationPath, $fileName2);
+        }
+        //dd($input);
+        // Check seller company already or not if exists update else create
+
+        $user = BuyerCompany::where("user_id", "=", $userId)->first();
+        if (isset($user->id)) {
+            $id = $user->id;
+            $sellercmpy = DB::table("buyer_companies")
+                ->where("id", $id)
+                ->update($input);
+        } else {
+            $sellercmpy = BuyerCompany::create($input);
+        }
+
+        
+
+         echo json_encode("Updated Successfully!");
+    }
+    public function updateCompanyAbtRegions(Request $request)
+    { 
+       
+        
+        $userId=$request->get('user_id'); 
+        $user = User::find($userId);
+        if($user->seller_type=="Co-Seller")
+        $userId=$user->parent_id;
+        $user = User::find($userId);
+       
+        $input = [];
+        
+        
+        
+        $active=$expand='';
+        if($request->has('active_country')) 
+        $active= implode(',', $request->get("active_country")); //dd($active);
+        if($request->has('expand_country')) 
+        $expand= implode(',', $request->get("expand_country"));
+        
+        $input = [
+            "user_id" => $userId,
+            "active_countries" => $active,
+            "expand_countries" =>$expand,
+            
+        ];
+        
+
+        $user = CompanyRegion::where("user_id", "=", $userId)->first();
+        if (isset($user->id)) {
+            $id = $user->id;
+            $compReg = DB::table("company_regions")
+                ->where("id", $id)
+                ->update($input);
+        } else {
+            $compReg = CompanyRegion::create($input);
+        }
+
+        
+
+         echo json_encode("Regions added Successfully!");
+    }
+    public function updateAdmSellerEmployee(Request $request)
+    { 
+        $userId = $request->get('user_id');
+        $user = User::find($userId);
+        
+        
+        
+        
+            $rules=[
+                "name" => "required",
+                "surname" => "required",
+                "position" =>"required",
+                "email" => ["required","email",
+                    "regex:/(.+)@(.+)\.(.+)/i",
+                    Rule::unique("users")
+                        ->ignore($userId)
+                        ->where(function ($query) {
+                            return $query->where("status", "<>", "Deleted");
+                        }),
+                ],
+                
+                "phone" => [
+                    "required",
+                    'regex:/^(^([+]+)(\d+)?$)$/',
+                    Rule::unique("users")
+                        ->ignore($userId)
+                        ->where(function ($query) {
+                            return $query->where("status", "<>", "Deleted");
+                        }),
+                ],
+                
+            ];
+            
+            
+              
+        $request->validate($rules);
+        
+        $input["name"] = $request->get("name");
+        $input["surname"] = $request->get("surname");
+        $input["email"] = $request->get("email");
+        $input["phone"] = $request->get("phone");
+        $input["position"] = $request->get("position");
+        
+        $input["company"] = "Yes";
+       
+
+        if ($user->email != $input["email"]) {
+            $input["email_status"] = "No";
+            $input["varification_status"] = "not varified";
+        }
+
+        DB::table("users")
+            ->where("id", $userId)
+            ->update($input);
+            
+        
+       //  echo json_encode("Profile Updated");
+       return response()->json(['message' => 'Profile Updated']);
+    }
+    public function resetAdmpassword(Request $request)
+    { 
+        $userId = $request->get('user_id'); 
+        $request->validate([
+          //  "oldPassword" => "required",
+            "password" => [
+                "required",
+                "string",
+                "min:8",
+                "confirmed", // must be at least 10 characters in length
+                "regex:/[a-z]/", // must contain at least one lowercase letter
+                "regex:/[A-Z]/", // must contain at least one uppercase letter
+                "regex:/[0-9]/", // must contain at least one digit
+                'regex:/[@$!%*#?&]/', // must contain a special character
+            ],
+            "password_confirmation" => "required",
+        ]);
+        $user = User::find($userId);
+        $usertype = $user->usertype;
+       /* if (!Hash::check($request["oldPassword"],Auth::guard("user")->user()->password)) {
+            
+                //return redirect()->route("CompanyProfile", $userId)->with("message_not_match","The old password does not match our records." );
+                return response()->json(['msg_old' => 'The old password does not match our records.']);
+            
+        }*/
+
+        $user = User::where("id", $userId)->update([
+            "password" => Hash::make($request->password),
+        ]);
+
+        return response()->json(['message' => 'Password updated successfully!']);
+        
+              //  return redirect()->route("CompanyProfile", $userId) ->with("message", "Your password has been changed!");
+            
+    }
+    public function addNewCoEmpAdmn(Request $request)
+    {
+        $userId=$request->get('user_id');
+		$package_data = DB::table("subscriptions")
+            ->leftJoin("order_details","subscriptions.order_id","=","order_details.id")
+            ->leftJoin("packages", "packages.id","=","order_details.package_id" )
+            ->where("subscriptions.user_id", "=", $userId )
+            ->where("subscriptions.status", "Active")
+            ->orderBy("subscriptions.id", "DESC")
+            ->first();
+
+        $user = User::where("parent_id",$userId)
+        ->where("status", "<>", "Deleted")
+        ->get();
+
+       
+
+        $request->validate([
+            "name" => "required",
+            "email" => [ "required", "email", "regex:/(.+)@(.+)\.(.+)/i",
+                Rule::unique("users")->where(function ($query) {
+                    return $query->where("status", "<>", "Deleted");
+                }),
+            ],
+            "phone" => [  "required", 'regex:/^(^([+]+)(\d+)?$)$/',
+                Rule::unique("users")->where(function ($query) {
+                    return $query->where("status", "<>", "Deleted");
+                }),
+            ],
+           
+        ]);
+
+        $input = $request->all();
+            if(!array_key_exists("unlimited_stock",$input))
+            $input['unlimited_stock']='No';
+          /*  if(!array_key_exists("stock_count",$input) || $input['stock_count']==null)
+            $input['stock_count']=0;*/
+            $parent_id=$userId;
+			$user=User::find($userId);
+           if($user->seller_type=="Co-Seller")
+           $parent_id=$user->parent_id;
+           
+        $input["parent_id"] = $parent_id;
+        $input["seller_type"] = "Co-Seller";
+        $input["country_id"] =$user->country_id;
+        $input["usertype"] = "seller";
+        $input["status"] = "Invited";
+        $usertype = $user->usertype;
+        /*if ($usertype == "seller") {
+            $input["usertype"] = "seller";
+        }
+        if ($usertype == "buyer") {
+            $input["usertype"] = "buyer";
+        }*/
+       // $input["password"] = Hash::make($request->get("password"));
+        $token = $token =Str::random(60) .$parent_id. date("Ymdss");
+        $input["token_number"] = $token;
+        if (request()->hasFile("imgupload_employee")) {
+            $extension = request("imgupload_employee")->extension();
+            $fileName = "user_pic" . time() . "." . $extension;
+            $destinationPath = public_path() . "/uploads/userImages";
+            request("imgupload_employee")->move($destinationPath, $fileName);
+            $input["profile_pic"] = $fileName;
+        }
+        
+        $user = User::create($input);
+        
+           
+         Mail::send('emails.newEmployeeInvitation', ['email' => $request->email,'token' => $token,'name' => $request->name,'company_name' => $user->BuyerCompany->company_name??""], function($message) use($request){
+              $message->to($request->email);
+              $message->subject('Invitation to join - FMCG');
+          }); 
+          
+        
+        $usertype = $user->usertype;  
+        
+            echo json_encode("Employee Added");
+
+       
+    }
     public function editProduct($productId) {
         
         $product = SellerProduct::find($productId);
@@ -1872,7 +2659,7 @@ public function userkycupload(Request $request) {
             $kycfile_data->update($data);
         $id=$request->get('hdnuserid'); 
         if($request->get('frompage')=='sellerside') 
-            return redirect()->route('admin.sellerview',$id)->with('message','Kyc Document Uploaded.'); 
+            return redirect()->route('seller.profileview',$id)->with('message','Kyc Document Uploaded.'); 
         else if($request->get('frompage')=='buyerside') 
             return redirect()->route('admin.buyerview',$id)->with('message','Kyc Document Uploaded.'); 
         else if($request->get('frompage')=="kycside")

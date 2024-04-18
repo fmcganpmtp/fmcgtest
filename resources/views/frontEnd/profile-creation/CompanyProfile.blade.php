@@ -509,13 +509,18 @@
 						  <div class="country-list">
 						  <div class="row">
 						  	<div class="col-lg-5 col-12">
-							<h4>{{$val}}</h4>
+						  	    <?php foreach($expand_reg_list as $row) {
+                                
+                                 if($row['continent']==$val) { ?>	<h4>{{$val}}</h4><?php   break; } } ?>
+                                
+                                
+						
 							</div>
 							
 							<div class="col-lg-7 col-12">
 							<ul>
 							    @foreach($expand_reg_list as $row)
-                  @if(!in_array($row['id'],$active_reg))
+                                @if(!in_array($row['id'],$active_reg))
                                 @if($row['continent']==$val)<li>{{$row['name']}}</li>@endif
                                 @endif
                                  @endforeach

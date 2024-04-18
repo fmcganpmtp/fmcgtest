@@ -34,8 +34,9 @@
 					<div class="carousel-caption">
 						    <h1>{{$Slider_img->title}}</h1>
                             <h2>{{$Slider_img->description}}</h2>
-		                    @if($Slider_img->target!='')      
-								<a href="{{$Slider_img->target}}" target="_blank" class="bg-button">SHOP NOW</a>
+		                    @if($Slider_img->target!='') 
+		                        <?php  $url = (!preg_match("~^(?:f|ht)tps?://~i", $Slider_img->target))?"http://" . $Slider_img->target:$Slider_img->target; ?>
+								<a href="{{$url}}" target="_blank" class="bg-button">Learn More</a>
 						    @endif 	
 						<!--container-->
 					</div>

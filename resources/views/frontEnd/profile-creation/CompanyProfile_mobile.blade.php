@@ -1,8 +1,6 @@
 @extends('layouts.template_mobile')
 @section('title', 'Company Profile')
 @section('content')
-
-
 <?php               if((request()->route('profId')==null)) {
                                 if(!empty(Auth::guard('user')->user()->profile_pic)) 
                                 $img_path = asset('/uploads/userImages/').'/'.Auth::guard('user')->user()->profile_pic;
@@ -94,7 +92,8 @@
                 <div class="row">
                   <div class="col-lg-4 col-12">
                     <div class="prof-imgg"><img src="{{$cmp_img}}" class="prof_img"> <a href="javascript: void(0)"  id="upload_image" class="edit-btn-prf"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> </a> </div>
-                     <input type="file" id="imgupload" class="image" name="image" style="display:none" accept="image/*" />
+                     <!--<input type="file" id="imgupload" class="image" name="image" style="display:none" accept="image/*" />-->
+                     <input type="file" id="imgupload" class="company_image" name="company_image" style="display:none" accept="image/*" />
                       <span id="txtimgpicture"></span> 
                   </div>
                   <div class="col-lg-8 col-12"><!-- <a href="javascript: void(0)" class="greenButton btn-save">Save</a> --></div>
@@ -102,7 +101,8 @@
               </div>
             </div>
             
-              
+              <div id="bnner_image_error"></div>
+              <div id="company_logo_error"></div>
             
             <div class="prof-inner-C">
 			<div class="profile_top">
@@ -143,12 +143,14 @@
                 <div class="row">
                   <div class="col-lg-4 col-12">
                     <ul class="bsc-inf">
-                      @if($user->BuyerCompany?->company_email)
+                     @if($user->BuyerCompany?->company_email)
                       <li class="inf"><a href="mailto:{{$user->BuyerCompany?->company_email}}">{{$user->BuyerCompany?->company_email}}</a></li>
                       @endif
                       @if($user->BuyerCompany?->company_phone)
                       <li class="tl"><a href="tel:{{ $user->phone}}">{{ $user->BuyerCompany?->company_phone ?? '' }}</a></li>
-                      @endif
+                      @endif  
+                     
+                      
                       @if($user->BuyerCompany?->company_website)
                       <?php $web = (strlen($user->BuyerCompany->company_website) > 17) ? substr($user->BuyerCompany->company_website,0,17).'...' : $user->BuyerCompany->company_website; ?>
                       <li class="wb">
@@ -269,19 +271,20 @@
                 <div class="row">
                   <div class="col-lg-4 col-12">
                     <ul class="bsc-inf">
-                      <li class="inf">
+                         <li class="inf">
                         <input placeholder="Company Email" type="text" class="form-control  {{ $errors->has('company_email') ? ' is-invalid' : '' }}" name="company_email" value="{{ old('company_email', $user->BuyerCompany?->company_email)  }}" >
-                      <span id="txtemail"></span>
+                        <span id="txtemail"></span>
                       </li>
-                      <li class="tl">
-                        
-						<input placeholder="Company Phone" name="full" type="text" value="{{ old('company_phone') ? old('company_phone') : $user->BuyerCompany?->company_phone ?? '' }}" id="phone" class="form-control pno05 {{ $errors->has('company_phone') ? ' is-invalid' : '' }} " maxlength="15"/>
-                 <span id="txtphone"></span>
+                        <li class="tl">
+                        <input placeholder="Company Phone" name="full" type="text" value="{{ old('company_phone') ? old('company_phone') : $user->BuyerCompany?->company_phone ?? '' }}" id="phone" class="form-control pno05 {{ $errors->has('company_phone') ? ' is-invalid' : '' }} " maxlength="15"/>
+                        <span id="txtphone"></span>
                       </li>
+                     
+                      
                       <li class="wb">
                         
 						<input placeholder="Company Website" name="company_website" type="text" value="{{ old('company_website') ? old('company_website') : $user->BuyerCompany->company_website ?? '' }}" id="company_website" class="form-control pno05 {{ $errors->has('company_website') ? ' is-invalid' : '' }} " />
-                 <span id="txtwebsite"></span>
+                        <span id="txtwebsite"></span>
                       </li>
                      <!-- <li class="inf">
                         <input placeholder="More Info Email" type="text" class="form-control  {{ $errors->has('more_info_email') ? ' is-invalid' : '' }}" name="more_info_email" value="{{ old('more_info_email', Auth::guard('user')->user()->BuyerCompany?->more_info_email)  }}" >
@@ -429,15 +432,15 @@
                        <a href="javascript:void(0)" onclick="removeImageabt1({{ $user->BuyerCompany->id }})" class="btn abt1_remove"><span class="red_round remove-input-field"><i class="fa fa-minus-circle" aria-hidden="true"></i></span></a>
                       @endif
                        </div>
-                       <input type="file" id="imgupload_abtimg1" class="image_abtimg1" name="image_abtimg1" style="display:none" accept="image/*" />
-                       
+                       <input type="file" id="imgupload_abtimg1" class="about_image1" name="about_image1" style="display:none" accept="image/*" />
+                       <div id="about_img1_error"></div>
                        <div class="cmpny-prof"><img class="abt2_img" src="{{$user->BuyerCompany->comp_about_img2==''?asset('assets/images/no_img.jpg'):asset('/uploads/BuyerCompanyBanner/').'/'.$user->BuyerCompany->comp_about_img2}}"><a href="javascript: void(0)"  id="upload_abtimg2" class="edit-btn-prf"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> </a>
                         @if($user->BuyerCompany->comp_about_img2)
                        <a href="javascript:void(0)" onclick="removeImageabt2({{ $user->BuyerCompany->id }})" class="btn abt2_remove"><span class="red_round remove-input-field"><i class="fa fa-minus-circle" aria-hidden="true"></i></span></a>
                        @endif
                        </div>
-                       <input type="file" id="imgupload_abtimg2" class="image_abtimg2" name="image_abtimg2" style="display:none" accept="image/*" />
-                      
+                       <input type="file" id="imgupload_abtimg2" class="about_image2" name="about_image2" style="display:none" accept="image/*" />
+                      <div id="about_img2_error"></div>
                        </div>
                     </div>
                     </form>
@@ -450,7 +453,59 @@
                   </div>
                   <div class="tab-pane " id="profile" role="tabpanel" aria-labelledby="profile-tab">
                       <input type="hidden" id="start_from" value="0">
-					  <div class="pro-lft-widget">
+			
+			
+			 <style>/*
+.sidenav-ns {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 115;
+    top: 0; bottom:0;
+    right:auto; left:0;
+ 
+    overflow-x: hidden;
+    transition: 0.4s; background:#fff;padding-bottom:30px;
+   
+}
+
+ */
+ 
+.sidenav-ns {display:none; }
+
+.my-prof-new .pro-lft-widget{border:1px solid #d6d6d6}
+
+.closebtn-ns{
+    position: absolute;
+    top: 10px; 
+    right: 20px;
+    font-size: 36px;
+    margin-left: 0px; color:#fff;  width:50px; height:50px;  z-index:20; text-align:center; display:none;
+}
+
+
+.menu-button2{padding:15px 0px;}
+
+.menu-button2 .fa{background:#f3f3f3;width:40px; height:35px; border-radius:5px; line-height:36px; cursor:pointer; text-align:center; border:1px solid #e0dcdc;} 
+
+/*
+.filter-cat .select2-container--focus { left:auto!important;}
+.select2-container--open{ left:auto!important; right:auto!important;}
+
+.select2-container--open .select2-dropdown--below {
+    left: 15px!important;}
+    */
+
+</style>
+					  
+					  
+	<div class="menu-button2"><a  onClick="openNav2()"><i class="fa fa-filter" aria-hidden="true"></i>
+</a></div>			
+	<div id="mySidenav-45" class="sidenav-ns "> <a href="javascript:void(0)" class="closebtn-ns" onClick="closeNav2()"><span>&times;</span></a>
+  <div class="pro-list-menu">			
+				
+				
+	<div class="pro-lft-widget">
           <div class="widget-sidebar">
             <div class="sidebar-widget  borddr-bx1 categories tpp">
               <div class="filter-cat">
@@ -524,14 +579,7 @@
                 </div>
               </div>
              -->
-             
-             
-              
-              
-              
-              
-              
-              
+               
     <div class="filter-cat">            
 <div class="sidebar-widget filter borddr-bx1  price-ranger01">
    <h3>Filter By Price</h3>
@@ -566,22 +614,59 @@
               
              
               <div class="filter-cat">
-                <h3>Search by Best Before Use</h3>
+                <h3>Search by Best Before Date</h3>
                 <div class="autocomplete form-group sg-list">
                   
                   <div class="srch-left-3">
-                    <input type="Date"  name="search_bbd" id="search_bbd" class="form-control" placeholder="Search"  onchange="fnbtnsearchproduct()">
+                    <input  type="text" onfocus="(this.type='date')" onblur="(this.type='text')"  name="search_bbd" id="search_bbd" class="form-control" placeholder="Select Date"  onchange="fnbtnsearchproduct()">
                     <!--<button type="submit" class="search_keyword_icon"><i class="fa fa-search" aria-hidden="true"></i></button>-->
                   </div>
                 </div>
                 </div>
               </div>
             </div>
-          </div>
-    
-    
-                      
-            
+          </div>			
+				
+				
+</div></div>
+<!--<script>
+function openNav2() {
+    document.getElementById("mySidenav-45").style.width = "100%";
+}
+
+function closeNav2() {
+    document.getElementById("mySidenav-45").style.width = "0";
+}
+</script>-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+					  
                       <div class="row " id="product-listing"></div>
                     <div class="row">
                      
@@ -625,7 +710,10 @@
 						  
                         </div>
 						
-						
+                        <?php
+                            $expand_reg = explode(',',$user->CompanyRegion->expand_countries);
+                            $active_reg = explode(',',$user->CompanyRegion->active_countries); 
+                            ?>
 						<div class="col-lg-6 col-12">
                           <h3><b class="exp"></b>Regions we would like to expand to</h3>
                         @if (count($expand_continents)>0)
@@ -633,13 +721,20 @@
 						  <div class="country-list">
 						  <div class="row">
 						  	<div class="col-lg-5 col-12">
-							<h4>{{$val}}</h4>
+						  	    <?php foreach($expand_reg_list as $row) {
+                                
+                                 if($row['continent']==$val) { ?>	<h4>{{$val}}</h4><?php   break; } } ?>
+                                
+                                
+						
 							</div>
 							
 							<div class="col-lg-7 col-12">
 							<ul>
 							    @foreach($expand_reg_list as $row)
+                                @if(!in_array($row['id'],$active_reg))
                                 @if($row['continent']==$val)<li>{{$row['name']}}</li>@endif
+                                @endif
                                  @endforeach
                                
                               </ul>
@@ -764,8 +859,10 @@
                               
                             <ul class="submenu">
                                
-                                 @foreach($countries as $row)
-                                  @if($row['continent']==$val)<li> <input class="sub_countries_Subcont{{$val_clas}}" id="cuntry_id{{$row['id']}}"  name="expand_country[]" type="checkbox" value="{{$row['id']}}"  {{in_array($row['id'],$expand_reg)?'checked':''}}> <label for="cuntry_id{{$row['id']}}">{{$row['name']}}</label></li>@endif
+                                 @foreach($remainining_toexpand as $row)
+                                 @if(!in_array($row['id'],$active_reg))
+                                  @if($row['continent']==$val)<li> <input class="sub_countries_Subcont{{$val_clas}} cntry{{$row['id']}}" id="cuntry_id{{$row['id']}}"  name="expand_country[]" type="checkbox" value="{{$row['id']}}"  {{in_array($row['id'],$expand_reg)?'checked':''}}> <label for="cuntry_id{{$row['id']}}">{{$row['name']}}</label></li>@endif
+                                  @endif
                                  @endforeach
                              </ul>
                           </li>
@@ -788,6 +885,7 @@
                       @if($edit=="Yes")  <a href="javascript:void(0)" onclick="edittabEployees()" class="greenButton">Edit</a> @endif
                       
                       <input type="hidden" id="start_from_empEdit" value="0">
+                      <input type="hidden" id="edit_active" value="no">
                       <div class="row edit_employees" id="employee-listing-edit" >
                       
                    <a   href="javascript:void(0)" onclick="HideEditEmployees()"   class="greenButton  btn-cancel_2 prof-save-btn edit_emp_icon" style="display:none;">Cancel</a>  
@@ -837,26 +935,27 @@
                             <div class="row">
                               <div class="col-lg-6 col-12">
                                 <input placeholder="First Name" type="text" class="form-control" value="{{ old('name', Auth::guard('user')->user()->name) }}" name="name" >
-                      <span id="txtusername_prof_emp"></span>
+                                <span id="txtusername_prof_emp"></span>
                               </div>
                               <div class="col-lg-6 col-12">
                                 <input placeholder="Last Name" type="text" class="form-control " name="surname" value="{{ old('surname', $user->surname)  }}"  >
-                     <span id="txtsurname_prof_emp"></span></div>
+                                <span id="txtsurname_prof_emp"></span></div>
                               </div>
                             
-                          </li>
-                          <li class="des">
+                            </li>
+                            <li class="des">
                               <input placeholder="Role" type="text" class="form-control "  name="position" value="{{ old('position', Auth::guard('user')->user()->position ?? '')  }}" >
-                 <span id="txtposition_prof_emp"></span>
+                                <span id="txtposition_prof_emp"></span>
                               </li>
-                          <li class="inf">
-                              <input placeholder="Email" type="text" class="form-control" name="email" value="{{ old('email', Auth::guard('user')->user()->email)  }}" >
-                      <span id="txtemail_prof_emp"></span>
-                              </li>
-                          <li class="tl">
+                              <li class="tl">
                               <input  placeholder="Phone" name="full" type="text" value="{{ old('phone') ? old('phone') : Auth::guard('user')->user()->phone ?? '' }}" id="phone_prof_emp" class="form-control pno05  " maxlength="15"/>
-                 <span id="txtphone_prof"></span>
+                                <span id="txtphone_prof"></span>
                               </li>
+                            <li class="inf">
+                              <input placeholder="Email" type="text" class="form-control" name="email" value="{{ old('email', Auth::guard('user')->user()->email)  }}" >
+                            <span id="txtemail_prof_emp"></span>
+                              </li>
+                          
                         </ul>
                         <button type="submit" class="greenButton btn-save" value="Save">Save</button>
                         
@@ -918,6 +1017,7 @@
      onClick="deleteProfileaccount({{Auth::guard('user')->user()->id}})" 
      class="default-btn ctr mr-pro"
    @else
+   onClick="deletedProfileaccount({{Auth::guard('user')->user()->id}})" 
      class="default-btn ctr mr-pro gray-btn45"
       title="Already a Request for Account Delete Sent to Admin"
    @endif 
@@ -1012,16 +1112,17 @@
                           <input  placeholder="Role" type="text" name="position" class="form-control {{ $errors->has('position') ? ' is-invalid' : '' }}" required value="{{ old('position') }}" >
 						   <span id="txtrole_employee"></span>
 						  </li>
-                          <li class="inf">
-						  
+                          
+						  <li class="tl">
+						  <input  placeholder="Phone" id="phone_employee" type="text" class="form-control{{ $errors->has('phone') ? ' is-invalid' : '' }}" name="full"  required maxlength="15" value="{{ old('phone') }}">
+						 <span id="txtphone_employee"></span>
+						 </li>
+						 <li class="inf">
 						  <input placeholder="Email" type="email" class="form-control {{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" required value="{{ old('email') }}">
 							<span id="txtemail_employee"></span>
 						  </li>
                           
-                          <li class="tl">
-						  <input  placeholder="Phone" id="phone_employee" type="text" class="form-control{{ $errors->has('phone') ? ' is-invalid' : '' }}" name="full"  required maxlength="15" value="{{ old('phone') }}">
-						 <span id="txtphone_employee"></span>
-						 </li>
+                          
                        <!--<li class="us-nam">
                             <div class="row">
                               <div class="col-lg-6 col-12">
@@ -1104,6 +1205,11 @@ $fmcg("#reason_delete").val('');
     } 
     else { }
     });  
+}
+
+function deletedProfileaccount(userid){
+//swal("Already a Request for Account Delete Sent to Admin", "", "success");
+ swal("Already a Request for Account Delete Sent to Admin");
 }
 function fnclosepopup1(){
      $fmcg("#Mymodal").modal('hide');
@@ -1913,13 +2019,14 @@ function HideEditRegions(){
    $fmcg(window).scrollTo(0, document.body.scrollHeight);
   }
 function HideEditEmployees(){ 
-
+   $fmcg("#edit_active").val('no');
    $fmcg(".edit_emp_icon").css("display", "none");
    $fmcg(".parentYes").css("display", "block");
    $fmcg(window).scrollTo(0, document.body.scrollHeight);
   }   
 function edittabEployees(){
-
+ 
+ $fmcg("#edit_active").val('yes');
  $fmcg(".edit_emp_icon").css("display", "block");
  $fmcg(".parentYes").css("display", "none");
 }	
@@ -1930,9 +2037,9 @@ $fmcg('#imgupload_abtimg2').trigger('click');
 });
  
  
-$fmcg(".image_abtimg2").change(function(e) {  
+$fmcg(".about_image2").change(function(e) {  
 var data = new FormData();
-data.append('image_abtimg2', this.files[0]);
+data.append('about_image2', this.files[0]);
 data.append('_token', "{{ csrf_token() }}"); 
 $fmcg.ajax({
         url:'{{route('updateAbtimg2')}}',
@@ -1948,8 +2055,13 @@ $fmcg.ajax({
             $fmcg(".abt2_remove").show()
           //  $fmcg('#changeimage').html('<img src="'+ imageUrl +'" height="120px" width="150px">');
         },
-        error: function() {
-          //  alert('Upload Failed');
+        error: function(xhr) {
+          var errors = JSON.parse(xhr.responseText); 
+         if(errors.message)
+            $fmcg("#about_img2_error").empty().append("<p  class='txt_err' style='color:red'>"+errors.message+"</p>");
+          else
+            $fmcg("#about_img2_error").empty();
+                      
         }
        });   
     });
@@ -1959,10 +2071,10 @@ $fmcg('#imgupload_abtimg1').trigger('click');
 });
  
  
- $fmcg(".image_abtimg1").change(function(e) {  
+ $fmcg(".about_image1").change(function(e) {  
      
 var data = new FormData();
-data.append('image_abtimg1', this.files[0]);
+data.append('about_image1', this.files[0]);
 data.append('_token', "{{ csrf_token() }}"); 
 $fmcg.ajax({
         url:'{{route('updateAbtimg1')}}',
@@ -1982,8 +2094,13 @@ $fmcg.ajax({
             $fmcg(".abt1_remove").css("display", "block");
           //  $fmcg('#changeimage').html('<img src="'+ imageUrl +'" height="120px" width="150px">');
         },
-        error: function() {
-          //  alert('Upload Failed');
+        error: function(xhr) {
+          var errors = JSON.parse(xhr.responseText); 
+         if(errors.message)
+            $fmcg("#about_img1_error").empty().append("<p  class='txt_err' style='color:red'>"+errors.message+"</p>");
+          else
+            $fmcg("#about_img1_error").empty();
+                      
         }
        });   
     });
@@ -1995,11 +2112,11 @@ $fmcg('#upload_image').click(function(){
 $fmcg('#imgupload').trigger('click'); 
 
  });
-$fmcg(".image").change(function(e) {  
-     
+//$fmcg(".image").change(function(e) {  
+$fmcg(".company_image").change(function(e) {       
 var data = new FormData();
 //data.append('image', $fmcg('input[type=file]')[0].files[0]);
-data.append('image', this.files[0]);
+data.append('company_image', this.files[0]);
 //data.append('image', this.files[0]);
 data.append('_token', "{{ csrf_token() }}"); 
 $fmcg.ajax({
@@ -2015,8 +2132,13 @@ $fmcg.ajax({
             $fmcg('.prof_img').attr('src', imageUrl);
           //  $fmcg('#changeimage').html('<img src="'+ imageUrl +'" height="120px" width="150px">');
         },
-        error: function() {
-          //  alert('Upload Failed');
+        error: function(xhr) {
+          var errors = JSON.parse(xhr.responseText); 
+         if(errors.message)
+            $fmcg("#company_logo_error").empty().append("<p  class='txt_err' style='color:red'>"+errors.message+"</p>");
+          else
+            $fmcg("#company_logo_error").empty();
+                      
         }
        });   
     });
@@ -2043,9 +2165,17 @@ $fmcg.ajax({
             $fmcg('.banner_img').attr('src', imageUrl);
           //  $fmcg('#changeimage').html('<img src="'+ imageUrl +'" height="120px" width="150px">');
         },
-        error: function() {
-          //  alert('Upload Failed');
+        error: function(xhr) {
+            //alert(errors.message);
+          var errors = JSON.parse(xhr.responseText); 
+         if(errors.message)
+            $fmcg("#bnner_image_error").empty().append("<p  class='txt_err' style='color:red'>"+errors.message+"</p>");
+          else
+            $fmcg("#bnner_image_error").empty();
+                      
         }
+        
+        
        });   
     });
 
@@ -2129,7 +2259,7 @@ $fmcg.ajax({
     
    function empSubmit(id) {
   
-        
+      
         $fmcg('#pw_reset'+id).submit(function(e) { 
             e.preventDefault();
 
@@ -2142,6 +2272,7 @@ $fmcg.ajax({
             // Send an AJAX request
              $fmcg.ajax({
                 type: "post",
+                //url: "{{ route('employeesPassword.reset') }}",
                 url: "{{ route('employeesPassword.reset') }}",
                 data: formData,
                 enctype : 'multipart/form-data',
@@ -2456,13 +2587,19 @@ function editemployees(){
                                    string += '</div>';
                                    string += '<a class="edit-btn-prf employee-pen" id="employee_edit_options' + item.id + '" onclick="empEdit(' + item.id + ')"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> </a>';
                                    string += '<div class="dropdown edit-prf-new">';
+                                   if($fmcg('#edit_active').val()=='no') {
                                    string += '<button style="display:none;" class="btn btn-secondary dropdown-toggle edit_emp_icon" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">';
                                    string += '<i class="fa fa-pencil-square-o" aria-hidden="true"></i>';
                                    string += '</button>';
+                                   } else { 
+                                   string += '<button  class="btn btn-secondary dropdown-toggle edit_emp_icon" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">';
+                                   string += '<i class="fa fa-pencil-square-o" aria-hidden="true"></i>';
+                                   string += '</button>';
+                                   }
                                    string += '<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">';
                                    string += '<li>';
-                                   string += '<form id="pw_reset{{$data->id}}" >';
-                                   string += '<input type="hidden" name="email" id="EmpEmail' + item.id + '" value="' + item.id + '" >';
+                                   string += '<form id="pw_reset' + item.id + '" >';
+                                   string += '<input type="hidden" name="email" id="EmpEmail' + item.id + '" value="' + item.email + '" >';
                                    string += '<button class="dropdown-item" type="submit" onclick="empSubmit(' + item.id + ')">Send password reset</button>';
                                    string += '</form>';
                                    string += '</li>';
@@ -2742,4 +2879,14 @@ $fmcg(function() {
 	var accordion = new Accordion($fmcg('.accordion2'), false);
 });
 </script>
+
+<script>
+$fmcg(document).ready(function(){
+  $fmcg(".menu-button2").click(function(){
+    $fmcg(".sidenav-ns ").toggle(300);
+  });
+});
+</script>
+
+
 @endsection

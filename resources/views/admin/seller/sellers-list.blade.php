@@ -254,9 +254,9 @@
        })
       
        var id = '12';
-   	   var viewurl="{{route('admin.sellerview', ':id')}}";
-       var editurl="{{route('admin.selleredit', ':id')}}";
-       var deleteurl="{{route('admin.sellerview', ':id')}}";
+   	   var viewurl="{{route('seller.profileview', ':id')}}";
+       var editurl="{{route('seller.profileview', ':id')}}";
+       var deleteurl="{{route('seller.profileview', ':id')}}";
        var sellerproductcreateurl="{{route('admin.sellerproduct_create', ':id')}}";
       
        var Blocked="'Blocked'";

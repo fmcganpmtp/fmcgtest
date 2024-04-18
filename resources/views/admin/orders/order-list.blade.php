@@ -94,7 +94,7 @@ var $ = jQuery;
   (function($) {
   $(document).ready( function () {
     var id = '12';
-	var editurl="{{route('admin.sellerview', ':id')}}";
+	var editurl="{{route('seller.profileview', ':id')}}";
     var Blocked="'Blocked'";
     var Active="'Active'";
     $('#btnsearch').click(function(){

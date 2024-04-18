@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 use App\Models\OrderDetail;
+use App\Models\User;
 use App\Models\BuyerCompany;
 use App\Providers\RouteServiceProvider;
 use Closure;
@@ -33,8 +34,12 @@ class RedirectIfAuthenticated
                     return redirect(RouteServiceProvider::ADMIN);
                 }
                 else {
-                    if(Auth::guard('user')->user()) {                        
-                        $id = Auth::guard('user')->user()->id;   
+                    if(Auth::guard('user')->user()) {
+                        
+                        $id = Auth::guard('user')->user()->id;
+                        if(Auth::guard('user')->user()->seller_type=="Co-Seller")
+                        $id = Auth::guard('user')->user()->parent_id;
+                        
                         if(Auth::guard('user')->user()->email_status=="No")
                         { 
 
@@ -110,9 +115,9 @@ class RedirectIfAuthenticated
                         }       
 
 
-                    $user =OrderDetail::where('user_id',$id)->first(); 
+                   // $user =OrderDetail::where('user_id',$id)->first(); 
                     
-                    
+                    $user =User::find($id);
                     
                     
                     
@@ -127,8 +132,9 @@ class RedirectIfAuthenticated
 								if(!empty($package_data)){  
 									if( $package_data->expairy_date>=date('Y-m-d'))
 									{
-									    
-										if(is_null(Auth::guard('user')->user()->BuyerCompany->company_image) ||is_null(Auth::guard('user')->user()->BuyerCompany->about_company))
+									    $company_image=$user->BuyerCompany->company_image??'';
+									    $about_company=$user->BuyerCompany->about_company??'';
+										if(($company_image=='') ||($about_company==''))
 											return redirect(route('MyCompanyProfile'));
 										
 										

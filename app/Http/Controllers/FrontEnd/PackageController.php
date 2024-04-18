@@ -47,21 +47,19 @@ class PackageController extends Controller
                     "Access Denied"
                 );
             }
-            if (Auth::guard("user")->user()->seller_type == "Co-Seller") {
+          /*  if (Auth::guard("user")->user()->seller_type == "Co-Seller") {
                 return redirect(route("home"));
-            }
+            }*/
         }
         if (Session::get("order_type") != "Upgraded") {  //previous discount only for upgrade package
             Session::forget("last_oreder_total");
         }
         $user_id = Auth::guard("user")->user()->id;
-        //$userType = Auth::guard("user")->user()->usertype;
+       
+        if(Auth::guard("user")->user()->seller_type=="Co-Seller") 
+         $user_id = Auth::guard("user")->user()->parent_id;
         $usertype = 'seller';
         $expairy_date = $packagePrice = '';
-        
-
-
-        
         $old_subscription = Subscription::where("user_id", $user_id)
               //->where("package_id", $old_pkg_id)
                 ->orderBy("id", "DESC")

@@ -126,14 +126,16 @@ class RequestDeleteController extends Controller
     {  
         
         $columnIndex_arr = $request->get('order');
-        $columnName_arr = $request->get('columns');
+        $columnName_arr = $request->get('columns'); 
         $order_arr = $request->get('order');
         $search_arr = $request->get('search');
         $draw = $request->get('draw');
         $start = $request->get("start");
         $rowperpage = $request->get("length"); // total number of rows per page
-        $columnIndex = $columnIndex_arr[0]['column']; // Column index
+        $columnIndex = $columnIndex_arr[0]['column']; // Column index 
+        
         $columnName = $columnName_arr[$columnIndex]['data']; // Column name
+        
         $columnSortOrder = $order_arr[0]['dir']; // asc or desc     
         $searchValue=$request->get('search_key');
         $status=$request->get('status');
@@ -153,18 +155,22 @@ class RequestDeleteController extends Controller
                 $query->where(DB::raw('CONCAT_WS(users.name,email,phone,buyer_companies.company_name)'), 'LIKE','%'.$searchValue.'%');
             })
             ->count();       
-
+//dd($columnSortOrder);
         // Get records, also we have included search filter as well
         $records = ProfileAccountDeleteRequest::leftJoin('users', 'profile_account_delete_requests.user_id', '=', 'users.id')
             ->leftJoin('buyer_companies', 'buyer_companies.user_id', '=', 'users.id')
-            ->select('users.*','buyer_companies.company_name','profile_account_delete_requests.status as reqstatus','profile_account_delete_requests.reason','profile_account_delete_requests.created_at' ,'profile_account_delete_requests.id as req_id')  
             ->when($request->get('status')!='', function ($query) use ($request) {
                 $query->where('profile_account_delete_requests.status',$request->get('status'));
             })
             ->when($searchValue!='', function ($query) use ($searchValue) {
                 $query->where(DB::raw('CONCAT_WS(users.name,email,phone,buyer_companies.company_name)'), 'LIKE','%'.$searchValue.'%');
-            })
-            ->orderBy($columnName,$columnSortOrder)      
+            });
+            if($columnName=='id') $columnName = 'profile_account_delete_requests.id';
+            if(!empty($columnSortOrder))
+            $records = $records->orderBy($columnName, $columnSortOrder);
+            else
+            $records = $records->orderBy('profile_account_delete_requests.id', 'DESC');
+            $records = $records->select('users.*','buyer_companies.company_name','profile_account_delete_requests.status as reqstatus','profile_account_delete_requests.reason','profile_account_delete_requests.created_at' ,'profile_account_delete_requests.id as req_id')  
             ->skip($start)
             ->take($rowperpage)
             ->get();

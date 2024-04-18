@@ -291,6 +291,8 @@ public function companyDB(){
 }
 	public function revokeFrom_network(Request $request){
 		$login_id = Auth::guard('user')->user()->id;
+	/*	 if(Auth::guard("user")->user()->seller_type=="Co-Seller")
+                $login_id=Auth::guard("user")->user()->parent_id;*/
 		$revok_userid=$request->get('user_id');
 		$networks=Mynetworks::where('user_id',$login_id)->pluck('mynetwork_id')->first();
 		$arrayData=explode(',', $networks);

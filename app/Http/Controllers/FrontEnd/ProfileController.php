@@ -60,13 +60,8 @@ class ProfileController extends Controller
 }
 
 public function deleteEmployee(Request $request)
-    { 
+    {   $status='Deleted';
         $user = User::find($request->empId);
-     /*   if (empty($user)) {
-            return redirect()
-                ->route("user.listcosellers")
-                ->with("message", "User not Exists");
-        }*/
         $user->delete();
         /*return redirect()
             ->route("user.listcosellers")
@@ -1616,10 +1611,7 @@ public function offlineCategoriesAdmin(request $request) {
         if(Auth::guard("user")->user()->seller_type=="Co-Seller")
         $userId=Auth::guard("user")->user()->parent_id;
         $user = User::find($userId);
-        $rules=[
-                
-                "about_company" => "required",
-            ];
+        $rules=[ "about_company" => "required", ];
         $request->validate($rules);
         $keywords_removed=[];
         if(!empty($request->get("about_company")))
@@ -4011,6 +4003,9 @@ public function UserResetPassword(Request $request)
     public function profile_to_network(Request $request)
     {
         $login_id = Auth::guard("user")->user()->id;
+        /*if(Auth::guard("user")->user()->seller_type=="Co-Seller")
+                $login_id=Auth::guard("user")->user()->parent_id;*/
+	
         $to_network_id = $request->get("user_id");
         $networks = Mynetworks::where("user_id", $login_id)->first();
         if (empty($networks)) {
@@ -4100,7 +4095,7 @@ public function UserResetPassword(Request $request)
             ->orderBy('continent','asc')
            // ->pluck("continent")
             ->get();	    
-        $expand_continents = Country::whereIn("id", $expand_reg)
+        $expand_continents = Country::whereIn("id", $expand_reg)->whereNotIn("id", $active_reg)
             ->distinct() 
             ->orderBy('continent','asc')
             ->pluck("continent")
@@ -4121,6 +4116,8 @@ public function UserResetPassword(Request $request)
         $values = [];
         $seller_type=$user->seller_type??"";
         if ($seller_type != "Master") {
+            $parent_id=$user->parent_id??'';
+            if($parent_id!='')
             $user = User::find($user->parent_id);
         }
         $usertype = Auth::guard("user")->user()->usertype;

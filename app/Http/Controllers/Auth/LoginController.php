@@ -174,10 +174,11 @@ class LoginController extends Controller
       public function showResetPasswordForm($token) { 
           
           
-          if($this->isMobile()) { 
-		    return view('auth.passwords.forgetPasswordLink_mobile', ['token' => $token]);
-           
-       } else {
+            if(Auth::guard('user')->check()) // this means that the admin was logged in.
+            Auth::guard('user')->logout();
+            if($this->isMobile()) { 
+		        return view('auth.passwords.forgetPasswordLink_mobile', ['token' => $token]);
+            } else {
          
             return view('auth.passwords.forgetPasswordLink', ['token' => $token]);
         }

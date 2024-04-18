@@ -313,6 +313,25 @@ Route::post('/updateCompAbout', 'App\Http\Controllers\FrontEnd\ProfileController
 Route::post('/updateCompanyRegions', 'App\Http\Controllers\FrontEnd\ProfileController@updateCompanyRegions')->name('updateCompanyRegions');
 
 
+
+
+
+Route::post('updateAdm-Compimage','App\Http\Controllers\Admin\SellersController@updateAdmCompimage')->name('updateAdmCompimage');
+Route::post('updateAdmProfimage','App\Http\Controllers\Admin\SellersController@updateAdmProfimage')->name('updateAdmProfimage');
+Route::post('update-CompAdmbanner','App\Http\Controllers\Admin\SellersController@updateAdmCompbanner')->name('updateAdmCompbanner');
+Route::post('updateAdmAbtimg1','App\Http\Controllers\Admin\SellersController@updateAdmAbtimg1')->name('updateAdmAbtimg1');
+Route::post('updateAdmAbtimg2','App\Http\Controllers\Admin\SellersController@updateAdmAbtimg2')->name('updateAdmAbtimg2');
+Route::post('/updateAdmCompProf', 'App\Http\Controllers\Admin\SellersController@updateAdmCompProf')->name('updateAdmCompProf');
+Route::post('/updateAdmCompAbout', 'App\Http\Controllers\Admin\SellersController@updateAdmCompAbout')->name('updateAdmCompAbout');
+Route::post('/updateCompanyAbtRegions', 'App\Http\Controllers\Admin\SellersController@updateCompanyAbtRegions')->name('updateCompanyAbtRegions');
+Route::get('/offlineAdmcategories','App\Http\Controllers\Admin\SellersController@offlineCategoriesAdmin')->name('offlineAdmcategories');
+Route::post('/updateAdmSellerEmployee', 'App\Http\Controllers\Admin\SellersController@updateAdmSellerEmployee')->name('updateAdmSellerEmployee');
+Route::post('resetAdmpassword', 'App\Http\Controllers\Admin\SellersController@resetAdmpassword')->name('resetAdmpassword');
+Route::post('/addNewCoEmpAdmn', 'App\Http\Controllers\Admin\SellersController@addNewCoEmpAdmn')->name('addNewCoEmpAdmn');
+//Route::post('/deleteAdmnCoEmployee','App\Http\Controllers\FrontEnd\ProfileController@deleteEmployee')->name('deleteCoEmployee');
+Route::post('/deleteAdmnCoEmployee','App\Http\Controllers\Admin\SellersController@deleteAdmnCoEmployee')->name('deleteAdmnCoEmployee');
+
+
 //Ajax Company image update
 Route::post('update-company-image','App\Http\Controllers\FrontEnd\ProfileController@UpdateCompanyImage')->name('update.company.image');
 
@@ -573,6 +592,7 @@ Route::get('/admin/user/list', 'App\Http\Controllers\Admin\SellersController@ind
 Route::get('getsellerslist','App\Http\Controllers\Admin\SellersController@getsellerslist')->name('getsellerslist')->middleware('auth:admin');
 Route::get('/admin/user/view/{sellerid}', 'App\Http\Controllers\Admin\SellersController@sellerdetails')->name('admin.sellerview')->middleware('auth:admin');
 Route::get('/admin/user/profileview/{sellerid}', 'App\Http\Controllers\Admin\SellersController@sellerprofiledetails')->name('seller.profileview')->middleware('auth:admin');
+
 
 Route::get('/admin/user/product/create/{sellerid}', 'App\Http\Controllers\Admin\SellersController@sellerproductcreate')->name('admin.sellerproduct_create')->middleware('auth:admin');
  

@@ -17,12 +17,7 @@
               <div class="card-body">
               <div class="row">
 
-
-				  
-				  
-				  
-				  
-				  <form id="formsubmit">
+            <form id="formsubmit">
                    
             <div class="row">
                         
@@ -780,7 +775,7 @@
                 contentType: false,
                 success: function(data) {
                     $(".loaderajax").hide();
-                    var url1="{{url('/admin/user/view',$product->user_id)}}";
+                    var url1="{{url('/admin/user/profileview',$product->user_id)}}";
                     window.location.href=url1;
                 },
                 error: function (xhr) {
