@@ -190,7 +190,7 @@
     </div>
   </div>
   <!--message-outer-sec-->
-  <button type="submit" class="new-msg-bx-button d-flex"><i class="fa fa-envelope-o" aria-hidden="true"></i> Messaging <span class="msg_btn_chat_note ml-2"></span></button>
+  <button type="submit" class="new-msg-bx-button d-flex"><i class="fa fa-envelope-o" aria-hidden="true"></i> Messaging <span class="msg_btn_chat_note ml-2" style="display:none"></span></button>
 </div>
 <div class="modal fade" id="chatModal" tabindex="-1" aria-labelledby="chatModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -279,7 +279,7 @@
       ); 
       $fmcg.each(chatrooms, async function(i, item) {  
       channel = client.channel("messaging", item); 
-        await channel.addMembers([id], { text: 'New Member joined the channel.' });  
+        await channel.addMembers([id]);  
       });
       await checkChannels();
   }
@@ -793,8 +793,8 @@ $fmcg(document).on('click','.cht-ico',async function(e){
                 channel = client.channel("messaging", default_chatroom);
                 //await channel.addMembers([member1,member2]); 
                 //console.log(channel.addMembers([member1], { text: 'New Member joined the channel.' }));
-                await channel.addMembers([member1], { text: 'New Member joined the channel.' }); 
-                await channel.addMembers([member2], { text: 'New Member joined the channel.' }); 
+                await channel.addMembers([member1]); 
+                await channel.addMembers([member2]); 
               }else
               await createChannel(default_chatroom,member1,member2,data.cmp_img); 
               if($fmcg('.new-msg-bx').is(':hidden'))

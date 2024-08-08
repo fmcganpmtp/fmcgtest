@@ -40,6 +40,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\FrontEnd\PublicMiddlewareController;
 use Illuminate\Support\Str;
+use Session;
 
 class SellersController extends Controller
 {
@@ -51,6 +52,8 @@ class SellersController extends Controller
     }
    
     public function index(Request $request) {
+		Session::forget('from_page');
+		Session::forget('prof_id');
 
         $search_key=$request->get('search_key');
         $status=$request->get('status');
@@ -1064,7 +1067,8 @@ public function adminusersellersstatusupdates (Request $request)
     public function sellerprofiledetails($id) {
 		
         $user=$seller = User::find($id);
-       
+        Session::put('from_page', 'profile_view');
+		Session::put('prof_id', $id);
       
        if($user->seller_type=="Co-Seller")
         {   $id=$user->parent_id;
@@ -1287,7 +1291,11 @@ public function adminusersellersstatusupdates (Request $request)
                 (($record->status=='Pending') ?'<span style="color:white;background-color:orange;padding:5px;line-height:12px;border-radius:2px;margin-top:5px;display:inline-block;">'.$record->status.'</span>' :
                 (($record->status=='Rejected') ? '<span style="color:white;background-color:purple;padding:5px;line-height:12px;border-radius:2px;margin-top:5px;display:inline-block;">'.$record->status.'</span>' : ""
                 ))));
-			$userId = $record->id;			
+            
+        $userId = $record->id;
+        if($record->seller_type=="Co-Seller")
+        $userId=$record->parent_id;    
+						
 			$c_types = $c_types_names =[]; 
             if($record->cmp_type) {             
                 foreach ($company_types as $company_type){
