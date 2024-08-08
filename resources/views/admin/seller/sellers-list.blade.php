@@ -116,19 +116,20 @@
                                  <tr>
                                     <th></th>
                                     <th>Sl no</th>
-                                    <th>Name</th>
-                                    <th>Package</th>
                                     <th>Company name</th>
-                                    
-                                    <th> Email</th>
-                                    <th>Phone</th>
-                                    <th>Created at</th>
-                                    <th>Address</th>
-                                    <th> Country</th>
-                                    <th>Subscription End</th>
-                                    <th>Categories</th>
                                     <th>Company Types</th>
-                                    
+                                    <th>Name</th>
+                                    <th>Last Name</th>
+                                    <th>Job Title</th>
+                                    <th>Mail Address Employee</th>
+                                    <th>Phone</th>
+                                    <th>Company Email</th>
+                                    <th>Country</th>
+                                    <th>Location(City)</th>
+                                    <th>Active Product Categories</th>
+                                    <!-- <th>Package</th>-->
+                                    <th>Subscription Start</th>
+                                    <th>Subscription End</th>
                                     <th>Action</th>
                                  </tr>
                               </thead>
@@ -304,7 +305,7 @@
            serverSide: true,
            'searching': false,
            "lengthChange": false,
-           "order": [ 0,'desc'],
+           "order": [ 2,'desc'],
            'ajax': {
            'url':"{{ url('getsellerslist') }}",
            'data': function(data){
@@ -345,7 +346,7 @@
          }
        },
          {
-          "targets":13, 
+          "targets":15, 
           "orderable": false,
           "render": function(data,type,full,meta)
          {
@@ -361,8 +362,8 @@
            if(full.status!='Blocked')
            str+='<button type="button" title="Block This User" onclick="fnstatusupdator('+full.id+','+Blocked+')" style="border: 0 none;"><i class="fa fa-ban" aria-hidden="true"></i></button>';
            if(full.status!='Active')
-             str+='<button type="button" title="Active This User" onclick="fnstatusupdator('+full.id+','+Active+')" style="border: 0 none;"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></button>';
-            str+='</div>';
+           str+='<button type="button" title="Active This User" onclick="fnstatusupdator('+full.id+','+Active+')" style="border: 0 none;"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></button>';
+           str+='</div>';
             
            return str;
          }
@@ -371,17 +372,22 @@
             columns: [
              { data: 'id' },
              { data: 'id' },
+             { data: 'company_name' } ,
+             { data: 'c_types' }, 
              { data: 'name' },
-             { data: 'pkg_name' }, 
-             { data: 'company_name' } ,  
+             { data: 'surname' },  
+             { data: 'position' },
              { data: 'email' } ,
              { data: 'phone' } ,
-             { data: 'created_at' },  
-             { data: 'address' },  
+             { data: 'company_email' } ,
              { data: 'country_name' },
-             { data: 'subscription' }, 
+             { data: 'address' }, 
              { data: 'categories' },
-             { data: 'c_types' }, 
+           //  { data: 'pkg_name' }, 
+             { data: 'subscription_start' },  
+             { data: 'subscription' }, 
+             
+             
              
              
             ]

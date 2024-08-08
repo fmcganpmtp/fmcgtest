@@ -27,7 +27,7 @@ use App\Models\LoginActivity;
 use App\Models\ProfileAccountDeleteRequest;
 use App\Models\SellerProductImage;
 use Illuminate\Support\Facades\Hash;
-use App\User;
+use App\Models\User;
 
 use File;
 use Illuminate\Http\Request;
@@ -59,16 +59,18 @@ class ProfileController extends Controller
     return 0 ;
 }
 
-public function deleteEmployee(Request $request)
-    {   $status='Deleted';
+public function deleteEmployee(Request $request) {   
+    $userId = Auth::guard("user")->user()->id;
+    if($request->empId!=''){
+        $status='Deleted';
         $user = User::find($request->empId);
-        $user->delete();
-        /*return redirect()
-            ->route("user.listcosellers")
-            ->with("message", "User Deleted!");*/
-            
-    echo json_encode("User Deleted!");
-    }
+        $user->status = 'Deleted';
+        $user->save();
+        return response()->json(['message' => 'Profile Deleted','status' => true]);
+    }else{
+        return response()->json(['message' => 'Profile not found','status' => false]);
+    }     
+}
    public function updateSellerEmployee(Request $request)
     { 
         $userId = Auth::guard("user")->user()->id;
@@ -3331,6 +3333,9 @@ public function UserResetPassword(Request $request)
             }
         }
         $userId = Auth::guard("user")->user()->id;
+        if(Auth::guard("user")->user()->parent_id >0){
+            $userId = Auth::guard("user")->user()->parent_id;
+        }
         $user = User::leftjoin( "buyer_companies", "buyer_companies.user_id", "users.id" )
                       ->where("users.id", $userId)
                       ->first();
@@ -4730,5 +4735,14 @@ public function UserResetPassword(Request $request)
         );
          
         return redirect(route('user-login'))->with('message','Email_not_verified:'.$email_id); 
+    }
+    public function updateNotificationStatus(Request $request)
+    {
+        $chat_notification=$request->input("chat_notification");
+        $sender_id = Auth::guard('user')->user()->id;
+        $users = User::find($sender_id);
+        $users->chat_notification =  $chat_notification;
+        $users->save(); 
+        $return_array = array('ajax_status' => true);
     }
 }

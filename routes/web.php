@@ -19,7 +19,6 @@ Auth::routes();
   
 Route::get('/login/admin', 'App\Http\Controllers\Auth\LoginController@showAdminLoginForm')->name('admin.login.form');
 Route::get('/login/user', 'App\Http\Controllers\Auth\LoginController@showUserLoginForm')->name('user-login');
-//Route::get('/admin/login', 'App\Http\Controllers\Auth\LoginController@showAdminLoginForm');
 Route::get('/register/admin', 'App\Http\Controllers\Auth\RegisterController@showAdminRegisterForm');
 Route::get('/register/user', 'App\Http\Controllers\Auth\RegisterController@showUserRegisterForm')->name('user-register');
 Route::post('/logout', 'App\Http\Controllers\Auth\RegisterController@logout')->name('logout');
@@ -30,6 +29,7 @@ Route::post('/register/admin', 'App\Http\Controllers\Auth\RegisterController@cre
 Route::post('/register/user', 'App\Http\Controllers\Auth\RegisterController@createUser');
 Route::get('/autocomplete-search', 'App\Http\Controllers\FrontEnd\PagesController@autocompleteSearch')->name('autocompleteSearch');
 Route::get('/TypeaheadSearch', 'App\Http\Controllers\FrontEnd\PagesController@TypeaheadSearch')->name('TypeaheadSearch');
+Route::post('/webhook', 'App\Http\Controllers\FrontEnd\PagesController@webhook')->name('webhook');
 //Route::get('/logout', 'App\Http\Controllers\Auth\LoginController@logout')->name('logout');
 Route::get('/logout', '\App\Http\Controllers\Auth\LoginController@logout')->name('admin.logout');
 
@@ -55,14 +55,18 @@ Route::get('/getMyMessages/{id}','App\Http\Controllers\FrontEnd\MessageControlle
 Route::post('/sentMessages', 'App\Http\Controllers\FrontEnd\MessageController@sentMessages')->name('chat.sentMessages');
 Route::get('/checkNewMessage/{senter_id}/{last_message}', 'App\Http\Controllers\FrontEnd\MessageController@checkNewMessage')->name('chat.checkNewMessage');
 Route::get('/checkNotifications', 'App\Http\Controllers\FrontEnd\MessageController@checkNotifications')->name('checkNotifications');
-
+Route::get('/messages', 'App\Http\Controllers\FrontEnd\MessageController@messagesPage')->name('chat.messages');
+Route::post('/ajaxmessages', 'App\Http\Controllers\FrontEnd\MessageController@ajaxmessages')->name('chat.ajaxmessages');
 //stripe
 Route::post('/session', 'App\Http\Controllers\FrontEnd\StripeController@session')->name('session');
+Route::post('/session1', 'App\Http\Controllers\FrontEnd\StripeController@session1')->name('session1');
 Route::get('/stripe', 'App\Http\Controllers\StripeController@checkout')->name('checkout');
 Route::get('/success', 'App\Http\Controllers\FrontEnd\StripeController@success')->name('success');
 
 //newsletter subsription
 Route::post('/newsletter-subscription', 'App\Http\Controllers\FrontEnd\ProfileController@NewsletterSubscription')->name('newsletter.subscription'); 
+Route::post('/updateNotificationStatus', 'App\Http\Controllers\FrontEnd\ProfileController@updateNotificationStatus')->name('updateNotificationStatus'); 
+
 
 Route::get('buildmenustructure', 'App\Http\Controllers\FrontEnd\PagesController@buildmenustructure')->name('buildmenustructure');
 Route::get('/my-network2', 'App\Http\Controllers\FrontEnd\PagesController@myNetwork2')->name('myNetwork2');
@@ -200,6 +204,7 @@ Route::get('product-listing/{search_key?}', 'App\Http\Controllers\FrontEnd\Produ
 // Front end packages listing page
 Route::get('/package-listing', 'App\Http\Controllers\FrontEnd\PackageController@PackageListing')->name('package.listing')->middleware('auth:user');
 Route::get('/package-detail', 'App\Http\Controllers\FrontEnd\PackageController@PackageDetails')->name('package.details')->middleware('auth:user');
+Route::post('/get-packageDetails', 'App\Http\Controllers\FrontEnd\PackageController@GetPackageDetail')->name('GetPackageDetail');
 Route::get('/PackgeInvoice', 'App\Http\Controllers\FrontEnd\PackageController@PackgeInvoice')->name('PackgeInvoice')->middleware('auth:user');
 Route::get('/PackgeInvoice', 'App\Http\Controllers\FrontEnd\PackageController@PackgeInvoice')->name('PackgeInvoice')->middleware('auth:user');
 Route::get('/prnpriview','App\Http\Controllers\FrontEnd\PackageController@prnpriview')->name('prnpriview')->middleware('auth:user');
@@ -703,3 +708,6 @@ Route::get('/admin/profile/request/delete', 'App\Http\Controllers\Admin\RequestD
 Route::get('/admin/stripe-status', 'App\Http\Controllers\Admin\AdminController@stripeStatus')->name('stripe.status')->middleware('auth:admin');
 Route::get('stripe_status', 'App\Http\Controllers\Admin\AdminController@stripe_status')->name('stripe_status');
 Route::post('currencymerge','App\Http\Controllers\Admin\CurrencyController@currencymerge')->name('currencymerge')->middleware('auth:admin');
+Route::post('create-token', 'App\Http\Controllers\FrontEnd\PagesController@createtoken')->name('create-token');
+Route::get('redirect-company-profile/{profileid}', 'App\Http\Controllers\FrontEnd\PagesController@RedirectCompanyProfile')->name('redirect.profile');
+Route::post('/stream-notification','App\Http\Controllers\FrontEnd\MessageController@sentNotification')->name('chat.sentNotification');

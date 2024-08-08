@@ -23,10 +23,18 @@ class StripeController extends Controller
          //Create Stripe Token
         \Stripe\Stripe::setApiKey("STRIPESECRETKEY");
         $email = $name = "";
-        if (session()->has("user_checkout_details")) {
+       /* if (session()->has("user_checkout_details")) {
             $email = session("user_checkout_details.email");
             $name = session("user_checkout_details.nme");
-        }
+        }*/
+        
+        
+        $email = $request->get('email');
+        $name = $request->get('name');
+        $amount = number_format(($request->get("amount")*100) , 0, '', '');
+        $item = $request->get("item");
+        $package_id = $request->get("package_id");
+        
         
          $amount = number_format(($request->get("amount")*100) , 0, '', '');
         $item = $request->get("item");
@@ -49,7 +57,7 @@ class StripeController extends Controller
             ],
             "mode" => "payment",
             "success_url" => route("success"),
-            "cancel_url" => route("subscription.details"),
+            "cancel_url" => route("package.listing"),
         ]);
 
         /*  $response = \Stripe\Token::create(array( 
@@ -60,11 +68,69 @@ class StripeController extends Controller
     "cvc" => session('user_checkout_details.card_cvc')
 )));*/
 
-        if (session()->missing("package_id") ||session()->missing("accounts_id")) {
+      /*  if (session()->missing("package_id") ||session()->missing("accounts_id")) {
             return redirect()->route("subscription.details");
+        }*/
+        
+        if (session()->missing("package_id") ) {
+            return redirect()->route("package.listing");
         }
         return redirect()->away($session->url);
     }
+    
+    
+    
+    
+    
+    
+    
+    public function session1(Request $request)
+    {
+        Session::put('auto_renewal', $request->get('auto_renewal'));
+        
+        \Stripe\Stripe::setApiKey(env('STRIPE_SK'));
+        $email = $request->get('email');
+        $name = $request->get('name');
+        $amount = number_format(($request->get("amount")*100) , 0, '', '');
+        $item = $request->get("item");
+        $package_id = $request->get("package_id");
+
+        $session = \Stripe\Checkout\Session::create([
+            "customer_email" => $email,
+            "line_items" => [
+                [
+                    "price_data" => [
+                        "currency" => "EUR",
+                        "product_data" => [
+                            "name" => $item,
+                        ],
+
+                        "unit_amount" =>$amount,
+                    ],
+                    "quantity" => 1,
+                ],
+            ],
+            "mode" => "payment",
+            "success_url" => route("success"),
+            "cancel_url" => route("package.listing"),
+        ]);
+
+        
+      //  return redirect()->away($session->url);
+      return redirect()->route('success');
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     public function success(Request $request)
     {
         
@@ -73,8 +139,8 @@ class StripeController extends Controller
         $user_id=Auth::guard("user")->user()->id;
         if(Auth::guard("user")->user()->seller_type=="Co-Seller")
         $user_id=Auth::guard("user")->user()->parent_id;
-        if((session()->missing('package_id')) || (session()->missing('accounts_id')))  {
-        return redirect()->route('subscription.details'); 
+        if((session()->missing('package_id')))  {
+        return redirect()->route('package.listing'); 
         }
         $order_type = $old_pkg_id = "";
         if (!empty(Session::get("order_type"))) {
@@ -88,14 +154,14 @@ class StripeController extends Controller
             ->id;
        }
        else {
-        return redirect()->route('subscription.details'); 
+        return redirect()->route('package.listing'); 
        }
         $accounts = PackageAccount::where("id", Session::get("accounts_id"))->first();
         $package = Package::where("id", Session::get("package_id"))->first();
         $input = [
             "user_id" => $user_id,
             "package_id" => Session::get("package_id"),
-            "type" => $package->user_type,
+            "type" => 'seller',
             "date" => Carbon::today(),
             "order_id" => $order_id,
             "order_total" => Session::get("order_total"),

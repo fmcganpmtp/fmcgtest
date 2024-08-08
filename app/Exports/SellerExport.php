@@ -34,9 +34,17 @@ class SellerExport implements FromCollection,ShouldAutoSize,WithHeadings
          
 
         $inr=0;
-         $records = User::leftJoin('buyer_companies', 'buyer_companies.user_id', '=', 'users.id')
+         $records = User::leftJoin('buyer_companies', function($join)
+                                               {
+                                                  $join->on('buyer_companies.user_id', '=', 'users.id');
+                                                  $join->orOn('buyer_companies.user_id', '=', 'users.parent_id');
+                                               }) 
         ->leftJoin('countries', 'countries.id', '=', 'users.country_id')
-        ->leftJoin('subscriptions', 'subscriptions.user_id', '=', 'users.id')
+        ->leftJoin('subscriptions', function($join)
+                                               {
+                                                  $join->on('subscriptions.user_id', '=', 'users.id');
+                                                  $join->orOn('subscriptions.user_id', '=', 'users.parent_id');
+                                               })  
         ->leftJoin('packages', 'subscriptions.package_id', '=', 'packages.id')
         ->where('subscriptions.package_id', '<>', null)
         -> where('subscriptions.status', '=', 'Active')	;
@@ -156,11 +164,20 @@ class SellerExport implements FromCollection,ShouldAutoSize,WithHeadings
             
        $records=$records 
       // ->where('usertype','seller') 
-       ->where('seller_type','Master')->where('users.status','<>','Deleted')     
+       //->where('seller_type','Master')
+       ->where('users.status','<>','Deleted')     
         ->groupby('users.id')->orderBy('users.name','asc') 
+       
+       /*
         ->select('buyer_companies.company_name','packages.name as pkg_name',DB::raw("'' AS cmpny_type"),'users.name','users.surname','users.position','users.email','users.phone',DB::raw("countries.name as country_name"),
         DB::raw("CONCAT(buyer_companies.company_street, ',', buyer_companies.company_location, ',', buyer_companies.company_zip) as address"),DB::raw("'' AS ctgry")
         ,DB::raw("(SELECT date FROM subscriptions WHERE subscriptions.user_id = users.id order BY subscriptions.id DESC limit 1) as subscription_date"),DB::raw("(SELECT expairy_date FROM subscriptions WHERE subscriptions.user_id = users.id order BY subscriptions.id DESC limit 1) as expairy_date"),'users.id','buyer_companies.company_type')       
+        
+        */
+         ->select('buyer_companies.company_name',DB::raw("'' AS cmpny_type"),'users.position','users.name','users.surname','users.position','users.email','users.phone', 'buyer_companies.company_email',DB::raw("countries.name as country_name"),
+        DB::raw("CONCAT(buyer_companies.company_street, ',', buyer_companies.company_location, ',', buyer_companies.company_zip) as address"),DB::raw("'' AS ctgry")
+        ,DB::raw("(SELECT date FROM subscriptions WHERE subscriptions.user_id = users.id order BY subscriptions.id DESC limit 1) as subscription_date"),DB::raw("(SELECT expairy_date FROM subscriptions WHERE subscriptions.user_id = users.id order BY subscriptions.id DESC limit 1) as expairy_date"),'users.id','buyer_companies.company_type')       
+        
         ->get()->each(function ($row, $inr) {
                        // $row->no = ++$inr; 
                         $userId = $row->id;
@@ -254,7 +271,7 @@ class SellerExport implements FromCollection,ShouldAutoSize,WithHeadings
      public function headings() :array
     {
         
-		return [" Company Name","Package" ," Company Type(s)"," Name"," Last name"," Job Title"," Mail address"," Phone#"," Country"," Location (City)"," Active product categories"," Subscription start","Subscription end"];
+		return [" Company Name" ," Company Type(s)"," Name"," Last name"," Job Title"," Mail address Employee"," Phone#"," Company Email"," Country"," Location (City)"," Active product categories"," Subscription start","Subscription end"];
 		//return [" SL No"," SELLER NAME ", " COMPANY NAME"," EMAIL"," PHONE"," CREATED AT"," ADDRESS"," COUNTRY NAME"," SUBSCRIPTION END"," Category"," Company Type"];
     }
 

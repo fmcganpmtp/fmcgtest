@@ -33,13 +33,13 @@
                                 @foreach ($slider_images as $images)
                                     <div class="carousel-item @if ($count==0) {{ 'active' }} @endif">
                                         @if ($images->image != '')<img src="{{ asset('/assets/uploads/sliders/' . $images->image) }}" class="img-thumbnail" width="98%" height="100px" />@endif
-                                        <div class="carousel-caption d-none d-md-block">
+                                       <!-- <div class="carousel-caption d-none d-md-block">
                                             <h5>{{ $images->title }}</h5>
                                             <p>{{ $images->description }}</p>
                                             @if ($images->target)
                                                 <a href="{{ $images->target }}">Readmore</a>
                                             @endif
-                                        </div>
+                                        </div> -->
                                     </div>
                                     @php $count++; @endphp
                                 @endforeach

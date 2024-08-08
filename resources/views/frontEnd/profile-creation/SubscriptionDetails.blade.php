@@ -51,7 +51,9 @@ $today = Carbon::createFromFormat('Y-m-d H:s:i', $today);
                       $Enddate =  $subscription->expairy_date;
                       $Enddate =  Carbon::createFromFormat('Y-m-d', $Enddate);
                       ?>
+                    @if($subscription->package_id!=$lowestpackage->id)  
                     {{$subscription->expairy_date ?? ''}}
+                    @endif
 					<?php
 					$dates_remining = $Enddate->diffInDays($today);
 					//dateDiffInDays($Enddate); //calling function
@@ -93,28 +95,29 @@ $today = Carbon::createFromFormat('Y-m-d H:s:i', $today);
 		        { 
 			      array_push($pac_acc,$pac_account->id);
 		        } } ?>
-					 <a href="{{ route('upgrade.package',['package_basicPrice'=>$package->package_basic_price,'order_type'=>'Upgrade','old_pkg_id'=>$package->id])}} " class="btn btn-outline-success">Upgrade</a>
+					 <a href="{{ route('package.listing')}} " class="btn btn-outline-success">Upgrade</a>
                      @if($package->status=='deleted')
                         <a  onclick="sweetAlert('This Package is no longer available.', '', 'error');"  href="#"  class="btn btn-outline-info">Renew </a>
 				     @elseif(!in_array($current_acc_id, $pac_acc) && $dates_remining<=15)
                         <a  onclick="sweetAlert('This Package -- Account details changed. So not able to renew.', '', 'error');"  href="#"  class="btn btn-outline-info">Renew </a>
                      @elseif($dates_remining<=15)
                         
-	                    <a  href="{{ route('renew.package',['package_id'=>$package->id,'accounts_id'=>$subscription->OrderDetail->accounts_id ,'order_type'=>'Renew','old_pkg_id'=>$package->id])}}"  class="btn btn-outline-info">Renew </a>
+	                    <a  href="{{ route('package.listing') }}"  class="btn btn-outline-info">Renew </a>
                      @endif
 					   <?php } 
 					   else {  ?>	
 
-					    <a href="{{ route('upgrade.package',['package_basicPrice'=>$package->package_basic_price,'order_type'=>'Upgrade','old_pkg_id'=>$package->id])}} " class="btn btn-outline-success">Upgrade</a>
+					    <a href="{{ route('package.listing') }} " class="btn btn-outline-success">Upgrade</a>
                  
               @if($package->status=='deleted')
                         <a  onclick="sweetAlert('This Package is no longer available.', '', 'error');"  href="#"  class="btn btn-outline-info">Renew </a>
                     @elseif($dates_remining<=15)
                        @if($package->package_basic_price>0)
 	                    <!--<a  href="{{ route('renew.package',['package_id'=>$package->id,'accounts_id'=>$subscription->OrderDetail->accounts_id ,'order_type'=>'Renew','old_pkg_id'=>$package->id])}}"  class="btn btn-outline-info">Renew </a>
-	                    -->
-	                    <a  href="{{route('subscription.checkout', ['pkg_id'=>$package->id, 'accounts_id'=>'','order_type'=>'Renew','old_pkg_id'=>$package->id])}}" class="btn btn-outline-info"><span>Renew</span></a>
 	                    
+	                    <a  href="{{route('subscription.checkout', ['pkg_id'=>$package->id, 'accounts_id'=>'','order_type'=>'Renew','old_pkg_id'=>$package->id])}}" class="btn btn-outline-info"><span>Renew</span></a>
+	                    -->
+	                    <a href="{{ route('package.listing')}} " class="btn btn-outline-info"><span>Renew</span></a>
 	                    @else
 	                    <form method="post" action="{{route('cart.submit')}}" name="direct_submit">
                                   
@@ -129,7 +132,7 @@ $today = Carbon::createFromFormat('Y-m-d H:s:i', $today);
 					   <?php } ?>
 					@endif
                     @if($subscription->status == "Active" && $Enddate->isPast() && !$Enddate->isToday() )       
-                        <a class="btn btn-outline-success" href="{{route('expired.package',['order_type'=>'Expired','old_pkg_id'=>$package->id])}}" ><i class="fa fa-telegram" aria-hidden="true"></i>Subscribe Packages </a>     
+                        <a class="btn btn-outline-success" href="{{route('package.listing')}}" ><i class="fa fa-telegram" aria-hidden="true"></i>Subscribe Packages </a>     
                     @endif     
                      </td>
                   </tr>

@@ -16,6 +16,8 @@ use DB;
 use Hash;
 use App\User;
 use App\Models\LoginActivity;
+
+use GetStream\StreamChat\Client as StreamClient;
 class LoginController extends Controller
 {
     /*
@@ -118,7 +120,27 @@ class LoginController extends Controller
 
         if (Auth::guard('user')->attempt(['email' => $request->email, 'password' => $request->password,'status'=> function ($query) {$query->where('status', '!=', 'Deleted');}], $request->get('remember'))) {                                                
                 LoginActivity::create(['user_id'=>Auth::guard('user')->id()]);
-    
+                $client = new StreamClient(
+                    getenv("STREAM_API_KEY"),
+                    getenv("STREAM_API_SECRET"),
+                    null,
+                    null,
+                    9 // timeout
+                );
+                $sender_details = User::find(Auth::guard('user')->id());  
+                $user = [
+                    'id' => preg_replace('/[@\.]/', '_', $request->email),
+                    'name' => $sender_details->BuyerCompany->company_name.'|'.$sender_details->name.' '.$sender_details->surname.'|'.$sender_details->position.'|'.Auth::guard('user')->id(),
+                    'role' => 'admin'
+                ];        
+                $client->updateUser($user);
+                $client->updateChannelType("messaging", ["reminders" => true]);
+                $client->updateAppSettings([
+                    'webhook_url'=> "http://test.fmcgland.com/webhook", 
+                ]);
+                
+                $chatroom = 'fmcgChatRoom'.Auth::guard('user')->id();
+                User::where('id', Auth::guard('user')->id())->update(['chatroom' => $chatroom]);
         }
         $user = \App\User::where('email', $request->email)->latest('id')->first();
        // dd($user);

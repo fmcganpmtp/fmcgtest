@@ -12,7 +12,7 @@
 <table width="100%" border="0" cellpadding="0" cellspacing="0" align="center" style="background:#FFF; border:1px solid #f1f1f1;max-width:500px; margin-top:10px; 
 border-top-right-radius:10px; border-top-left-radius:10px;">
   <tr style=" margin:0px 0px; padding:0px;">
-    <td colspan="5"><p style="margin:0px 0px;  padding:0px;border-top-right-radius:10px; text-align:center; border-top-left-radius:10px; border-bottom:3px solid #e86a6a; background:#f5f5f5;"><img src="{{url('/public/images/logo_mail.png')}}" style="width:250px; text-align:center; margin:30px auto;" /></p></td>
+    <td colspan="5"><p style="margin:0px 0px;  padding:0px;border-top-right-radius:10px; text-align:center; border-top-left-radius:10px; border-bottom:3px solid #e86a6a; background:#f5f5f5;"><img src="https://fmcgland.com/public/images/logo_mail.png" style="width:250px; text-align:center; margin:30px auto;" /></p></td>
   </tr>
   <tr>
     <td colspan="5">
@@ -22,6 +22,7 @@ border-top-right-radius:10px; border-top-left-radius:10px;">
 <h1 style="  font-size: 18px; ">
     Hi {{$user}},<br>
 You have received a chat message from {{$messaged_user}}. Go to the fmcgland website to see and answer the message.<br><br>
+<a style="color:#E09D4F;" href="{{ route('user-login') }}">Login</a><br><br>
 with kind regards,<br><br>
 Fmcgland team.
 </h1>

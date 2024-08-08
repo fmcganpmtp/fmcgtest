@@ -68,10 +68,15 @@
                   @else
                     @if($view_composer_profile_menu_visible_criteria['network_expand'] == 1  && $network==true )
                         <a href="javascript:void(0)" class="green-button clsa{{$user->id}}" onclick="addtonetwork({{$user->id}})" ><i class="fa fa-plus" aria-hidden="true"></i> Add To Network</a>
+                        
                     @else
                       <!--  <a href="javascript:void(0)" onclick="showerrornetwork" class="green-button ad-nw12">Add To Networks</a> -->
                     @endif
-                  
+                    @php 
+                    $fromusername = preg_replace('/[@\.]/', '_', Auth::guard('user')->user()->email); 
+                    $tousername = preg_replace('/[@\.]/', '_', $user->email); 
+                    @endphp
+                    <a href="{{ route('chat.messages')}}?sender_id={{$user->id}}" class="green-button cht-ico" sender-id="{{$user->id}}"><i class="fa fa-comments" aria-hidden="true"></i>Message</a>
                   <!--
 					  @if( $view_composer_profile_menu_visible_criteria['network_chat'] == 1)
 					  <a href="javascript:void(0)" class="green-button cht-ico" onclick="EnableChatRequest({{$user->id}})"><i class="fa fa-comments" aria-hidden="true"></i>Message</a>
@@ -242,9 +247,10 @@
               
               
             </div>
-                   <span id="txtcompanytype"></span>  
+                     
                   </div>
                 </h3>
+                <span id="txtcompanytype"></span>
                 <h4>
                   <div class="dropdown">
                     <div class="autocomplete form-group off-ln-cat" >
@@ -265,9 +271,10 @@
               
               
             </div>
-                  <span id="offline_categories1"></span>     
+                     
                   </div>
                 </h4>
+                <span id="offline_categories1"></span>  
               </div>
               <div class="pr-adrrs-blk">
                 <div class="row">
@@ -726,7 +733,7 @@
                                 <span id="txtusername_prof_emp"></span>
                               </div>
                               <div class="col-lg-6 col-12">
-                                <input placeholder="Last Name" type="text" class="form-control " name="surname" value="{{ old('surname', $user->surname)  }}"  >
+                                <input placeholder="Last Name" type="text" class="form-control " name="surname" value="{{ old('surname', Auth::guard('user')->user()->surname)  }}"  >
                                 <span id="txtsurname_prof_emp"></span></div>
                               </div>
                             
@@ -749,6 +756,15 @@
                         
                        </form>
                         <button class="greenButton  btn-cancel_2 prof-save-btn" onclick="HideEditprof()">Cancel</button>
+                      </div>
+                      <div class="col-12">
+                        <div class="cont">
+                          <span>Chat Email Notification:</span>
+                          <div class="toggle">                            
+                            <input type="checkbox" id="mode-toggle" class="toggle__input" @if($user->chat_notification) checked @endif>
+                            <label for="mode-toggle" class="toggle__label"></label>
+                          </div>
+                        </div>
                       </div>
                     </div>
                     
@@ -1070,6 +1086,9 @@
   
   
 </section>
+	
+@endsection
+@section('footer_script')
 <style>
    
 #chartdiv {
@@ -1082,6 +1101,49 @@
     width: 100%;
   height: 500px;
 }
+
+.cont {
+    text-align: center;
+}
+
+.toggle {
+    position: relative;
+    display: inline-block;
+}
+
+.toggle__input {
+    display: none;
+}
+
+.toggle__label {
+    display: block;
+    width: 60px;
+    height: 30px;
+    background-color: #FD632F;
+    border-radius: 99px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.dark-mode .toggle__label {
+    background-color: #026f4d;
+}
+
+.toggle__input:checked + .toggle__label::after {
+    left: 32px;
+}
+
+.toggle__label::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 26px;
+    height: 26px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    transition: left 0.3s ease;
+}
 </style>
 
         <script src="{{ asset('js/io_range-slider.min.js')}}"></script>
@@ -1091,8 +1153,7 @@
         <script src="{{ asset('js/jquery.passwordRequirements.js')}}"></script>
         <script src="{{ asset('js/jquery.passwordRequirements.min.js')}}"></script>
         <link rel="stylesheet" href="{{ asset('/css/intlTelInput.css')}}">
-        <script src="{{ asset('js/intlTelInput.min.js')}}"></script>
-       
+        <script src="{{ asset('js/intlTelInput.min.js')}}"></script> 
  
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/5.2.2/tinymce.min.js"></script> 
                     
@@ -1429,38 +1490,22 @@ $fmcg("#submitmessage_prof").css("display", "none");
                 dataType: "json",
                 processData: false,
                 contentType: false,
-                success: function(data) {
-                    //$fmcg(".loaderajax").hide();
-                    swal('Employee Deleted!'); 
-                    
+                success: function(data) { 
+                  if(data.status){
+                    swal(data.message);  
                     $fmcg('.edt-emp'+id).hide();
-                    //data.message
-                   /* if(data)
-                        $fmcg("#mail_send_success").empty().append("<p style='color:red'>"+data+"</p>");
-                      else
-                        $fmcg("#mail_send_success").empty();*/ 
-                       
-                        
+                  }else{
+                    swal(data.message);  
+                    //$fmcg('.edt-emp'+id).hide();
+                  }
+                      
                 },
                 error: function (xhr) {
-                 
-                   
-                  $fmcg(window).scrollTo(0, document.body.scrollHeight);
-                   // $fmcg(window).scrollTop(0);
-                               
+                  $fmcg(window).scrollTo(0, document.body.scrollHeight);                                
                 }
             });
 
-        });
-         
-         
-            
-
-        
-      
-     
-  
-     
+        }); 
  
 }
 var input = window.intlTelInput(document.querySelector("#phone_prof_emp"), {
@@ -1789,7 +1834,7 @@ $fmcg("#compny_profile").on('submit', function(e) {
                     
                       
                     if(errors.errors.image)
-                    $fmcg("#txtimgpicture").empty().append("<p  class='txt_err' style='color:red'>Company logo is required</p>");
+                    $fmcg("#txtimgpicture").empty().append("<p  class='txt_err lgo-err' style='color:red'>Company logo is required</p>");
                     else
                       $fmcg("#txtimgpicture").empty();
                       
@@ -2637,8 +2682,38 @@ function RemoveWishlist(id = null){
             
         }
 
+        const toggle = document.getElementById('mode-toggle');
+const body = document.body;
 
+toggle.addEventListener('change', function() {
+    if (this.checked) {
+        body.classList.add('dark-mode');
+        localStorage.setItem('darkMode', 'enabled');
+        var chat_notification = 1;
+    } else {
+        body.classList.remove('dark-mode');
+        localStorage.setItem('darkMode', 'disabled');
+        var chat_notification = 0;
+    }
+    $fmcg.ajax({
+        type:'post',
+        url:'{{ route("updateNotificationStatus") }}',
+        data:{chat_notification: chat_notification, '_token':'{{csrf_token()}}'},
+        success:function(response){
+          ;
+        }
+    });
+});
 
+// check for saved user preference, if any, on load of the website
+document.addEventListener('DOMContentLoaded', (event) => {
+    const darkMode = localStorage.getItem('darkMode');
+    
+    if (darkMode === 'enabled') {
+        body.classList.add('dark-mode');
+        toggle.checked = true;
+    }
+}); 
 </script>
 <script src="//cdn.amcharts.com/lib/5/index.js"></script>
 <script src="//cdn.amcharts.com/lib/5/map.js"></script>
@@ -2786,5 +2861,6 @@ $fmcg(function() {
 
 	var accordion = new Accordion($fmcg('.accordion2'), false);
 });
-</script>
+
+  </script>
 @endsection

@@ -316,6 +316,8 @@
                         <li class="nav-item {{ (Request::get('tab')=="about"  || !(isset($_GET['tab'])))? 'active':"" }}"><a data-toggle="tab" href="#home"  id="home-tab" role="tab" aria-controls="home" aria-selected="{{ (Request::get('tab')=="about" || !(isset($_GET['tab']))) ? 'true':"false" }}">About</a></li>
                         <li class="nav-item {{ Request::get('tab')=="regions"? 'active':"" }}"><a data-toggle="tab" href="#menu1" role="tab" aria-controls="menu1" id="menu1-tab" aria-selected="false">Regions</a></li>
                         <li class="nav-item {{ Request::get('tab')=="employees"? 'active':"" }}"><a data-toggle="tab" href="#menu2" role="tab" aria-controls="menu2" id="menu2-tab" aria-selected="{{ Request::get('tab')=="employees"? 'true':"false" }} ">Employees</a></li>
+                        <li class="nav-item {{ Request::get('tab')=="myprofile"? 'active':"" }}"><a data-toggle="tab" href="#myprofile" role="tab" aria-controls="myprofile" id="myprofile-tab" aria-selected="{{ Request::get('tab')=="myprofile"? 'true':"false" }} ">Profile</a>
+                    </li>
                       </ul>
                      <div class="tab-content">
                         <div id="home" class="tab-pane fade show {{ (Request::get('tab')=="about" || !(isset($_GET['tab'])))? 'active':"" }}"  role="tabpanel" aria-labelledby="home-tab" style="position:relative;">
@@ -554,8 +556,133 @@
                      </div>
                   </div>
                </div>
-                       
-            
+                        <div id="myprofile"  class="tab-pane {{ Request::get('tab')=="myprofile"? 'active':"" }}"  role="tabpanel" aria-labelledby="myprofile-tab" style="position:relative;">
+                    <div class="pr-tab-inner">
+                      
+                      <div class="my-prfile-view">
+                         @if(request()->route('profId')==null) <a href="javascript:void(0)" onclick="editMyProfile()" class="greenButton">Edit</a>@endif
+                      
+                      <div class="row">
+                        <div class="col-lg-3 col-12">
+                      
+                          <div class="tab-profile-user-img"><img src="{{$img_path}}"></div>
+                        </div>
+                        <div class="col-lg-9 col-12">
+                          <ul class="bsc-inf">
+                            <li class="us-nam">{{$u_name}}</li>
+                            @if($u_position)<li class="des">{{$u_position}}</li>@endif
+                            <li class="inf"><a href="mailto:{{$u_email}}">{{$u_email}}</a></li>
+                            <li class="tl"><a href="tel:{{$u_phone}}">{{$u_phone}}</a></li>
+                          </ul>
+                        </div>
+                      </div>
+                      
+                      </div>
+                      
+                      <div class="my-prfile-edit" style="display:none;">
+                          <div class="row">
+                      <div class="col-lg-3 col-12">
+                          
+                        <div class="tab-profile-user-img">
+                           <img src="{{$img_path}}" class="prof_img_original"> <a href="javascript: void(0)"  id="upload_image_original" class="edit-btn-prf"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> </a> 
+                            <input type="file" id="imgupload_original" class="image_original" name="image_original" style="display:none" accept="image/*" />
+                        </div>
+                      </div>
+                      <div class="col-lg-9 col-12">
+                       <form id="my-prof-edit">
+                           <ul class="bsc-inf prf-edit-form">
+                          <li class="us-nam">
+                            <div class="row">
+                              <div class="col-lg-6 col-12">
+                                <input placeholder="First Name" type="text" class="form-control" value="{{ old('name', $user->name) }}" name="name" >
+                                <span id="txtusername_prof_emp"></span>
+                              </div>
+                              <div class="col-lg-6 col-12">
+                                <input placeholder="Last Name" type="text" class="form-control " name="surname" value="{{ old('surname', $user->surname)  }}"  >
+                                <span id="txtsurname_prof_emp"></span></div>
+                              </div>
+                            
+                            </li>
+                            <li class="des">
+                              <input placeholder="Role" type="text" class="form-control "  name="position" value="{{ old('position', $user->position ?? '')  }}" >
+                                <span id="txtposition_prof_emp"></span>
+                              </li>
+                              <li class="tl">
+                              <input  placeholder="Phone" name="full" type="text" value="{{ old('phone') ? old('phone') : $user->phone ?? '' }}" id="phone_prof_emp" class="form-control pno05  " maxlength="15"/>
+                                <span id="txtphone_prof"></span>
+                              </li>
+                            <li class="inf">
+                              <input placeholder="Email" type="text" class="form-control" name="email" value="{{ old('email', $user->email)  }}" >
+                            <span id="txtemail_prof_emp"></span>
+                              </li>
+                          
+                        </ul>
+                        <button type="submit" class="greenButton btn-save" value="Save">Save</button>
+                        
+                       </form>
+                        <button class="greenButton  btn-cancel_2 prof-save-btn" onclick="HideEditprof()">Cancel</button>
+                      </div>
+                    </div>
+                    
+                      </div>
+                      
+                      <span id="submitmessage_prof" style="display:none;"></span>
+                      <?php
+                      $parent_id="";
+                      if($user->seller_type=="Co-Seller")
+                            $parent_id=$user->parent_id;
+                      ?>
+                      @if($user->id == $user->id || $user->id == $parent_id )
+                      <div class="ch-pwd">
+                        
+                        <h3>Change Password</h3>
+                        <form  id='cf-form'>
+                        @csrf
+                        <input type="hidden" name="email" value="{{ $user->email}}">    
+                        <div class="row">
+                          <div class="col-lg-4 col-12">
+                            <div class="mb-3">
+                              <label for="exampleInputEmail1" class="form-label">Current Password</label>
+                              <input name="oldPassword" id="cntpw" type="password" class="form-control {{ $errors->has('oldPassword') ? ' is-invalid' : '' }}"  placeholder="" value="{{ old('oldPassword') }}" required>
+                              <span id="old_pw"></span>
+                            </div>
+                          </div>
+                          <div class="col-lg-4 col-12">
+                            <div class="mb-3">
+                              <label for="exampleInputEmail1" class="form-label">New Password</label>
+                              <input value="{{ old('password') }}" id="password" type="password" class="pr-password  form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" required>
+                               <span id="new_pw"></span>
+                            </div>
+                          </div>
+                          <div class="col-lg-4 col-12">
+                            <div class="mb-3">
+                              <label for="exampleInputEmail1" class="form-label">Confirm Password</label>
+                              <input value="{{ old('password_confirmation') }}" id="password-confirm" type="password" class="form-control" name="password_confirmation" required>
+                            <span id="confirm_pw"></span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div class="row">
+                          <div class="col-lg-8 col-12"></div>
+                          <div class="col-lg-4 col-12">
+                            <button type="submit" class="blue-button">Update Password</button>
+                          </div>
+                        </div>
+                        </form>
+         <div id="pw_updated"></div>   
+                        
+
+                        
+                        
+                        
+                        
+                      </div>
+                      @endif
+                      
+                    </div>
+                  </div>
+               
             </div>
            
          </div>
@@ -1770,12 +1897,12 @@
        
    
    }
-  /* var input = window.intlTelInput(document.querySelector("#phone_prof_emp"), {
+   var input = window.intlTelInput(document.querySelector("#phone_prof_emp"), {
     separateDialCode: true,
     preferredCountries:["nl"],
     hiddenInput: "phone",
     utilsScript: "//cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.3/js/utils.js"
-   });*/
+   });
    var input = window.intlTelInput(document.querySelector("#phone"), {
     separateDialCode: true,
     preferredCountries:["nl"],
@@ -2416,7 +2543,7 @@
                // Serialize the form data
               //const formData = new FormData(form);
               var formData = new FormData($('#cf-form')[0]); 
-              formData.append('user_id', {{$seller->id}});
+              formData.append('user_id', {{$user->id}});
                formData.append('_token', "{{ csrf_token() }}"); 
                // Send an AJAX request
                 $.ajax({
@@ -2429,15 +2556,20 @@
                    contentType: false,
                    success: function(data) {
                        //$(".loaderajax").hide();
-                       
+                       console.log(data);
                        //data.message
-                       
-                           if(data.message) {
+                      if(data.msg_old != '')
+                       { $("#new_pw").empty();
+                           $("#old_pw").empty().append("<p  class='txt_err' style='color:red'>"+data.msg_old+"</p>");}
+                      else
+                         $("#old_pw").empty(); 
+                        if(data.message) {
                                $("#new_pw").empty(); 
                                $('#cntpw').val('');
                                $('#password').val('');
                                $('#password-confirm').val('');
-                           $("#pw_updated").empty().append("<p style='color:green'>"+data.message+"</p>");
+                               $("#old_pw").empty(); 
+                               $("#pw_updated").empty().append("<p style='color:green'>"+data.message+"</p>");
                            }
                          else
                            $("#pw_updated").empty();
@@ -2454,12 +2586,16 @@
                        
                          
                        if(errors.errors.password)
-                           $("#new_pw").empty().append("<p  class='txt_err' style='color:red'>"+errors.errors.password[0]+"</p>");
+                          { $("#new_pw").empty().append("<p  class='txt_err' style='color:red'>"+errors.errors.password[0]+"</p>");
+                              $("#old_pw").html('');
+                          }
                          else
                            $("#new_pw").empty();
                            
                         if(errors.errors.password_confirmation)
-                           $("#confirm_pw").empty().append("<p  class='txt_err' style='color:red'>"+errors.errors.password_confirmation[0]+"</p>");
+                          { $("#confirm_pw").empty().append("<p  class='txt_err' style='color:red'>"+errors.errors.password_confirmation[0]+"</p>");
+                              $("#old_pw").html(''); 
+                          }
                          else
                            $("#confirm_pw").empty();  
                            if(errors.errors.password_confirmation)

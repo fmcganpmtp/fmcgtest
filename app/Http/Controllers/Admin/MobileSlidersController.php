@@ -54,9 +54,10 @@ class MobileSlidersController extends Controller
                 MobileSliderimage::create([
                     'slider_id'=>$last_inserted_id,
                     'image'=>$fileName,
-                    'title' =>$request->title_on_image[$counter],
-                    'description' =>$request->description[$counter],
+                   /* 'title' =>$request->title_on_image[$counter],
+                    'description' =>$request->description[$counter],*/
                     'target' =>$request->image_target[$counter],
+                    'display_order' =>$request->display_order[$counter], 
                 ]);
                 $counter++;
             }
@@ -111,9 +112,10 @@ class MobileSlidersController extends Controller
                 MobileSliderimage::create([
                     'slider_id'=>$id,
                     'image'=>$fileName,
-                    'title' =>$request->title_on_image[$counter],
-                    'description' =>$request->description[$counter],
+                   /* 'title' =>$request->title_on_image[$counter],
+                    'description' =>$request->description[$counter],*/
                     'target' =>$request->image_target[$counter],
+                    'display_order' =>$request->display_order[$counter],
                 ]);
                 $counter++;
             }
@@ -125,9 +127,10 @@ class MobileSlidersController extends Controller
         if($old_image_id){
             foreach($request->old_image_id as $image_id){
                 MobileSliderimage::find($image_id)->update([
-                    'title' =>$request->old_title_on_image[$counter],
-                    'description' =>$request->old_description[$counter],
+                    /* 'title' =>$request->old_title_on_image[$counter],
+                    'description' =>$request->old_description[$counter],*/
                     'target' =>$request->old_image_target[$counter],
+                    'display_order' =>$request->old_display_order[$counter],
                 ]);
                 $counter++;
             }

@@ -240,9 +240,10 @@
               
               
             </div>
-                   <span id="txtcompanytype"></span>  
+                   
                   </div>
                 </h3>
+                <span id="txtcompanytype"></span>  
                 <h4>
                   <div class="dropdown">
                     <div class="autocomplete form-group off-ln-cat" >
@@ -263,9 +264,10 @@
               
               
             </div>
-                  <span id="offline_categories1"></span>     
+                   
                   </div>
                 </h4>
+                <span id="offline_categories1"></span>    
               </div>
               <div class="pr-adrrs-blk">
                 <div class="row">
@@ -1174,6 +1176,49 @@ function closeNav2() {
     width: 100%;
   height: 500px;
 }
+
+.cont {
+    text-align: center;
+}
+
+.toggle {
+    position: relative;
+    display: inline-block;
+}
+
+.toggle__input {
+    display: none;
+}
+
+.toggle__label {
+    display: block;
+    width: 60px;
+    height: 30px;
+    background-color: #FD632F;
+    border-radius: 99px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.dark-mode .toggle__label {
+    background-color: #026f4d;
+}
+
+.toggle__input:checked + .toggle__label::after {
+    left: 32px;
+}
+
+.toggle__label::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 26px;
+    height: 26px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    transition: left 0.3s ease;
+}
 </style>
 
         <script src="{{ asset('js/io_range-slider.min.js')}}"></script>
@@ -1599,7 +1644,38 @@ var input = window.intlTelInput(document.querySelector("#phone"), {
       });
       
  
+      const toggle = document.getElementById('mode-toggle');
+const body = document.body;
 
+toggle.addEventListener('change', function() {
+    if (this.checked) {
+        body.classList.add('dark-mode');
+        localStorage.setItem('darkMode', 'enabled');
+        var chat_notification = 1;
+    } else {
+        body.classList.remove('dark-mode');
+        localStorage.setItem('darkMode', 'disabled');
+        var chat_notification = 0;
+    }
+    $fmcg.ajax({
+        type:'post',
+        url:'{{ route("updateNotificationStatus") }}',
+        data:{chat_notification: chat_notification, '_token':'{{csrf_token()}}'},
+        success:function(response){
+          ;
+        }
+    });
+});
+
+// check for saved user preference, if any, on load of the website
+document.addEventListener('DOMContentLoaded', (event) => {
+    const darkMode = localStorage.getItem('darkMode');
+    
+    if (darkMode === 'enabled') {
+        body.classList.add('dark-mode');
+        toggle.checked = true;
+    }
+}); 
 
   </script>       
 <script>
@@ -1625,7 +1701,7 @@ $fmcg(document).ready(function() {
                 success: function(data) {
                     if(data.message){
                   $fmcg("#submitmessage_prof").show();
-                  $fmcg("#submitmessage_prof").empty().append('<div class="alert alert-success">'+data.message+'</div>'); 
+                  $fmcg("#submitmessage_prof").empty().append('<div class="alert alert-success" style="z-index:99999 !important;">'+data.message+'</div>'); 
                   $fmcg("#submitmessage_prof").delay(1000).fadeOut(1000);
                     }
                    // setTimeout(window.location.reload(),10);
@@ -1779,7 +1855,7 @@ $fmcg("#form_about").on('submit', function(e) {
                 success: function(data) {
                    // $fmcg(".loaderajax").hide();
                    $fmcg("#submitmessage").show();
-                  $fmcg("#submitmessage").empty().append('<div class="alert alert-success">'+data+'</div>'); 
+                  $fmcg("#submitmessage").empty().append('<div class="alert alert-success"  style="z-index:99999 !important;">'+data+'</div>'); 
                   $fmcg("#submitmessage").delay(1000).fadeOut(500);
                    $fmcg(".edit_tab1").css("display", "none");
                    $fmcg(".view_tab1").show();
@@ -1800,7 +1876,7 @@ $fmcg("#form_about").on('submit', function(e) {
                       $fmcg("#txtabt").empty();
                     
                     $fmcg("#submitmessage").show();
-                    $fmcg("#submitmessage").empty().append('<div class="alert alert-warning">Update Failed!!</div>');
+                    $fmcg("#submitmessage").empty().append('<div class="alert alert-warning" style="z-index:9999;">Update Failed!!</div>');
                     $fmcg("#submitmessage").delay(1000).fadeOut(500);
                     $fmcg(window).scrollTo(0, document.body.scrollHeight);
                                
@@ -1826,7 +1902,7 @@ $fmcg("#region-form").on('submit', function(e) {
                 success: function(data) {
                    // $fmcg(".loaderajax").hide();
                    $fmcg("#submitmessage").show();
-                   $fmcg("#submitmessage").empty().append('<div class="alert alert-success">'+data+'</div>'); 
+                   $fmcg("#submitmessage").empty().append('<div class="alert alert-success"  style="z-index:99999 !important;">'+data+'</div>'); 
                    $fmcg("#submitmessage").delay(1000).fadeOut(500);
                    $fmcg(".edit_tab1").css("display", "none");
                    $fmcg(".view_tab1").show();
@@ -1841,7 +1917,7 @@ $fmcg("#region-form").on('submit', function(e) {
                    //$fmcg(".loaderajax").hide();
                     var errors = JSON.parse(xhr.responseText);
                     $fmcg("#submitmessage").show();
-                    $fmcg("#submitmessage").empty().append('<div class="alert alert-warning">Update Failed!!</div>');
+                    $fmcg("#submitmessage").empty().append('<div class="alert alert-warning" style="z-index:9999;">Update Failed!!</div>');
                     $fmcg("#submitmessage").delay(1000).fadeOut(500);
                     
                     $fmcg(window).scrollTo(0, document.body.scrollHeight);
@@ -1870,10 +1946,10 @@ $fmcg("#compny_profile").on('submit', function(e) {
                 contentType: false,
                 success: function(data) {
                    // $fmcg(".loaderajax").hide();
-                  $fmcg("#submitmessage").empty().append('<div class="alert alert-success">'+data+'</div>');
+                  $fmcg("#submitmessage").empty().append('<div class="alert alert-success"  style="z-index:99999 !important;">'+data+'</div>');
                     
                     setTimeout(window.location.reload(),300);
-                    $fmcg(window).scrollTo(0, document.body.scrollHeight);
+                    $fmcg(window).scrollTo(0, document.body.scrollHeight); 
                 },
                 error: function (xhr) {
                    //$fmcg(".loaderajax").hide();
@@ -1881,7 +1957,7 @@ $fmcg("#compny_profile").on('submit', function(e) {
                     
                       
                     if(errors.errors.image)
-                    $fmcg("#txtimgpicture").empty().append("<p  class='txt_err' style='color:red'>Company logo is required</p>");
+                    $fmcg("#txtimgpicture").empty().append("<p  class='txt_err lgo-err' style='color:red'>Company logo is required</p>");
                     else
                       $fmcg("#txtimgpicture").empty();
                       
@@ -1932,7 +2008,7 @@ $fmcg("#compny_profile").on('submit', function(e) {
                    }
                     else
                       $fmcg("#company_types1").empty();*/
-                    $fmcg("#submitmessage").empty().append('<div class="alert alert-warning">Profile Update Failed!!</div>');
+                    $fmcg("#submitmessage").empty().append('<div class="alert alert-warning" style="z-index:9999;">Profile Update Failed!!</div>');
                     $fmcg("#submitmessage").delay(1000).fadeOut(500);
                     $fmcg(window).scrollTo(0, document.body.scrollHeight);
                                

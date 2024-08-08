@@ -86,18 +86,19 @@
                      <div class="form-group">
                          <label for="name" >{{ __('Star Rating') }}  </label>
                           <div >
-  <div class="rating-css">
+<div class="rating-css">
     <div class="star-icon">
-        <input type="radio" value="1" name="star_rating" id="rating1">
-        <label for="rating1" class="fa fa-star"></label>
+   
+        <input type="radio"   value="1" name="star_rating" id="rating1">
+        <label for="rating1" onclick="removefade(1)" class="fa fa-star colorfade"></label>
         <input type="radio" value="2" name="star_rating" id="rating2">
-        <label for="rating2" class="fa fa-star"></label>
-        <input type="radio" value="3" name="star_rating" id="rating3">
-        <label for="rating3" class="fa fa-star"></label>
+        <label for="rating2"onclick="removefade(2)" class="fa fa-star colorfade"></label>
+        <input type="radio"  value="3" name="star_rating" id="rating3">
+        <label for="rating3" onclick="removefade(3)" class="fa fa-star colorfade"></label>
         <input type="radio" value="4" name="star_rating" id="rating4">
-        <label for="rating4" class="fa fa-star"></label>
+        <label for="rating4" onclick="removefade(4)" class="fa fa-star colorfade"></label>
         <input type="radio" value="5" name="star_rating" id="rating5">
-        <label for="rating5" class="fa fa-star"></label>
+        <label for="rating5" onclick="removefade(5)" class="fa fa-star colorfade"></label>
     </div>
 </div>
                         
@@ -131,7 +132,11 @@
   </div>
 
 
-
+<script>
+function removefade(cnt) {
+ $(document).find(".colorfade").removeClass("colorfade");
+}
+</script>
 
 
 

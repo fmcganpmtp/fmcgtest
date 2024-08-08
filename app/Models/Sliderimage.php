@@ -10,6 +10,6 @@ class Sliderimage extends Model
     use HasFactory;
 
     protected $fillable = [
-        'slider_id','image','title','description','target'
+        'slider_id','image','title','description','target','display_order'
     ];
 }

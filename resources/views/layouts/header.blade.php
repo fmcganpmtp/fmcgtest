@@ -33,6 +33,9 @@
 		<script src="{{asset('/admin1/js/sweetalert.js')}}"></script>
 		<link href="{{ asset('css/jquery-ui1.css')}}" rel="stylesheet" type="text/css" media="all"/>
 		<link rel="stylesheet" href="{{asset('/css/cookieconsent.css')}}" media="print" onload="this.media='all'">
+		
+<link rel="stylesheet" href="{{ asset('/css/jquery.emojipicker.css')}}">
+<link rel="stylesheet" href="{{ asset('/css/jquery.emojipicker.tw.css')}}">
 		<!--<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">-->
 		<!-- Favicon -->
 		<link rel="icon" type="image/png" href="{{ URL::asset('/images/favicon.png')}}">
@@ -115,6 +118,10 @@
 										<div class="wish-count wishlist_count" @php if($view_composer_wishCount==0) {  echo 'style="display:none;"'; } @endphp>{{ $view_composer_wishCount ?? "" }}
 							</div>
 							</a></li>
+							 <li class="wish-list"><a href="{{ route('chat.messages')}}"  ><img src="{{ asset('images/chat-ic-03.png') }}">
+							 <div class="chat-count wish-count" style="display:none;"></div>
+							</a>
+							</li>
 							<!--
 							@if( $view_composer_profile_menu_visible_criteria['network_chat'] == 1)
 							     <li class="wish-list"><a href="javascript:void(0)" id="loadChatWindow"><img src="{{ asset('images/chat-ic-03.png') }}"><br>
@@ -177,7 +184,7 @@
 								{{--	@endif--}}
 									@endif
 									
-									<a class="dropdown-item" href="{{ route('subscription.details')}}"> <i class="fa fa-tasks" aria-hidden="true"></i> Subscription details </a>
+									<a class="dropdown-item" href="{{ route('package.listing')}}"> <i class="fa fa-tasks" aria-hidden="true"></i> Subscription details </a>
 								
 									<a class="dropdown-item" href="{{route('logout')}}"> <i class="fa fa-sign-out" aria-hidden="true"></i>Log out </a> 
 								</div>

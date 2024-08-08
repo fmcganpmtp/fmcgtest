@@ -53,7 +53,7 @@
                                     </div>
                                 </div>
                             
-                            
+                            <!--
                                 <div class="form-group">
                                     <label>Title on Image</label> <input type="text" name="old_title_on_image[]" value="{{$images->title}}" class="form-control">
                                 </div>
@@ -61,9 +61,13 @@
                                 <div class="form-group">
                                     <label>Description </label> <textarea name="old_description[]" class="form-control">{{$images->description}}</textarea>
                                 </div>
-                            
+                            -->
                                 <div class="form-group">
                                     <label>Image Target </label> <input type="text" name="old_image_target[]" value="{{$images->target}}" class="form-control">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>Display Order </label> <input type="number" name="old_display_order[]" value="{{$images->display_order}}" class="form-control">
                                 </div>
                             
                             <input type="hidden" name="old_image_id[]" value="{{$images->id}}" />
@@ -80,7 +84,7 @@
                             </div>
                         </div>
                     
-
+<!--
                         <div class="form-group">
                             <label>Title on Image</label> <input type="text" name="title_on_image[]" value="" class="form-control">
                         </div>
@@ -88,9 +92,12 @@
                         <div class="form-group">
                             <label>Description </label> <textarea name="description[]" class="form-control"></textarea>
                         </div>
-                   
+              -->     
                         <div class="form-group">
                             <label>Image Target </label> <input type="text" name="image_target[]" value="" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Display Order </label> <input id="display_order" type="number" class="form-control" name="display_order[]" value="" >
                         </div>
                     
 
@@ -124,6 +131,9 @@
                         
                             <div class="form-group">
                                 <label>Image Target </label> <input type="text" name="image_target[]" value="" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Display Order </label> <input type="text" name="image_target[]" value="" class="form-control">
                             </div>
                         
                     </div>

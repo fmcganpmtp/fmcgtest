@@ -152,7 +152,7 @@
 								{{--	@endif--}}
 									@endif
 									
-									<a class="dropdown-item" href="{{ route('subscription.details')}}"> <i class="fa fa-tasks" aria-hidden="true"></i> Subscription details </a>
+									<a class="dropdown-item" href="{{ route('package.listing')}}"> <i class="fa fa-tasks" aria-hidden="true"></i> Subscription details </a>
 									
 									<a class="dropdown-item" href="{{route('logout')}}"> <i class="fa fa-sign-out" aria-hidden="true"></i>Log out </a> 
 								</div>

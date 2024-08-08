@@ -1064,6 +1064,15 @@ public function adminusersellersstatusupdates (Request $request)
     public function sellerprofiledetails($id) {
 		
         $user=$seller = User::find($id);
+       
+      
+       if($user->seller_type=="Co-Seller")
+        {   $id=$user->parent_id;
+            $seller = User::find($id);
+        }
+       
+       
+       
         if (empty($user)) {
             return redirect()
                 ->route("admin.sellerslist")
@@ -1095,12 +1104,12 @@ public function adminusersellersstatusupdates (Request $request)
         else
         $network_count=0; 
         $countries = Country::select("id","continent", "name")->get();      
-        $active_region=$user->CompanyRegion->active_countries??"";
+        $active_region=$seller->CompanyRegion->active_countries??"";
         $active_reg = explode(',',$active_region); 
         $active_reg_list = Country::select('*')
             ->whereIn("id", $active_reg)
             ->get();  
-        $expand_regions=$user->CompanyRegion->expand_countries??"";
+        $expand_regions=$seller->CompanyRegion->expand_countries??"";
         $expand_reg = explode(',',$expand_regions);
         $expand_reg_list = Country::select('*')
             ->whereIn("id", $expand_reg)
@@ -1157,7 +1166,7 @@ public function adminusersellersstatusupdates (Request $request)
         
         
 		
-        return view('admin.seller.seller-profileview',compact('seller','categorylists','remainining_toexpand',"active_reg_list","expand_reg_list","active_continents","all_continents","expand_continents",'countries','product_count','network_count','profile_visit_count','company_types',"categories","seller_OflnCats",'id','varification_status'));
+        return view('admin.seller.seller-profileview',compact('seller','user','categorylists','remainining_toexpand',"active_reg_list","expand_reg_list","active_continents","all_continents","expand_continents",'countries','product_count','network_count','profile_visit_count','company_types',"categories","seller_OflnCats",'id','varification_status'));
     }
 
    
@@ -1172,7 +1181,7 @@ public function adminusersellersstatusupdates (Request $request)
         return view('admin.seller.seller-profile',compact('countries',"categories","seller_OflnCats",'seller','SellerOpeningTimes','company_types'));
     }
 
-    public function getsellerslist(Request $request){  
+     public function getsellerslist(Request $request){  
         $company_types = CompanyType::select("id", "company_type")->get();
         $columnIndex_arr = $request->get('order');
         $columnName_arr = $request->get('columns');
@@ -1197,14 +1206,31 @@ public function adminusersellersstatusupdates (Request $request)
         $totalRecords =User::select('count(*) as allcount')
             ->when($request->get('status')!='', function ($query) use ($request) {
                 $query->where('status',$request->get('status'));
-            })->where('seller_type','Master')->where('users.status','<>','Deleted')->count();
+            })
+           // ->where('seller_type','Master')
+            ->where('users.status','<>','Deleted')->count();
        
         // Get records, also we have included search filter as well
-        $records = User::leftJoin('buyer_companies', 'buyer_companies.user_id', '=', 'users.id')
+        $records = User::leftJoin('buyer_companies', function($join)
+                                               {
+                                                  $join->on('buyer_companies.user_id', '=', 'users.id');
+                                                  $join->orOn('buyer_companies.user_id', '=', 'users.parent_id');
+                                               })  
             ->leftJoin('countries', 'countries.id', '=', 'users.country_id')
-            ->leftJoin('subscriptions', 'subscriptions.user_id', '=', 'users.id')
-            ->leftJoin('packages', 'subscriptions.package_id', '=', 'packages.id')->select('users.*','buyer_companies.company_name','packages.name as pkg_name','buyer_companies.company_type as cmp_type','buyer_companies.company_location','buyer_companies.company_street','buyer_companies.company_zip',
-            DB::raw("countries.name as country_name"),'subscriptions.expairy_date as expairy_date')->where('subscriptions.package_id', '<>', null)->where('subscriptions.status', '=', 'Active')->where('seller_type','Master')->where('users.status','<>','Deleted');
+            
+            ->leftJoin('subscriptions', function($join)
+                                               {
+                                                  $join->on('subscriptions.user_id', '=', 'users.id');
+                                                  $join->orOn('subscriptions.user_id', '=', 'users.parent_id');
+                                               })  
+            ->leftJoin('packages', 'subscriptions.package_id', '=', 'packages.id')
+            ->select('users.*','buyer_companies.company_name','packages.name as pkg_name',
+            'buyer_companies.company_type as cmp_type','buyer_companies.company_email as company_email','buyer_companies.company_location','buyer_companies.company_street','buyer_companies.company_zip',
+            DB::raw("countries.name as country_name"),'subscriptions.created_at as subscription_start','subscriptions.expairy_date as expairy_date') 
+            ->where('subscriptions.package_id', '<>', null)
+         ->where('subscriptions.status', '=', 'Active')
+       //     ->where('seller_type','Master')
+            ->where('users.status','<>','Deleted');
         if($request->get('status')!=''){
             $records = $records->where('users.status',$request->get('status'));
         } 
@@ -1244,7 +1270,9 @@ public function adminusersellersstatusupdates (Request $request)
             $records = $records->whereIn('users.id',$combinedArray);
         }         
         
-        $totalRecordswithFilter= $records ->groupby('users.id')->get()->count();
+        $totalRecordswithFilter= $records 
+        ->groupby('users.id')
+        ->get()->count();
         
         $records= $records->orderBy($columnName,$columnSortOrder)
         ->skip($start)
@@ -1318,7 +1346,10 @@ public function adminusersellersstatusupdates (Request $request)
             $data_arr[] = array(
                 "id" => $record->id,
                 "name" =>$name,
+                "surname"=>$record->surname??'', 
+                "position"=>$record->position??'',
                 "c_types" =>$c_types_names,
+                "company_email" =>$record->company_email??'', 
                 "prdts_to_uplod" =>$prdts_to_uplod,
 				"categories" =>$cats,				
                 "company_name" => $record->company_name,
@@ -1328,7 +1359,8 @@ public function adminusersellersstatusupdates (Request $request)
                 "address" => $address,
                 "created_at" => date('d-m-Y', strtotime($record->created_at)),
                 "country_name" => $record->country_name, 
-                "pkg_name" => $record->pkg_name,                  
+                "pkg_name" => $record->pkg_name,   
+                "subscription_start" => $record->subscription_start==''? 'Nill': date('d-m-Y', strtotime($record->subscription_start)),
                 "subscription" => $record->expairy_date==''? 'Nill': date('d-m-Y', strtotime($record->expairy_date)),);    
         }
 
@@ -1341,6 +1373,7 @@ public function adminusersellersstatusupdates (Request $request)
         );
         echo json_encode($response);       
     }
+
 
 
 
@@ -2172,7 +2205,7 @@ public function adminusersellersstatusupdates (Request $request)
     { 
         $userId = $request->get('user_id'); 
         $request->validate([
-          //  "oldPassword" => "required",
+            "oldPassword" => "required",
             "password" => [
                 "required",
                 "string",
@@ -2187,12 +2220,9 @@ public function adminusersellersstatusupdates (Request $request)
         ]);
         $user = User::find($userId);
         $usertype = $user->usertype;
-       /* if (!Hash::check($request["oldPassword"],Auth::guard("user")->user()->password)) {
-            
-                //return redirect()->route("CompanyProfile", $userId)->with("message_not_match","The old password does not match our records." );
+        if (!Hash::check($request["oldPassword"],$user->password)) 
                 return response()->json(['msg_old' => 'The old password does not match our records.']);
-            
-        }*/
+       
 
         $user = User::where("id", $userId)->update([
             "password" => Hash::make($request->password),

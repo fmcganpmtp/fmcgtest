@@ -154,16 +154,17 @@ class AppServiceProvider extends ServiceProvider
                                                                    ->leftJoin('order_details', 'subscriptions.order_id', '=', 'order_details.id')
                                                                    ->leftJoin('packages', 'packages.id', '=', 'order_details.package_id')
                                                                    ->where('subscriptions.user_id', '=',$parent_id)
-                                                                   ->where('subscriptions.status','active')
+                                                                   ->where('subscriptions.status','Active')
                                                                    ->whereDate('subscriptions.expairy_date', '>=', Carbon::now())
                                                                    ->orderBy('subscriptions.id','DESC')
                                                                    ->first(); 
+                                                                 
                   $product_count_approved = SellerProduct::where("user_id", $parent_id)->where("status",'<>', "deleted")->count(); 
                   $product_count_pending = SellerProductTemp::where("user_id", $parent_id)->where("status",'<>', "deleted")->count(); 
                   $product_count = $product_count_approved + $product_count_pending;
                   //$product_count = SellerProduct::where("user_id", $parent_id)->where("status",'<>', "deleted")->count();   
                  //dd($product_count);
-                // dd($package_data)    ;                                              
+                 //dd($package_data)    ;                                              
                                                                    
              
             } 
@@ -240,13 +241,23 @@ class AppServiceProvider extends ServiceProvider
             }
             $wishCounts->with('view_composer_wishCount', $wishCount);
         });
-    // view::composer('*', function ($header_user){
-        
-   //     if(Auth::guard('user')->check()) {
-   //         $user_id = Auth::guard('user')->user()->id;
-    //        $view_composer_user=  User::find($user_id);
-    //    } else $view_composer_user=null;
-   //     $header_user->with('view_composer_user', $view_composer_user);
-   // });
+        view::composer('*', function ($header_user){
+            
+            if(Auth::guard('user')->check()) {
+                $user_id = Auth::guard('user')->user()->id;
+                $view_composer_user=  User::find($user_id);
+            } else $view_composer_user=null;
+            $header_user->with('view_composer_user', $view_composer_user);
+        });
+        view::composer('*', function ($chat_company){
+            
+            if(Auth::guard('user')->check()) {
+                $user_id = Auth::guard('user')->user()->id;
+                $current_user=  User::find($user_id);
+                if($current_user->parent_id!='')
+                    $current_user = User::find($current_user->parent_id);                   
+            } else $current_user=null;
+            $chat_company->with('current_user', $current_user);
+        });
     }
 }

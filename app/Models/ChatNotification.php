@@ -8,5 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class ChatNotification extends Model
 {
     //use HasFactory;
-    protected $fillable = ['message_id', 'user1','user2'];
+    protected $fillable = [ 'user1','user2', 'last_notification'];
 }

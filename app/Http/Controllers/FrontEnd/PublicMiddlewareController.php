@@ -6,6 +6,11 @@ use Illuminate\Http\Request;
 use Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\Category;
+use App\Models\User;
+use App\Models\Package;
+use App\Models\OrderDetail;
+use App\Models\Subscription;
+use Carbon;
 use App\Models\SellerProduct;
 class PublicMiddlewareController extends Controller
 {
@@ -70,7 +75,50 @@ class PublicMiddlewareController extends Controller
                                 if($package_data->expairy_date>=date('Y-m-d'))
                                     return true;
                                 else
-                                    return false;                        
+                                    {
+                                       ///////////////////////////////
+									    $user_parent_id = $parent_id;
+                                        $user=User::find($user_parent_id);
+                                        
+                                        $updt_old = DB::table("subscriptions")
+                                                        ->where("user_id", $user_parent_id)
+                                        				->where('status','Active')
+                                                        ->orderBy("id", "desc")
+                                                        ->take(1);
+                                        $package = Package::where('status','Active')
+                                        			->orderBy("package_basic_price", "asc")
+                                        			->first();				
+                                        
+                                        
+                                       $order_data=array(
+                                        'user_id'=>$user_parent_id,
+                                        'package_id'=> $package->id,
+                                        'order_type'=>'',
+                                        'name'=>$user->name??'',
+                                        'email'=>$user->email??'',
+                                        'phone'=>$user->phone??'',
+                                        'address'=>$user->address??'',
+                                        'country'=>$user->country_id??'',
+                                        'zip'=>$user->store_zip??'',
+                                        'city'=>$user->store_city??'',
+                                        ); 
+                                        $order=OrderDetail::create($order_data); 
+                                        
+                                        			$updt_old->update(["status" => "Expired"]);
+                                        			$input = [
+                                                    "user_id" => $user_parent_id,
+                                                    "package_id" => $package->id,
+                                                    "type" => 'seller',
+                                                    "date" => Carbon::today(),
+                                                    "order_id" => $order->id,
+                                                    "order_total" => 0,
+                                                    "auto_renewal" => 1,
+                                        			"expairy_date" => Carbon::now()->addMonths(12),
+                                        			"status" => "Active",
+                                                ];
+                                        Subscription::create($input);
+									    /////////////////////////////// 
+                                        return true; }                       
                             }
                             else
                                     return false;  

@@ -13,12 +13,15 @@ use App\Models\Contentpage;
 use App\Models\CompanyType;
 use App\Models\Mynetworks;
 use App\Models\Message;
+use App\Models\Sliderimage;
 use App\Models\ProductRequest;
 use App\Models\Generalsetting;
 use App\Models\Advertisement;
 use App\Models\MobileSlider;
 use App\Models\MobileSliderimage;
 use App\Models\SellerOfflineCategory;
+use App\Models\Chatroom;
+
 use App\User;
 use App\Models\BusinessInsight;
 use App\buildTree;
@@ -29,6 +32,8 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\FrontEnd\PublicMiddlewareController;
+
+use GetStream\StreamChat\Client as StreamClient;
 class PagesController extends Controller{
 	protected $PublicMiddlewareController;
 	public function __construct(PublicMiddlewareController $PublicMiddlewareController){
@@ -108,7 +113,12 @@ class PagesController extends Controller{
                     ->latest("product_requests.created_at")
                     ->latest('created_at')->take(8)->get();	
                    
-		$slider = Slider::where('show_home',"Yes")->with('Sliderimage')->first();
+	//	$slider = Slider::where('show_home',"Yes")->with('Sliderimage')->first();
+		
+		$slider = Sliderimage::leftJoin('sliders', 'sliderimages.slider_id', '=', 'sliders.id')
+		->where('sliders.show_home',"Yes")
+		->select('sliderimages.*')
+		->orderBy('sliderimages.display_order','asc') ->get();
 		
 		$welcome_page_adds = Advertisement::leftJoin('contentpages', 'contentpages.id', '=', 'advertisements.page_id')
 			->whereRaw('? between start_date and end_date', [date('Y-m-d')])
@@ -118,7 +128,11 @@ class PagesController extends Controller{
 		$validity=$this->PublicMiddlewareController->checkUserContactValidity();
 		$site_testimonials =  DB::table('testimonials')->get();
 		if($this->isMobile()) { 
-			$mobile_slider = MobileSlider::where('show_home',"Yes")->with('MobileSliderimage')->first();
+		//	$mobile_slider = MobileSlider::where('show_home',"Yes")->with('MobileSliderimage')->first();
+			$mobile_slider = MobileSliderimage::leftJoin('mobile_sliders', 'mobile_sliderimages.slider_id', '=', 'mobile_sliders.id')
+		->where('mobile_sliders.show_home',"Yes")
+		->select('mobile_sliderimages.*')
+		->orderBy('mobile_sliderimages.display_order','asc') ->get();
 		  return view('welcome_mobile',compact('mobile_slider','season_offers','productRequests','site_testimonials','products','welcome_page_adds','featured_products','all_categories','newest_company','validity'));
 		} else {
 		  return view('welcome',compact('slider','site_testimonials','productRequests','season_offers','products','welcome_page_adds','featured_products','all_categories','newest_company','validity'));
@@ -477,6 +491,7 @@ if($seller_name_search!=''){
 	    $query->orWhere(DB::raw('UPPER(buyer_companies.profile_keywords)'), 'LIKE','%'.$seller_name_search.'%');
 	    //$query->orwhereRaw('find_in_set("'.$seller_name_search.'",buyer_companies.profile_keywords)');
 		$query->orWhere(DB::raw('UPPER(users.name)'), 'LIKE','%'.$seller_name_search.'%');
+		$query->orWhere(DB::raw("CONCAT(users.name, ' ', users.surname)"), 'LIKE', "%".$seller_name_search."%");
 		$query->orWhere(DB::raw('UPPER(buyer_companies.company_name)'), 'LIKE','%'.$seller_name_search.'%');
 	});
 
@@ -674,6 +689,7 @@ if($seller_name_search!='')
 		$query->orWhere(DB::raw('UPPER(buyer_companies.profile_keywords)'), 'LIKE','%'.$seller_name_search.'%');
 		//$query->orwhereRaw('find_in_set("'.$seller_name_search.'",buyer_companies.profile_keywords)');
 		$query->orWhere(DB::raw('UPPER(users.name)'), 'LIKE','%'.$seller_name_search.'%');
+		$query->orWhere(DB::raw("CONCAT(users.name, ' ', users.surname)"), 'LIKE', "%".$seller_name_search."%");
 		$query->orWhere(DB::raw('UPPER(buyer_companies.company_name)'), 'LIKE','%'.$seller_name_search.'%');
 	});
 
@@ -785,6 +801,7 @@ public function myNwLists(Request $request){
 			$query->orWhere(DB::raw('UPPER(buyer_companies.about_company)'), 'LIKE','%'.$seller_name_search.'%');
 			$query->orWhere(DB::raw('UPPER(buyer_companies.profile_keywords)'), 'LIKE','%'.$seller_name_search.'%');
 			$query->orWhere(DB::raw('UPPER(users.name)'), 'LIKE','%'.$seller_name_search.'%');
+			$query->orWhere(DB::raw("CONCAT(users.name, ' ', users.surname)"), 'LIKE', "%".$seller_name_search."%");
 			$query->orWhere(DB::raw('UPPER(buyer_companies.company_name)'), 'LIKE','%'.$seller_name_search.'%');
 		});
 	}
@@ -935,7 +952,11 @@ public function companyDbs(Request $request){
 	//dd($active_sellers);
 	$user_data = User::join('buyer_companies','buyer_companies.user_id', '=', 'users.id')
 				->leftJoin('countries', 'countries.id', '=', 'users.country_id')
-				->leftJoin('subscriptions', 'subscriptions.user_id', '=', 'users.id')
+				->leftJoin('subscriptions', function($join)
+                         {
+                             $join->on('subscriptions.user_id', '=', 'users.id');
+                             $join->on('subscriptions.status','=',DB::raw("'Active'")); 
+                         }) 
 				->leftJoin('company_types', 'buyer_companies.company_type', '=', 'company_types.id') 
 				->where('users.status','Active')
 				->where('users.seller_type','Master') 
@@ -949,6 +970,7 @@ public function companyDbs(Request $request){
 			$query->orWhere(DB::raw('UPPER(buyer_companies.about_company)'), 'LIKE','%'.$seller_name_search.'%');
 			$query->orWhere(DB::raw('UPPER(buyer_companies.profile_keywords)'), 'LIKE','%'.$seller_name_search.'%');
 			$query->orWhere(DB::raw('UPPER(users.name)'), 'LIKE','%'.$seller_name_search.'%');
+			$query->orWhere(DB::raw("CONCAT(users.name, ' ', users.surname)"), 'LIKE', "%".$seller_name_search."%");
 			$query->orWhere(DB::raw('UPPER(buyer_companies.company_name)'), 'LIKE','%'.$seller_name_search.'%');
 		});
 	}
@@ -1093,4 +1115,66 @@ public function companyDbs(Request $request){
 		  return json_encode($categoryTree);
 	   
 	} 
+	public function createtoken(Request $request){
+		$client = new StreamClient(
+            getenv("STREAM_API_KEY"),
+            getenv("STREAM_API_SECRET"),
+            null,
+            null,
+            9 // timeout
+        );
+		$token = $client->createToken($request->username);
+		$user_id = Auth::guard('user')->user()->id;
+		$sender_details = User::find($user_id); 		  
+		if($sender_details->parent_id!='')
+			$reciever_company_id = User::find($sender_details->parent_id)->BuyerCompany->id;
+		else
+			$reciever_company_id = $sender_details->BuyerCompany->id;
+		$chatrooms = Chatroom::where('sender_company_id',$reciever_company_id)->orwhere('buyer_company_id', $reciever_company_id)->pluck('chatroom')->all();         ;
+		return response()->json([
+            'token' => $token,
+			'chatrooms'=>$chatrooms
+        ], 200); 
+
+	}
+	public function webhook(Request $request){
+					// Get the incoming webhook data
+			$webhookData = file_get_contents("php://input");
+
+			// Decode JSON data
+			$decodedData = json_decode($webhookData, true);
+			$to = "anpmtp@gmail.com";
+				$subject = "HTML email";
+
+				$message = "
+				<html>
+				<head>
+				<title>HTML email</title>
+				</head>
+				<body>
+				<p>This email contains HTML Tags!</p>
+				<table>
+				<tr>
+				<th>Firstname</th>
+				<th>Lastname</th>
+				</tr>
+				<tr>
+				<td>".$decodedData."</td>
+				<td>Doe</td>
+				</tr>
+				</table>
+				</body>
+				</html>
+				";
+
+				// Always set content-type when sending HTML email
+				$headers = "MIME-Version: 1.0" . "\r\n";
+				$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+
+				// More headers
+				$headers .= 'From: <webmaster@example.com>' . "\r\n";
+				$headers .= 'Cc: myboss@example.com' . "\r\n";
+
+				mail($to,$subject,$message,$headers);
+	}
 }

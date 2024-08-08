@@ -55,55 +55,102 @@ class PackageController extends Controller
             Session::forget("last_oreder_total");
         }
         $user_id = Auth::guard("user")->user()->id;
-       
         if(Auth::guard("user")->user()->seller_type=="Co-Seller") 
-         $user_id = Auth::guard("user")->user()->parent_id;
+        $user_id = Auth::guard("user")->user()->parent_id;
+        
+        
+        //////////////////////// package expired switch to free
+                               $package_data = DB::table('subscriptions')
+                                            ->leftJoin('order_details', 'subscriptions.order_id', '=', 'order_details.id')
+                                            ->leftJoin('packages', 'packages.id', '=', 'order_details.package_id')
+                                           /// ->leftJoin('package_accounts', 'package_accounts.id', '=', 'order_details.accounts_id')
+                                            ->where('subscriptions.user_id', '=',$user_id)
+                                            ->where('subscriptions.status','Active')
+                                            ->select('subscriptions.id','subscriptions.expairy_date','packages.subscription_type')
+                                            ->orderBy('subscriptions.id','DESC')->first();
+								if(!empty($package_data))
+								{  
+									if( $package_data->expairy_date>=date('Y-m-d'))
+									{
+									 
+									}
+									else
+									{ 
+									    /////////////////////////////// add free package to expired users
+									   
+                                        $user=User::find($user_id);
+                                        
+                                        $updt_old = DB::table("subscriptions")
+                                                        ->where("user_id", $user_id)
+                                        				->where('status','Active')
+                                                        ->orderBy("id", "desc")
+                                                        ->take(1);
+                                        $package = Package::where('status','Active')
+                                        			->orderBy("package_basic_price", "asc")
+                                        			->first();				
+                                        
+                                        
+                                       $order_data=array(
+                                         'user_id'=>$user_id,
+                                        'package_id'=> $package->id,
+                                        'order_type'=>'',
+                                        'name'=>$user->name??'',
+                                        'email'=>$user->email??'',
+                                        'phone'=>$user->phone??'',
+                                        'address'=>$user->address??'',
+                                        'country'=>$user->country_id??'',
+                                        'zip'=>$user->store_zip??'',
+                                        'city'=>$user->store_city??'',
+                                        ); 
+                                        $order=OrderDetail::create($order_data); 
+                                        
+                                        			$updt_old->update(["status" => "Expired"]);
+                                        			$input = [
+                                                    "user_id" => $user_id,
+                                                    "package_id" => $package->id,
+                                                    "type" => 'seller',
+                                                    "date" => Carbon::today(),
+                                                    "order_id" => $order->id,
+                                                    "order_total" => 0,
+                                                    "auto_renewal" => 1,
+                                        			"expairy_date" => Carbon::now()->addMonths(12),
+                                        			"status" => "Active",
+                                                ];
+                                                    Subscription::create($input);
+									}
+								}
+        //////////////////////
+        
+        $lowestpackage = Package::where('status','Active')->orderBy("package_basic_price", "asc")->first();
         $usertype = 'seller';
-        $expairy_date = $packagePrice = '';
-        $old_subscription = Subscription::where("user_id", $user_id)
+        $expairy_date = $packagePrice = $currect_active_id='';
+        $now = Carbon::now()->format('Y-m-d');
+        $old_subscription = Subscription::leftJoin('packages', 'packages.id', '=', 'subscriptions.package_id')
+                ->where("user_id", $user_id)
+                ->whereDate('expairy_date', '>=', $now)
+                ->select('subscriptions.*','packages.package_basic_price as current_pkg_price')
               //->where("package_id", $old_pkg_id)
                 ->orderBy("id", "DESC")
                 ->first();
-        if(!is_null($old_subscription))   
-        {
-        $expairy_date = $old_subscription->expairy_date;
-        $expairy_date =  Carbon::createFromFormat('Y-m-d', $expairy_date);
-        $packagePrice = $old_subscription->Package->package_basic_price;
-        $old_pkg_id = $old_subscription->package_id;
-        }       
+         
+         
         
-        $pkg_type = $request->get("pkg_type"); //
+       
         $query = Package::where("status", "!=", "deleted");
-       /* if ($pkg_type == "seller") {
-            $query = $query->where("user_type", "Seller");
-        } elseif ($pkg_type == "buyer") {
-            $query = $query->where("user_type", "Buyer");
-        } */
-        if(!is_null($old_subscription) && $expairy_date->isFuture() ) { 
-            
-        $query = $query->where("package_basic_price", ">", $packagePrice);
-       /* $query->when($userType == "seller", function ($q) use ($packagePrice) {
-                return $q
-                    ->where("package_basic_price", ">", $packagePrice)
-                    ->where("user_type", "Seller")
-                    ->where("status", "!=", "deleted");
-            });
-            $query->when($userType == "buyer", function ($q) use ($packagePrice) {
-                return $q
-                    ->where("user_type", "Seller")
-                    ->orwhere("user_type", "Buyer")
-                    ->where("package_basic_price", ">", $packagePrice)
-                    ->where("status", "!=", "deleted");
-            });
-            $query->where("id", "!=", $old_pkg_id);*/
+       
+        if(!is_null($old_subscription) ) 
+        {
+           // $query = $query->where("package_basic_price", ">", $packagePrice);
+            $currect_active_id=$old_subscription->package_id;
         }
+        
+        
         $packages = $query->orderBy('display_order','asc') ->get();
         $stripe_status = StripeStatus::pluck('status')->first();
-        
         if($this->isMobile()) { 
-	    return view("frontEnd.profile-creation.listPackages_mobile",compact("packages","stripe_status"));
+	    return view("frontEnd.profile-creation.listPackages_mobile",compact("packages","stripe_status","old_subscription","currect_active_id",'lowestpackage'));
         } else {
-          return view("frontEnd.profile-creation.listPackages",compact("packages","stripe_status"));
+          return view("frontEnd.profile-creation.listPackages",compact("packages","stripe_status","old_subscription","currect_active_id",'lowestpackage'));
     }
     }
     //package detail page
@@ -144,6 +191,96 @@ class PackageController extends Controller
           return view("frontEnd.profile-creation.packageDetails",compact("package", "lowest", "accounts_id"));
             }
     }
+    
+    
+    public function GetPackageDetail(Request $request)
+    {
+        $user_id=Auth::guard("user")->user()->id;
+        $user=User::find($user_id);
+        $packageId = $request->input("package_id"); 
+        $old_pkg_id = $request->input("old_pkg_id"); 
+        $order_type = $request->input("order_type");
+        Session::put("old_pkg_id", $old_pkg_id);
+        Session::put("order_type", $order_type);
+        Session::put("package_id", $packageId);
+        Session::put("user_checkout_details", [
+            "name" => Auth::guard("user")->user()->name,
+            "accounts_id" => $request->get("accounts_id"),
+            "order_type" => $request->get("order_type"),
+            "package_id" => $request->get("package_id"),
+            "user_id" => $user_id,
+            "email" => Auth::guard("user")->user()->email, 
+        ]);
+        
+  if($old_pkg_id!='' && $order_type=='Upgrade') {     
+        $package_validity = DB::table("packages")
+            ->where("id", $old_pkg_id)
+            ->pluck("package_validity")
+            ->last();
+         if ($package_validity == "One year") {
+             $tot_months = 12;
+         }
+         if ($package_validity == "6 months") {
+             $tot_months = 6;
+         }
+         if ($package_validity == "3 months") {
+             $tot_months = 3;
+         }
+         $last_oreder_total = $user->Subscription
+            ->where("package_id", $old_pkg_id)
+            ->pluck("order_total")
+            ->last(); 
+        $startDate = $user->Subscription
+            ->where("package_id", $old_pkg_id)
+            ->pluck("date")
+            ->last();
+        $today = Carbon::parse(date("Y-m-d"));
+        $startDate = Carbon::parse($startDate);
+        $days_used = $startDate->diffInDays($today);
+        $used_months = ceil($days_used / 30.5);
+        $remaining_months=$tot_months - $used_months;
+        $remaining_percentage = ($tot_months - $used_months) / $tot_months;
+        $remaining_amount = round($last_oreder_total * $remaining_percentage,2);
+       // $remaining_amount = round(($last_oreder_total -($last_oreder_total/$tot_months)*$remaining_months),2);
+       
+        $last_pkg_permonth=$last_oreder_total/$tot_months;
+        
+    }
+    else{
+        $last_oreder_total =	$remaining_amount = $last_oreder_total = $last_pkg_permonth = $remaining_months =0;		
+    }
+        Session::put("last_oreder_total", $remaining_amount);
+        
+        $package = Package::find($packageId);
+        $price=0;
+        if( $package->package_offer_price>0)
+        $price=$package->package_offer_price;
+        else
+        $price=$package->package_basic_price;
+		//$price= $package->package_offer_price ? $package->package_offer_price : $package->package_basic_price	; dd($package->$price=$package->package_offer_price;);
+		$order_total=$price-$remaining_amount;
+		Session::put("order_total", $order_total);
+		Session::put("auto_renewal", 1);
+        $data_return = [
+                "id" => $package->id,
+                "order_type"=>$order_type,
+                "name" => $package->name,
+                "package_validity" => $package->package_validity??'',
+                "price" => $price,
+                "remaining_months" => $remaining_months,
+                "last_order_total" =>$last_oreder_total,
+                "remaining_amount" =>$remaining_amount,
+                "last_pkg_permonth"=>round($last_pkg_permonth,2),
+                "order_total" =>$order_total,
+            ]; 
+       
+        
+        
+         return json_encode($data_return);
+    }
+    
+    
+    
     //create invoice
     public function PackgeInvoice(Request $request)
     {
@@ -616,12 +753,12 @@ class PackageController extends Controller
             ->orderBy("id", "DESC")
             ->get();
 
-        $highestPackage = Package::where("status", 'Active')->orderBy("package_basic_price", "DESC")->first();
-        
+      //  $highestPackage = Package::where("status", 'Active')->orderBy("package_basic_price", "DESC")->first();
+        $lowestpackage = Package::where('status','Active')->orderBy("package_basic_price", "asc")->first();
         if($this->isMobile()) { 
-	    return view( "frontEnd.profile-creation.SubscriptionDetails_mobile",compact("subscriptions","highestPackage") );
+	    return view( "frontEnd.profile-creation.SubscriptionDetails_mobile",compact("subscriptions",'lowestpackage') );
         } else {
-          return view( "frontEnd.profile-creation.SubscriptionDetails",compact("subscriptions","highestPackage") );
+          return view( "frontEnd.profile-creation.SubscriptionDetails",compact("subscriptions",'lowestpackage') );
     }
     }
     public function UpgradePackage(Request $request)

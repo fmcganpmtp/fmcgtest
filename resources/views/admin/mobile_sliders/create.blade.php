@@ -49,22 +49,19 @@
                                 </div>
                            
 
-						<div class="form-group">
-                                <label for="name" >Title on Image </label> 
-								<input type="text" name="title_on_image[]" value="" class="form-control" style=" height: 40px !important; ">
-                            </div>
-
-						<div class="form-group">
-                                <label for="name" >Description </label> 
-								<textarea name="description[]" class="form-control"></textarea>
-                            </div>
+						
 
                           <div class="form-group">
                                 <label for="name" >Image Target </label> 
 								<input type="text" name="image_target[]" value="" class="form-control">
                             </div>							
+						 	
+							<div class="form-group">  
+                                <label for="name" >Display Order </label> 
+								<input id="display_order" type="number" class="form-control" name="display_order[]" value="" >
+                            </div>	
 						 </div>	
-							
+						 
 							<div class="row clone-group" id="clone" style="display: none;">
                         <div class="row clone-group">
                             <div class="col-xs-12 col-sm-12 col-md-12">
@@ -77,21 +74,17 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-xs-12 col-sm-12 col-md-12">
-                                <div class="form-group">
-                                    <label for="name" >Title on Image</label> <input type="text" name="title_on_image[]" value="" class="form-control">
-                                </div>
-                            </div>
-                            <div class="col-xs-12 col-sm-12 col-md-12">
-                                <div class="form-group">
-                                    <label for="name" >Description </label> <textarea name="description[]" class="form-control"></textarea>
-                                </div>
-                            </div>
+                            
                             <div class="col-xs-12 col-sm-12 col-md-12">
                                 <div class="form-group">
                                     <label for="name" >Image Target </label> <input type="text" name="image_target[]" value="" class="form-control">
                                 </div>
                             </div>
+                            <div class="col-xs-12 col-sm-12 col-md-12">
+                             <div class="form-group">
+                                <label>Display Order </label> <input id="display_order" type="number" class="form-control" name="display_order[]" value="" >
+                             </div>
+                             </div>
                         </div>
                     </div>
 							
