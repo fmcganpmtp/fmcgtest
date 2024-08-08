@@ -952,11 +952,7 @@ public function companyDbs(Request $request){
 	//dd($active_sellers);
 	$user_data = User::join('buyer_companies','buyer_companies.user_id', '=', 'users.id')
 				->leftJoin('countries', 'countries.id', '=', 'users.country_id')
-				->leftJoin('subscriptions', function($join)
-                         {
-                             $join->on('subscriptions.user_id', '=', 'users.id');
-                             $join->on('subscriptions.status','=',DB::raw("'Active'")); 
-                         }) 
+				->leftJoin('subscriptions', 'subscriptions.user_id', '=', 'users.id')
 				->leftJoin('company_types', 'buyer_companies.company_type', '=', 'company_types.id') 
 				->where('users.status','Active')
 				->where('users.seller_type','Master') 
