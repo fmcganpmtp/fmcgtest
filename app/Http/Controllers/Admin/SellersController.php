@@ -67,10 +67,172 @@ class SellersController extends Controller
         $country_id = User::select('country_id')->distinct()->where('seller_type','Master')->where('users.status','<>','Deleted')->get()->pluck('country_id')->toArray();
 	    $countries = Country::whereIn('id', $country_id)->orderBy('name','asc')->get();
         $filter=$request->get('filter');
-        if($filter=='Excel') 
-               return Excel::download(new SellerExport($search_key,$status,$company_type,$selected_country_id,$category_id,$sub_end_month,$sub_type), 'Users_List.xls');
-        else
+        if($filter=='Excel'){
+            $company_types = CompanyType::select("id", "company_type")->get();
+              
+            $columnName = 'buyer_companies.id';
+            $columnSortOrder = 'desc';
+            
+            $searchValue=$request->get('search_key');
+            $status=$request->get('status');       
+            $company_type= $request->get('company_type');
+            $selected_country_id= $request->get('selected_country_id'); 
+            $category_id= $request->get('category_id');
+            $sub_end_month= $request->get('sub_end_month');
+            $sub_type= $request->get('sub_type'); 
+            
+            $totalRecords =User::select('count(*) as allcount')
+                ->when($request->get('status')!='', function ($query) use ($request) {
+                    $query->where('status',$request->get('status'));
+                })->where('users.status','<>','Deleted')->count();
+            $records = User::leftJoin('buyer_companies',  'buyer_companies.id', '=', 'users.company_id' )  
+                ->leftJoin('countries', 'countries.id', '=', 'users.country_id')            
+                ->leftJoin('subscriptions', 'subscriptions.user_id', '=', 'buyer_companies.user_id')  
+                ->leftJoin('packages', 'subscriptions.package_id', '=', 'packages.id')
+                ->select('users.*','buyer_companies.company_name','packages.name as pkg_name',
+                'buyer_companies.company_type as cmp_type','buyer_companies.company_email as company_email','buyer_companies.company_location','buyer_companies.company_street','buyer_companies.company_zip',
+                DB::raw("countries.name as country_name"),'subscriptions.created_at as subscription_start','subscriptions.expairy_date as expairy_date') 
+                ->where('subscriptions.package_id', '<>', null)
+             ->where('subscriptions.status', '=', 'Active')
+           //     ->where('seller_type','Master')
+                ->where('users.status','<>','Deleted');
+            if($request->get('status')!=''){
+                $records = $records->where('users.status',$request->get('status'));
+            } 
+            if($searchValue!=''){
+                $records = $records->where(DB::raw('CONCAT_WS(users.name,email,phone,buyer_companies.company_name,countries.name)'), 'LIKE','%'.$searchValue.'%');
+            } 
+            if($request->get('company_type')!=''){
+                $records = $records->Where(function ($query) use ($company_type) {
+                    foreach ($company_type as $term) {
+                        $query->orWhereRaw( 'find_in_set("' . $term . '",buyer_companies.company_type)');
+                    }
+                });
+            } 
+            if($request->get('sub_end_month')!=''){ 
+                $records = $records->whereDate('subscriptions.expairy_date', '>=', NOW())
+                        ->where('subscriptions.status','active')
+                        ->whereRaw('extract(month from subscriptions.expairy_date) = ?', [$sub_end_month]);			             
+            }			
+            if($sub_type!=''){         
+                if($sub_type=='free') {
+                    $records = $records->where('packages.package_basic_price', '=', 0); 
+                } elseif($sub_type=='paid') {
+                    $records = $records->where('packages.package_basic_price', '>', 0); 
+                }       
+            }					
+            if($request->get('selected_country_id')!='')
+                $records = $records->whereIn('users.country_id',$selected_country_id); 
+            $category_ids = [];  
+            $sellers = [];
+            if($category_id!='0'){  
+                $sellers_list = SellerProduct::select('user_id')->distinct()->Where('seller_products.parent_category_id',$category_id)->get()->pluck('user_id')->toArray();
+                $offline_list = SellerOfflineCategory::select('user_id')->distinct()->WhereRaw( 'find_in_set("' . $category_id . '",seller_offline_categories.category_id)')->get()->pluck('user_id')->toArray();
+                if(!empty($sellers_list)&&!empty($offline_list))
+                    $combinedArray = array_merge($sellers_list, $offline_list);
+                else
+                    $combinedArray = $sellers_list; 
+                $records = $records->whereIn('users.id',$combinedArray);
+            }         
+            
+            $totalRecordswithFilter= $records 
+            ->groupby('users.id')
+            ->get()->count();
+            
+            $records= $records->orderBy($columnName,$columnSortOrder)
+           
+            ->groupby('users.id')
+            ->get();           
+            $data_arr = array();  
+            foreach ($records as $record) {
+                $status = '';
+                
+            $userId = $record->id;
+            if($record->seller_type=="Co-Seller")
+            $userId=$record->parent_id;    
+                            
+                $c_types = $c_types_names =[]; 
+                if($record->cmp_type) {             
+                    foreach ($company_types as $company_type){
+                        $c_types = explode(",",$record->cmp_type);
+                        if(in_array($company_type->id, $c_types))
+                            $c_types_names[] = $company_type->company_type ;
+                    } 
+                }
+                $c_types_names =  implode( ', ', $c_types_names );	
+                $parent_cat_id = SellerProduct::select('parent_category_id')->distinct()->Where('seller_products.user_id',$userId)->get()->pluck('parent_category_id')->toArray();
+                $seller_Ofln_Cats = SellerOfflineCategory::select('category_id')->where('user_id', $userId)->first();
+                if ($seller_Ofln_Cats) 
+                    $seller_offine_categorylists = explode(",", $seller_Ofln_Cats->category_id);
+                else 
+                    $seller_offine_categorylists = []; 
+                 
+                $categorylists = Category::whereIn("id", $parent_cat_id)
+                    ->orwhereIn("id", $seller_offine_categorylists)
+                    ->where('parent_id',null)
+                    ->whereNotNull('name')
+                    ->where('name','<>','')
+                    ->distinct() 
+                    ->orderBy('name','asc')
+                    ->pluck("name")
+                    ->all();
+                $cats = implode( ', ', $categorylists ); 
+                
+                $name=$record->name ;
+                $address="";
+                
+                if($record->company_location)
+                    $address.=$record->company_location." ,";
+                if($record->company_street)
+                    $address.=$record->company_street." ,";
+                if($record->company_zip)
+                    $address.=$record->company_zip;
+                    
+                $package_data = DB::table('subscriptions')->leftJoin('packages', 'packages.id', '=', 'subscriptions.package_id')
+                                ->where('subscriptions.user_id', '=',$userId)
+                                ->where('subscriptions.status','active')
+                                ->whereDate('subscriptions.expairy_date', '>=', Carbon::now())
+                                ->orderBy('subscriptions.id','DESC')
+                                ->first(); 
+                $product_count_approved = SellerProduct::where("user_id", $userId)->where("status",'<>', "deleted")->count(); 
+                $product_count_pending = SellerProductTemp::where("user_id", $userId)->where("status",'<>', "deleted")->count(); 
+                $product_count = $product_count_approved + $product_count_pending;                 
+                $prdts_to_uplod=0;
+                if(!empty($package_data)){
+                    $market_uploads = $package_data->market_uploads;    
+                    if($package_data->market_uploads=='')
+                       $prdts_to_uplod="Unlimited";
+                    elseif($market_uploads>0 && $market_uploads>$product_count)
+                        $prdts_to_uplod=$market_uploads-$product_count;
+                            
+                }
+                $data_arr[] = array(
+                    "id" => $record->id,
+                    "name" =>$name,
+                    "surname"=>$record->surname??'', 
+                    "position"=>$record->position??'',
+                    "c_types" =>$c_types_names,
+                    "company_email" =>$record->company_email??'', 
+                    "prdts_to_uplod" =>$prdts_to_uplod,
+                    "categories" =>$cats,				
+                    "company_name" => $record->company_name,
+                    "status" => $record->status,
+                    "phone" => $record->phone,
+                    "email" => $record->email,
+                    "address" => $address,
+                    "created_at" => date('d-m-Y', strtotime($record->created_at)),
+                    "country_name" => $record->country_name, 
+                    "pkg_name" => $record->pkg_name,   
+                    "subscription_start" => $record->subscription_start==''? 'Nill': date('d-m-Y', strtotime($record->subscription_start)),
+                    "subscription" => $record->expairy_date==''? 'Nill': date('d-m-Y', strtotime($record->expairy_date)),);    
+            }
+            //return Excel::download(new SellerExport(), 'Users_List.xls');
+            return Excel::download(new SellerExport        ($data_arr), 'Users_List.xlsx');
+           // $filePath = $ex->getFile()->getPathname();
+           // return Response::download($filePath, 'Users_List.xlsx');
+        } else{
                 return view('admin.seller.sellers-list',compact('allcategorylists','CompanyType','countries'));
+        }
 
     }
     public function create() {
@@ -426,7 +588,12 @@ class SellersController extends Controller
         } 
         
         $sellercmpy=BuyerCompany::create($input);
-        
+
+        $buyer_company_id = $sellercmpy->id;
+            $buyer_input["company_id"] = $buyer_company_id;
+            DB::table("buyer_companies")
+                ->where("user_id", $userId)
+                ->update($buyer_input);
         
         $offline_categories = $request->get("offline_categories");
         $sOflinCats = SellerOfflineCategory::where("user_id", $userId)->first();
@@ -745,7 +912,13 @@ class SellersController extends Controller
         
      } 
     else  
-        BuyerCompany::create( $input );
+       // BuyerCompany::create( $input );
+        $buyer_company_id = BuyerCompany::create($input)->id;
+        $buyer_input["company_id"] = $buyer_company_id;
+        DB::table("buyer_companies")
+            ->where("user_id", $userId)
+            ->update($buyer_input);
+
         $offline_categories = $request->get("offline_categories");
         $sOflinCats = SellerOfflineCategory::where("user_id", $userId)->first();
         $of_cats = '';
@@ -1195,38 +1368,28 @@ public function adminusersellersstatusupdates (Request $request)
         $start = $request->get("start");
         $rowperpage = $request->get("length"); // total number of rows per page
         $columnIndex = $columnIndex_arr[0]['column']; // Column index
-        $columnName = $columnName_arr[$columnIndex]['data']; // Column name
-        $columnSortOrder = $order_arr[0]['dir']; // asc or desc     
+        $columnName = $columnName_arr[$columnIndex]['data']; // Column name ddd()
+        
+        $columnSortOrder = $order_arr[0]['dir']; // asc or desc   
+        if($columnName == 'id'){
+            $columnName = 'buyer_companies.id';
+            $columnSortOrder = 'desc';
+        }  
         $searchValue=$request->get('search_key');
         $status=$request->get('status');       
         $company_type= $request->get('company_type');
         $selected_country_id= $request->get('selected_country_id'); 
         $category_id= $request->get('category_id');
         $sub_end_month= $request->get('sub_end_month');
-        $sub_type= $request->get('sub_type');
-        
-        $company_types = CompanyType::select("id", "company_type")->get();       
+        $sub_type= $request->get('sub_type'); 
         
         $totalRecords =User::select('count(*) as allcount')
             ->when($request->get('status')!='', function ($query) use ($request) {
                 $query->where('status',$request->get('status'));
-            })
-           // ->where('seller_type','Master')
-            ->where('users.status','<>','Deleted')->count();
-       
-        // Get records, also we have included search filter as well
-        $records = User::leftJoin('buyer_companies', function($join)
-                                               {
-                                                  $join->on('buyer_companies.user_id', '=', 'users.id');
-                                                  $join->orOn('buyer_companies.user_id', '=', 'users.parent_id');
-                                               })  
-            ->leftJoin('countries', 'countries.id', '=', 'users.country_id')
-            
-            ->leftJoin('subscriptions', function($join)
-                                               {
-                                                  $join->on('subscriptions.user_id', '=', 'users.id');
-                                                  $join->orOn('subscriptions.user_id', '=', 'users.parent_id');
-                                               })  
+            })->where('users.status','<>','Deleted')->count();
+        $records = User::leftJoin('buyer_companies',  'buyer_companies.id', '=', 'users.company_id' )  
+            ->leftJoin('countries', 'countries.id', '=', 'users.country_id')            
+            ->leftJoin('subscriptions', 'subscriptions.user_id', '=', 'buyer_companies.user_id')  
             ->leftJoin('packages', 'subscriptions.package_id', '=', 'packages.id')
             ->select('users.*','buyer_companies.company_name','packages.name as pkg_name',
             'buyer_companies.company_type as cmp_type','buyer_companies.company_email as company_email','buyer_companies.company_location','buyer_companies.company_street','buyer_companies.company_zip',
@@ -1383,6 +1546,183 @@ public function adminusersellersstatusupdates (Request $request)
     }
 
 
+    // public function getsellerslist(Request $request){  
+    //     $company_types = CompanyType::select("id", "company_type")->get();
+    //     $columnIndex_arr = $request->get('order');
+    //     $columnName_arr = $request->get('columns');
+    //     $order_arr = $request->get('order');
+    //     $search_arr = $request->get('search');
+    //     $draw = $request->get('draw');
+    //     $start = $request->get("start");
+    //     $rowperpage = $request->get("length"); // total number of rows per page
+    //     $columnIndex = $columnIndex_arr[0]['column']; // Column index
+    //     $columnName = $columnName_arr[$columnIndex]['data']; // Column name
+    //     $columnSortOrder = $order_arr[0]['dir']; // asc or desc     
+    //     $searchValue=$request->get('search_key');
+    //     $status=$request->get('status');       
+    //     $company_type= $request->get('company_type');
+    //     $selected_country_id= $request->get('selected_country_id'); 
+    //     $category_id= $request->get('category_id');
+    //     $sub_end_month= $request->get('sub_end_month');
+    //     $sub_type= $request->get('sub_type'); 
+        
+    //     $totalRecords =User::select('count(*) as allcount')
+    //         ->when($request->get('status')!='', function ($query) use ($request) {
+    //             $query->where('status',$request->get('status'));
+    //         })->where('users.status','<>','Deleted')->count();
+            
+    //     $records = User::leftJoin('buyer_companies',  'buyer_companies.id', '=', 'users.company_id' )  
+    //         ->leftJoin('countries', 'countries.id', '=', 'users.country_id')             
+    //         ->select('users.*','buyer_companies.company_name',
+    //         'buyer_companies.company_type as cmp_type','buyer_companies.company_email as company_email','buyer_companies.company_location','buyer_companies.company_street','buyer_companies.company_zip',
+    //         DB::raw("countries.name as country_name"))             
+    //         ->where('users.status','<>','Deleted');
+    //     if($request->get('status')!=''){
+    //         $records = $records->where('users.status',$request->get('status'));
+    //     } 
+    //     if($searchValue!=''){
+    //         $records = $records->where(DB::raw('CONCAT_WS(users.name,email,phone,buyer_companies.company_name,countries.name)'), 'LIKE','%'.$searchValue.'%');
+    //     } 
+    //     if($request->get('company_type')!=''){
+    //         $records = $records->Where(function ($query) use ($company_type) {
+    //             foreach ($company_type as $term) {
+    //                 $query->orWhereRaw( 'find_in_set("' . $term . '",buyer_companies.company_type)');
+    //             }
+    //         });
+    //     } 
+    //     // if($request->get('sub_end_month')!=''){ 
+    //     //     $records = $records->whereDate('subscriptions.expairy_date', '>=', NOW())
+    //     //             ->where('subscriptions.status','active')
+    //     //             ->whereRaw('extract(month from subscriptions.expairy_date) = ?', [$sub_end_month]);			             
+    //     // }			
+    //     // if($sub_type!=''){         
+    //     //     if($sub_type=='free') {
+    //     //         $records = $records->where('packages.package_basic_price', '=', 0); 
+    //     //     } elseif($sub_type=='paid') {
+    //     //         $records = $records->where('packages.package_basic_price', '>', 0); 
+    //     //     }       
+    //     // }					
+    //     if($request->get('selected_country_id')!='')
+    //         $records = $records->whereIn('users.country_id',$selected_country_id); 
+    //     $category_ids = [];  
+    //     $sellers = [];
+    //     if($category_id!='0'){  
+    //         $sellers_list = SellerProduct::select('user_id')->distinct()->Where('seller_products.parent_category_id',$category_id)->get()->pluck('user_id')->toArray();
+    //         $offline_list = SellerOfflineCategory::select('user_id')->distinct()->WhereRaw( 'find_in_set("' . $category_id . '",seller_offline_categories.category_id)')->get()->pluck('user_id')->toArray();
+    //         if(!empty($sellers_list)&&!empty($offline_list))
+    //             $combinedArray = array_merge($sellers_list, $offline_list);
+    //         else
+    //             $combinedArray = $sellers_list; 
+    //         $records = $records->whereIn('users.id',$combinedArray);
+    //     }         
+        
+    //     $totalRecordswithFilter= $records 
+    //     ->groupby('users.id')
+    //     ->get()->count();
+        
+    //     $records= $records->orderBy($columnName,$columnSortOrder)
+    //     ->skip($start)
+    //     ->take($rowperpage)
+    //     ->groupby('users.id')
+    //     ->get();           
+    //     $data_arr = array();  
+    //     foreach ($records as $record) {
+    //         $status = (
+    //             ( $record->status=='Active') ? '<span style="color:white;background-color:green;padding:5px;line-height:12px;border-radius:2px;margin-top:5px;display:inline-block;">'.$record->status.'</span>':
+    //             (($record->status=='Blocked') ? '<span style="color:white;background-color:red;padding:5px;line-height:12px;border-radius:2px;margin-top:5px;display:inline-block;">'.$record->status.'</span>' :
+    //             (($record->status=='Pending') ?'<span style="color:white;background-color:orange;padding:5px;line-height:12px;border-radius:2px;margin-top:5px;display:inline-block;">'.$record->status.'</span>' :
+    //             (($record->status=='Rejected') ? '<span style="color:white;background-color:purple;padding:5px;line-height:12px;border-radius:2px;margin-top:5px;display:inline-block;">'.$record->status.'</span>' : ""
+    //             ))));
+            
+    //     $userId = $record->id;
+    //     if($record->seller_type=="Co-Seller")
+    //     $userId=$record->parent_id;    
+						
+	// 		$c_types = $c_types_names =[]; 
+    //         if($record->cmp_type) {             
+    //             foreach ($company_types as $company_type){
+    //                 $c_types = explode(",",$record->cmp_type);
+    //                 if(in_array($company_type->id, $c_types))
+    //                     $c_types_names[] = $company_type->company_type ;
+    //             } 
+    //         }
+    //         $c_types_names =  implode( ', ', $c_types_names );	
+	// 		$parent_cat_id = SellerProduct::select('parent_category_id')->distinct()->Where('seller_products.user_id',$userId)->get()->pluck('parent_category_id')->toArray();
+    //         $seller_Ofln_Cats = SellerOfflineCategory::select('category_id')->where('user_id', $userId)->first();
+    //         if ($seller_Ofln_Cats) 
+    //             $seller_offine_categorylists = explode(",", $seller_Ofln_Cats->category_id);
+    //         else 
+    //             $seller_offine_categorylists = []; 
+			 
+    //         $categorylists = Category::whereIn("id", $parent_cat_id)
+    //             ->orwhereIn("id", $seller_offine_categorylists)
+    //             ->where('parent_id',null)
+    //             ->whereNotNull('name')
+    //             ->where('name','<>','')
+    //             ->distinct() 
+    //             ->orderBy('name','asc')
+    //             ->pluck("name")
+    //             ->all();
+    //         $cats = implode( ', ', $categorylists ); 
+			
+    //         $name=$record->name.'<br/> '.$status;
+    //         $address="";
+            
+    //         if($record->company_location)
+    //             $address.=$record->company_location." ,";
+    //         if($record->company_street)
+    //             $address.=$record->company_street." ,";
+    //         if($record->company_zip)
+    //             $address.=$record->company_zip;
+                
+    //         $package_data = DB::table('subscriptions')->leftJoin('packages', 'packages.id', '=', 'subscriptions.package_id')
+    //                         ->where('subscriptions.user_id', '=',$userId)
+    //                         ->where('subscriptions.status','active')
+    //                         ->whereDate('subscriptions.expairy_date', '>=', Carbon::now())
+    //                         ->orderBy('subscriptions.id','DESC')
+    //                         ->first(); 
+    //         $product_count_approved = SellerProduct::where("user_id", $userId)->where("status",'<>', "deleted")->count(); 
+    //         $product_count_pending = SellerProductTemp::where("user_id", $userId)->where("status",'<>', "deleted")->count(); 
+    //         $product_count = $product_count_approved + $product_count_pending;                 
+    //         $prdts_to_uplod=0;
+    //         if(!empty($package_data)){
+    //             $market_uploads = $package_data->market_uploads;    
+    //             if($package_data->market_uploads=='')
+    //                $prdts_to_uplod="Unlimited";
+    //             elseif($market_uploads>0 && $market_uploads>$product_count)
+    //                 $prdts_to_uplod=$market_uploads-$product_count;
+                    	
+    //         }
+    //         $data_arr[] = array(
+    //             "id" => $record->id,
+    //             "name" =>$name,
+    //             "surname"=>$record->surname??'', 
+    //             "position"=>$record->position??'',
+    //             "c_types" =>$c_types_names,
+    //             "company_email" =>$record->company_email??'', 
+    //             "prdts_to_uplod" =>$prdts_to_uplod,
+	// 			"categories" =>$cats,				
+    //             "company_name" => $record->company_name,
+    //             "status" => $record->status,
+    //             "phone" => $record->phone,
+    //             "email" => $record->email,
+    //             "address" => $address,
+    //             "created_at" => date('d-m-Y', strtotime($record->created_at)),
+    //             "country_name" => $record->country_name, 
+    //             "pkg_name" => '',   
+    //             "subscription_start" => '',
+    //             "subscription" => '',);    
+    //     }
+
+    //     $response = array(
+    //         "draw" => intval($draw),
+    //         //"iTotalRecords" => $totalRecords,
+    //         "iTotalRecords" => $totalRecordswithFilter,
+    //         "iTotalDisplayRecords" => $totalRecordswithFilter,
+    //         "aaData" => $data_arr,
+    //     );
+    //     echo json_encode($response);       
+    // }
 
 
     public function getsellerdocslist(Request $request)
@@ -2042,6 +2382,10 @@ public function adminusersellersstatusupdates (Request $request)
                 ->update($input);
         } else {
             $sellercmpy = BuyerCompany::create($input);
+            $buyer_input["company_id"] = $sellercmpy->id;
+            DB::table("buyer_companies")
+                ->where("user_id", $userId)
+                ->update($buyer_input);
         }
 
         
@@ -2102,6 +2446,10 @@ public function adminusersellersstatusupdates (Request $request)
                 ->update($input);
         } else {
             $sellercmpy = BuyerCompany::create($input);
+            $buyer_input["company_id"] = $sellercmpy->id;
+            DB::table("buyer_companies")
+                ->where("user_id", $userId)
+                ->update($buyer_input);
         }
 
         

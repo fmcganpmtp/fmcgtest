@@ -148,7 +148,7 @@ class RegisterController extends Controller
         $user_id = User::create( $input )->id; 
 		$company['company_name'] = $request->get('company_name');
 		$company['user_id'] = $user_id;
-		BuyerCompany::create( $company ); 
+		$buyer_company_id = BuyerCompany::create( $company )->id; 
         //mail to admin
             $name = $request->get('name');
             $surname = $request->get('surname');
@@ -189,7 +189,7 @@ class RegisterController extends Controller
         }
         DB::table("users")
             ->where("id", $user_id)
-            ->update(["token_number" => $token]);
+            ->update(["token_number" => $token,"company_id" =>$buyer_company_id]);
         //email verification
       /*  Mail::send(
             "emails.KYCApprovalMailTemplate",

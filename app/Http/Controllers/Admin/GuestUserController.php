@@ -143,6 +143,10 @@ class GuestUserController extends Controller
         }
 
         $sellercmpy = BuyerCompany::create($input);
+        $buyer_input["company_id"] = $sellercmpy->id;
+            DB::table("buyer_companies")
+                ->where("user_id", $user->id)
+                ->update($buyer_input);
 
         $input["seller_id"] = $user->id;
 
@@ -392,7 +396,11 @@ class GuestUserController extends Controller
                 ->where("user_id", $userId)
                 ->update($input);
         } else {
-            BuyerCompany::create($input);
+            $sellercmpy= BuyerCompany::create($input);
+            $buyer_input["company_id"] = $sellercmpy->id;
+            DB::table("buyer_companies")
+                ->where("user_id", $userId)
+                ->update($buyer_input);
         }
         $input = [];
         $input["seller_id"] = $userId;

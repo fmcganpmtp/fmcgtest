@@ -1272,6 +1272,11 @@ public function offlineCategoriesAdmin(request $request) {
                 ->update($input);
         } else {
             $sellercmpy = BuyerCompany::create($input);
+            $buyer_company_id = $sellercmpy->id;
+            $buyer_input["company_id"] = $buyer_company_id;
+            DB::table("buyer_companies")
+                ->where("user_id", $userId)
+                ->update($buyer_input);
         }
 
         $input = [
@@ -1599,6 +1604,11 @@ public function offlineCategoriesAdmin(request $request) {
                 ->update($input);
         } else {
             $sellercmpy = BuyerCompany::create($input);
+            $buyer_company_id = $sellercmpy->id;
+            $buyer_input["company_id"] = $buyer_company_id;
+            DB::table("buyer_companies")
+                ->where("user_id", $userId)
+                ->update($buyer_input);
         }
 
         
@@ -1662,6 +1672,11 @@ public function offlineCategoriesAdmin(request $request) {
                 ->update($input);
         } else {
             $sellercmpy = BuyerCompany::create($input);
+            $buyer_company_id = $sellercmpy->id;
+            $buyer_input["company_id"] = $buyer_company_id;
+            DB::table("buyer_companies")
+                ->where("user_id", $userId)
+                ->update($buyer_input);
         }
 
         
@@ -1749,8 +1764,12 @@ public function offlineCategoriesAdmin(request $request) {
             DB::table("buyer_companies")
                 ->where("id", $id)
                 ->update($input);
-        } else {
-            BuyerCompany::create($input);
+        } else { 
+            $buyer_company_id = BuyerCompany::create($input)->id;
+            $buyer_input["company_id"] = $buyer_company_id;
+            DB::table("buyer_companies")
+                ->where("user_id", $user_id)
+                ->update($buyer_input);
         }
         return redirect()->route("home");
     }
@@ -2256,7 +2275,11 @@ public function offlineCategoriesAdmin(request $request) {
                 ->where("user_id", $userId)
                 ->update($input1);
         } else {
-            BuyerCompany::create($input);
+            $buyer_company_id = BuyerCompany::create($input)->id;
+            $buyer_input["company_id"] = $buyer_company_id;
+            DB::table("buyer_companies")
+                ->where("user_id", $userId)
+                ->update($buyer_input);
         }
 
         return redirect()
@@ -2414,7 +2437,11 @@ public function offlineCategoriesAdmin(request $request) {
                 ->where("user_id", $userId)
                 ->update($input);
         } else {
-            BuyerCompany::create($input);
+            $buyer_company_id = BuyerCompany::create($input)->id;
+            $buyer_input["company_id"] = $buyer_company_id;
+            DB::table("buyer_companies")
+                ->where("user_id", $userId)
+                ->update($buyer_input);
         }
 
         $input = [

@@ -127,7 +127,7 @@
                                     <th>Country</th>
                                     <th>Location(City)</th>
                                     <th>Active Product Categories</th>
-                                    <!-- <th>Package</th>-->
+                                    <th>Package</th> 
                                     <th>Subscription Start</th>
                                     <th>Subscription End</th>
                                     <th>Action</th>
@@ -304,8 +304,7 @@
            processing: '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> '},
            serverSide: true,
            'searching': false,
-           "lengthChange": false,
-           "order": [ 2,'desc'],
+           "lengthChange": false, 
            'ajax': {
            'url':"{{ url('getsellerslist') }}",
            'data': function(data){
@@ -346,7 +345,7 @@
          }
        },
          {
-          "targets":15, 
+          "targets":16, 
           "orderable": false,
           "render": function(data,type,full,meta)
          {
@@ -383,10 +382,9 @@
              { data: 'country_name' },
              { data: 'address' }, 
              { data: 'categories' },
-           //  { data: 'pkg_name' }, 
+             { data: 'pkg_name' }, 
              { data: 'subscription_start' },  
-             { data: 'subscription' }, 
-             
+             { data: 'subscription' },             
              
              
              
