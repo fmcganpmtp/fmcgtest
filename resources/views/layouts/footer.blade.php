@@ -797,10 +797,10 @@ $fmcg(document).on('click','.cht-ico',async function(e){
                 await channel.addMembers([member2]); 
               }else
               await createChannel(default_chatroom,member1,member2,data.cmp_img); 
-            //  if($fmcg('.new-msg-bx').is(':hidden'))
-             // {     
+              if($fmcg('.new-msg-bx').is(':hidden'))
+              {     
               $fmcg('.new-msg-bx-button').trigger("click");
-            //  }
+              }
               await loadDefaultChannel();      
 	        },
 	        error: function (xhr) { 
@@ -825,6 +825,9 @@ $fmcg(document).on('click','.cht-ico',async function(e){
       });
       // Here, 'travel' will be the channel ID
       await channel.create();
+      await channel.addMembers([member1]);  
+      await channel.addMembers([member2]);  
+
     }
 </script>
 

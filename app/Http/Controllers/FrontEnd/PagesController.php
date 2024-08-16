@@ -21,10 +21,11 @@ use App\Models\MobileSlider;
 use App\Models\MobileSliderimage;
 use App\Models\SellerOfflineCategory;
 use App\Models\Chatroom;
-
+use App\Models\Package;
 use App\User;
 use App\Models\BusinessInsight;
 use App\buildTree;
+use App\Models\BuyerCompany;
 use Carbon;
 use Session;
 use DB;
@@ -966,7 +967,7 @@ public function companyDbs(Request $request){
 			$query->orWhere(DB::raw('UPPER(buyer_companies.about_company)'), 'LIKE','%'.$seller_name_search.'%');
 			$query->orWhere(DB::raw('UPPER(buyer_companies.profile_keywords)'), 'LIKE','%'.$seller_name_search.'%');
 			$query->orWhere(DB::raw('UPPER(users.name)'), 'LIKE','%'.$seller_name_search.'%');
-			$query->orWhere(DB::raw("CONCAT(users.name, ' ', users.surname)"), 'LIKE', "%".$seller_name_search."%");
+			//$query->orWhere(DB::raw("CONCAT(users.name, ' ', users.surname)"), 'LIKE', "%".$seller_name_search."%");
 			$query->orWhere(DB::raw('UPPER(buyer_companies.company_name)'), 'LIKE','%'.$seller_name_search.'%');
 		});
 	}
@@ -1172,5 +1173,32 @@ public function companyDbs(Request $request){
 				$headers .= 'Cc: myboss@example.com' . "\r\n";
 
 				mail($to,$subject,$message,$headers);
+	}
+	public function pricing(){
+		if (Auth::guard("user")->check()) {
+			return redirect(route("package.listing"));
+        }  
+		$query = Package::where("status", "!=", "deleted");
+        $packages = $query->orderBy('display_order','asc') ->get();
+		if($this->isMobile()) { 
+	    	return view("frontEnd.pages.pricing",compact("packages"));
+        } else {
+          return view("frontEnd.pages.pricing",compact("packages"));
+    	}
+	}
+	public function updateCompanyUser(){
+		  
+		$company = BuyerCompany::all();
+		foreach($company as $row){
+			DB::table("users")
+            ->where("id", $row->user_id)
+            ->update(["company_id" => $row->id]);
+			$child_users = User::where('parent_id',$row->user_id)->get();
+			foreach($child_users as $users){
+				DB::table("users")
+					->where("id", $users->id)
+					->update(["company_id" => $row->id]);
+			}
+		}		 
 	}
 }

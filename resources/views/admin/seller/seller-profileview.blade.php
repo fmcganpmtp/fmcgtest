@@ -316,7 +316,7 @@
                         <li class="nav-item {{ (Request::get('tab')=="about"  || !(isset($_GET['tab'])))? 'active':"" }}"><a data-toggle="tab" href="#home"  id="home-tab" role="tab" aria-controls="home" aria-selected="{{ (Request::get('tab')=="about" || !(isset($_GET['tab']))) ? 'true':"false" }}">About</a></li>
                         <li class="nav-item {{ Request::get('tab')=="regions"? 'active':"" }}"><a data-toggle="tab" href="#menu1" role="tab" aria-controls="menu1" id="menu1-tab" aria-selected="false">Regions</a></li>
                         <li class="nav-item {{ Request::get('tab')=="employees"? 'active':"" }}"><a data-toggle="tab" href="#menu2" role="tab" aria-controls="menu2" id="menu2-tab" aria-selected="{{ Request::get('tab')=="employees"? 'true':"false" }} ">Employees</a></li>
-                       <!-- <li class="nav-item {{ Request::get('tab')=="myprofile"? 'active':"" }}"><a data-toggle="tab" href="#myprofile" role="tab" aria-controls="myprofile" id="myprofile-tab" aria-selected="{{ Request::get('tab')=="myprofile"? 'true':"false" }} ">Profile</a>-->
+                        <li class="nav-item {{ Request::get('tab')=="myprofile"? 'active':"" }}"><a data-toggle="tab" href="#myprofile" role="tab" aria-controls="myprofile" id="myprofile-tab" aria-selected="{{ Request::get('tab')=="myprofile"? 'true':"false" }} ">Profile</a>
                     </li>
                       </ul>
                      <div class="tab-content">
@@ -556,7 +556,6 @@
                      </div>
                   </div>
                </div>
-                       <!--
                         <div id="myprofile"  class="tab-pane {{ Request::get('tab')=="myprofile"? 'active':"" }}"  role="tabpanel" aria-labelledby="myprofile-tab" style="position:relative;">
                     <div class="pr-tab-inner">
                       
@@ -683,7 +682,7 @@
                       
                     </div>
                   </div>
-               -->
+               
             </div>
            
          </div>

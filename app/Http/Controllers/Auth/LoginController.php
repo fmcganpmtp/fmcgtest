@@ -134,7 +134,7 @@ class LoginController extends Controller
                     'role' => 'admin'
                 ];        
                 $client->updateUser($user);
-                $client->updateChannelType("messaging", ["reminders" => true,"mark_messages_pending" => true ]);
+                $client->updateChannelType("messaging", ["reminders" => true]);
                 $client->updateAppSettings([
                     'webhook_url'=> "http://test.fmcgland.com/webhook", 
                 ]);

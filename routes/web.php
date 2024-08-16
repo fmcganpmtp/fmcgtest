@@ -47,7 +47,7 @@ Route::post('password/reset', 'App\Http\Controllers\Auth\LoginController@submitR
 Route::post('employees/password/reset', 'App\Http\Controllers\FrontEnd\ProfileController@submitForgetPasswordEmployees')->name('employeesPassword.reset');
 Route::post('loademployees-compProfile', 'App\Http\Controllers\FrontEnd\ProfileController@loadEmployeesCompProf')->name('loadEmployeesCompProf');
 
-
+Route::get('/pricing', 'App\Http\Controllers\FrontEnd\PagesController@pricing')->name('pricing');
 
 //chat
 Route::post('/get-my-contacts','App\Http\Controllers\FrontEnd\MessageController@getMyContacts')->name('chat.getMyContacts');
@@ -711,3 +711,4 @@ Route::post('currencymerge','App\Http\Controllers\Admin\CurrencyController@curre
 Route::post('create-token', 'App\Http\Controllers\FrontEnd\PagesController@createtoken')->name('create-token');
 Route::get('redirect-company-profile/{profileid}', 'App\Http\Controllers\FrontEnd\PagesController@RedirectCompanyProfile')->name('redirect.profile');
 Route::post('/stream-notification','App\Http\Controllers\FrontEnd\MessageController@sentNotification')->name('chat.sentNotification');
+Route::get('/update-company-user','App\Http\Controllers\FrontEnd\PagesController@updateCompanyUser');
