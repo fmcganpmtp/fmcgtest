@@ -15,10 +15,10 @@ FMCG | About Us
   
     <div class="about-content">
       <!--<h3>{{ $about_us->title  ?? ''}}</h3>-->
-      
+      <div class="container">
     <?php echo $faq->page_content; ?> 
      
-     
+    </div>
     <div class="gap-30"></div>
   </div>
 </div><?php ?>
