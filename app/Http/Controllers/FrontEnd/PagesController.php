@@ -210,6 +210,13 @@ class PagesController extends Controller{
 		else
 				return view('frontEnd.pages.AboutUs',compact('about_us'));
 	}
+	public function Faq(){
+		$faq =  Contentpage::where('page',"FAQ")->first();
+		if($this->isMobile())
+				return view('frontEnd.pages.faq_mobile',compact('faq'));
+		else
+				return view('frontEnd.pages.faq',compact('faq'));
+	}
 public function mynetwork(){
 	   
 	if(Auth::guard('user')->check()){          

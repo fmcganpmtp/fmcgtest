@@ -178,6 +178,7 @@ Route::post('resend_veryfication_email', 'App\Http\Controllers\FrontEnd\ProfileC
 Route::get('/terms-and-conditions', 'App\Http\Controllers\FrontEnd\PagesController@TermsAndCondition')->name('terms.condition');
 //Privacy Policy
 Route::get('/privacy-policy', 'App\Http\Controllers\FrontEnd\PagesController@PrivacyPolicy')->name('privacy.policy');
+Route::get('/faq', 'App\Http\Controllers\FrontEnd\PagesController@Faq')->name('Faq');
 
 
 

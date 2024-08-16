@@ -178,7 +178,7 @@ class SellersController extends Controller
                     ->all();
                 $cats = implode( ', ', $categorylists ); 
                 
-                $name=$record->name.'<br/> '.$status;
+                $name=$record->name;
                 $address="";
                 
                 if($record->company_location)
