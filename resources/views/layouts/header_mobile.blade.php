@@ -60,6 +60,7 @@
 
   gtag('config', 'G-TG7NKKFFF4');
 </script>
+
    </head>
    <body>
       <div class="loaderajax" style="display: none;">
@@ -71,8 +72,20 @@
       <header class="header-area">
          <div class="header-part-1">
             <div class="container">
+                
+                         <?php
+                        $company_logo="";			
+                        foreach($view_composer_general as $general)
+                        {
+                        if( $general->item =='company_logo')
+                        { $company_logo=$general->value; }
+                        }
+                        if(!empty($company_logo)) $img_url =asset('/assets/uploads/logo/'.$company_logo);
+                        else $img_url =   asset('images/logo.png'); 
+                        ?>
+                     <div class="logo"> <a href="{{route('home')}}"> <img src="{{ $img_url }}" alt="Image"> </a> </div>
                <div class="row">
-                  <div class="col-lg-5 col-5 flx1">
+                  <div class=" col-3 flx1">
                       
                       <!--
                       <div class="mobile-responsive-menu">
@@ -85,20 +98,23 @@
                       
                       -->
                     
-                     <div class="menu-btn"><a  onClick="openNav()"><img src="{{ asset('/mobile/images/menu-btn.png')}}"></a></div>
-                     <?php
-                        $company_logo="";			
-                        foreach($view_composer_general as $general)
-                        {
-                        if( $general->item =='company_logo')
-                        { $company_logo=$general->value; }
-                        }
-                        if(!empty($company_logo)) $img_url =asset('/assets/uploads/logo/'.$company_logo);
-                        else $img_url =   asset('images/logo.png'); 
-                        ?>
-                     <div class="logo"> <a href="{{route('home')}}"> <img src="{{ $img_url }}" alt="Image"> </a> </div>
+                     <div class="menu-btn"><a  onClick="openNav()"><i class="fa fa-caret-down" aria-hidden="true"></i>categories
+<!--img src="{{ asset('/mobile/images/menu-btn.png')}}">--></a></div>
+            
                   </div>
-                  <div class="col-lg-7 col-7">
+                  <div class=" col-6">
+                      <div class="head-product-menu d-flex">
+                           <a class="middle-menu-item d-block pt-2 px-2 {{ Route::is('home')  ? 'active' : '' }}" href="{{route('home')}}">Products</a> 
+                                @if(Auth::guard('user')->check())   
+                                     <a class="middle-menu-item d-block pt-2 {{ Route::is('companyDB')  ? 'active' : '' }}" href="{{route('companyDB')}}">Companies</a> 
+                                @else
+                                    <a class="middle-menu-item  d-block pt-2 {{ Route::is('network')  ? 'active' : '' }}" href="{{route('network')}}">Companies</a> 
+                                @endif
+                              
+                      </div>
+                  </div>
+                  <div class=" col-3  ">
+                      
                      <div class="head-right-05">
                         <?php    $img_path = asset('uploads/defaultImages/default_avatar.png'); 
                            if(Auth::guard('user')->check()) {  
@@ -118,7 +134,7 @@
                                  <div class="log-user">
                                     <img src="{{$img_path}}">
                                  </div>
-                                 <span class="user-name01"> {{ substr(Auth::guard('user')->user()->name,0,6) ?? '' }}</span> 
+                                 <span class="user-name01"> </span>  
                               </button>
                               
                               <div class="dropdown-menu language-dropdown-menu" aria-labelledby="language2">
@@ -161,28 +177,28 @@
                               
                                @if($view_composer_profile_menu_visible_criteria['flag_blocked_active'] != true)
 								@if($usertype !="guest" && $view_composer_profile_menu_visible_criteria['flag2'] == true)
-                              <ul class="head-right  home-demo">
-                                  <li class="wish-list wish_show">
-                                      <a href="{{ route('WishlistItems')}}"><i class="fa fa-heart" aria-hidden="true">
- </i><br>
-										<div class="wish-count wishlist_count" @php if($view_composer_wishCount==0) {  echo 'style="display:none;"'; } @endphp>{{ $view_composer_wishCount ?? "" }}
-							            </div>
-							          </a>
-							      </li>
-							 <!--     
-							@if( $view_composer_profile_menu_visible_criteria['network_chat'] == 1)      
-							<li class="wish-list"><a href="javascript:void(0)" id="loadChatWindow"><img src="{{ asset('images/chat-ic-03.png') }}"> <br>
-							@if($view_composer_chact_unreadcnt!=0)
-							<div class="chat-count wish-count">{{ $view_composer_chact_unreadcnt}}</div>
-							@else
-							<div class="chat-count wish-count" style="display:none;"></div>
-							@endif
-							</a></li>
-							@else
-                             <li class="wish-list"><a href="javascript:void(0)" onclick="showerrorchat()"><img src="{{ asset('images/chat-ic-03.png') }}"></a></li>
-                            @endif
-                            -->
-                              </ul>
+ <!--                             <ul class="head-right  home-demo">-->
+ <!--                                 <li class="wish-list wish_show">-->
+ <!--                                     <a href="{{ route('WishlistItems')}}"><i class="fa fa-heart" aria-hidden="true">-->
+ <!--</i><br>-->
+	<!--									<div class="wish-count wishlist_count" @php if($view_composer_wishCount==0) {  echo 'style="display:none;"'; } @endphp>{{ $view_composer_wishCount ?? "" }}-->
+	<!--						            </div>-->
+	<!--						          </a>-->
+	<!--						      </li>-->
+							   
+	<!--						@if( $view_composer_profile_menu_visible_criteria['network_chat'] == 1)      -->
+	<!--						<li class="wish-list"><a href="javascript:void(0)" id="loadChatWindow"><img src="{{ asset('images/chat-ic-03.png') }}"> <br>-->
+	<!--						@if($view_composer_chact_unreadcnt!=0)-->
+	<!--						<div class="chat-count wish-count">{{ $view_composer_chact_unreadcnt}}</div>-->
+	<!--						@else-->
+	<!--						<div class="chat-count wish-count" style="display:none;"></div>-->
+	<!--						@endif-->
+	<!--						</a></li>-->
+	<!--						@else-->
+ <!--                            <li class="wish-list"><a href="javascript:void(0)" onclick="showerrorchat()"><img src="{{ asset('images/chat-ic-03.png') }}"></a></li>-->
+ <!--                           @endif-->
+ <!--                           --> 
+ <!--                             </ul>-->
                               @endif
 							@endif
                            </div>
@@ -218,14 +234,27 @@
                         
                         
                         <?php } else { ?>
-                        <ul class="head-right  home-demo">
-                           <li><a href="{{route('user-login')}}"><i class="fa fa-user" aria-hidden="true"></i></a></li>
+                        <!--<ul class="head-right  home-demo">-->
+                        <!--   <li><a href="{{route('user-login')}}"><i class="fa fa-user" aria-hidden="true"></i></a></li>-->
                          <!--  <li><a href="{{ route('user-register') }}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> </a></li>-->
-                        </ul>
+                        <!--</ul>-->
+                        <div class="dropdown menu-button-mob mt-2">
+  <a class="dropdown-toggle" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+  <i class="fa fa-bars" aria-hidden="true"></i>
+  </a>
+  <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+    <li><a class="dropdown-item" href="{{url('about-us')}}"><i class="fa fa-info-circle" aria-hidden="true"></i> About Us</a></li>
+    <li><a class="dropdown-item" href="{{route('pricing')}}"><i class="fa fa-tag" aria-hidden="true"></i>Pricing</a></li> 
+    <li><a class="dropdown-item" href="{{route('user-login')}}"><i class="fa fa-user" aria-hidden="true"></i>Sign in </a></li>
+	<li><a class="dropdown-item" href="{{ route('user-register') }}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>Register </a></li>
+	<li><button class="btn btn-warning"  data-bs-toggle="modal" data-bs-target="#staticBackdrop">Request Demo</button></li>
+  </ul>
+</div>
                         <?php } ?>
                      </div>
+                     
                   </div>
-                  <div class="col-lg-4"> </div>
+                  
                </div>
             </div>
          </div>
@@ -256,8 +285,99 @@
             </div>
          </div>
 
-<script  type="text/javascript">
+
+</header>
+<div class="modal fade demo-modal" id="staticBackdrop"     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="staticBackdropLabel">Request Demo</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                              </div>
+                              <div class="modal-body">
+                                 <div class="mb-3">
+                                  <label for="exampleFormControlInput1" class="form-label">Name</label>
+                                  <input type="text" class="form-control" id="request_name" placeholder="John Smith">
+                                  <span id="err_request_name" style="display:none">Please enter your name</span>
+                                </div>
+                                <div class="mb-3">
+                                  <label for="exampleFormControlInput1" class="form-label">Email address</label>
+                                  <input type="email" class="form-control" id="request_email" placeholder="name@example.com">
+                                  <span id="err_request_email" style="display:none">Please enter your email address</span>
+                                </div>
+                                <div class="mb-3">
+                                  <label for="exampleFormControlInput1" class="form-label">Phone Number</label>
+                                  <input type="text" class="form-control" id="request_phone" placeholder="+1123456">
+                                  <span id="err_request_phone" style="display:none">Please enter your phone number</span>
+                                </div>
+                                <div class="mb-3">
+                                  <label for="exampleFormControlTextarea1" class="form-label">Message</label>
+                                  <textarea class="form-control" id="request_message" rows="3"></textarea>
+                                  
+                                </div>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary btn-save" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary btn-save" id="btn_request_demo">Submit</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <script  type="text/javascript">
     var url_subpath = '{{url('product-listing')}}/';
     var $fmcg = $.noConflict();
+    
+$fmcg(document).on('click','#btn_request_demo',function(){
+     var url_request_demo = "{{route('demorequest')}}";
+     var request_name = $fmcg('#request_name').val();
+     var request_email = $fmcg('#request_email').val();
+     var request_phone = $fmcg('#request_phone').val();
+     var request_message = $fmcg('#request_message').val(); 
+     var error = 0;
+     if(request_name==''){
+         $fmcg("#err_request_name").show();
+         error++;
+     }else{
+         $fmcg("#err_request_name").hide();
+     }
+     if(request_email==''){
+         $fmcg("#err_request_email").show();
+         error++;
+     }else{
+         $fmcg("#err_request_email").hide();
+     }
+     if(request_phone==''){
+         $fmcg("#err_request_phone").show();
+         error++;
+     }else{
+         $fmcg("#err_request_phone").hide();
+     }
+     if(error==0){
+        $fmcg.ajax({
+               url: url_request_demo,
+               type: "post",
+               async:true,
+               cache: false,
+                data:{
+    	          "_token": "{{ csrf_token() }}",
+    	          'request_name':request_name,
+                   'request_email':request_email,
+                   'request_phone':request_phone,
+                   'request_message':request_message, 
+                },
+               dataType: 'json',
+               success: function(menu_structure){
+                    
+                       
+                  
+        } ,
+             error: function(XMLHttpRequest, textStatus, errorThrown) { 
+               
+             }  
+   
+       })  ;
+    }
+     
+});
 </script>
-</header>

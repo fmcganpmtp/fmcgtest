@@ -10,7 +10,7 @@ class MobileSlider extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name','show_home'
+        'name','show_home','show_network'
     ];
 function MobileSliderimage() {
         return $this->hasMany('App\Models\MobileSliderimage','slider_id','id');

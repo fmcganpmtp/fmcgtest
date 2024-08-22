@@ -10,7 +10,7 @@ class Slider extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name','show_home'
+        'name','show_home','show_network'
     ];
 function Sliderimage() {
         return $this->hasMany('App\Models\Sliderimage','slider_id','id');

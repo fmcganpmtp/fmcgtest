@@ -240,6 +240,8 @@
   var default_chatroom = '';
   var upload_file_type= 'alt';
   var upload_file_name = '';
+  var chatroom_created = 0;
+  var new_profile_id = 0;
   const username = "{{preg_replace('/[@\.]/', '_', Auth::guard('user')->user()->email)}}"; 
 	@php
       $company_image =  $view_composer_user->BuyerCompany->company_image ?$view_composer_user->BuyerCompany->company_image : ''; 
@@ -290,7 +292,7 @@
 	async function checkChannels(){
     const filter = { type: 'messaging', members: { $in: [username] } };
     const sort = { last_message_at: -1 };
-    const channels = await client.queryChannels(filter, sort, {watch:true,presence:true}); 
+    const channels = await client.queryChannels(filter, sort, {watch:true,presence:true,offset:0,limit:100}); 
     var html = '';
 	  active_chat_room_unread = 0;
 	  totalUnreadCount = 0;
@@ -409,13 +411,13 @@
     var company_name = $fmcg(this).find('h4.company_name').html();
     await loadChannel(channel_id,logo_selected,company_name);
   });
-  async function loadChannel(channel_id,logo_selected,company_name){
+  async function loadChannel(channel_id,logo_selected,company_name){ 
     channel = client.channel("messaging", channel_id);
-	  await channel.markRead();
+	  
     
     const { memebrs, messages } =  await channel.watch({presence:true});
-    channel.watch({presence:true});
-      
+    //channel.watch({presence:true});
+    await channel.markRead();
     channel.on("user.watching.start", (event) => {
       console.log(`${event.user.id} started watching`);
     });
@@ -602,78 +604,167 @@
       // $fmcg(".msg-user-bx.active").trigger('click');
       //   });
 	async function sendMessage(){
-		var vidFileLength = $fmcg("#msg_attach_file")[0].files.length; 
-      if(vidFileLength != 0){
-       // $fmcg('#msg_attach_file').prop('files')[0];
-        var mimeType=$fmcg('#msg_attach_file').prop('files')[0]['type']; //mimeType=image/jpeg or application/pdf etc...        
-        const response =  await channel.sendImage($fmcg('#msg_attach_file').prop('files')[0]); 
-        if(response.file != undefined){
-          if(mimeType.split('/')[0] === 'image'){
-              await channel.sendMessage({
-              text:  $fmcg("#stream_chat_text").val(),
-              attachments: [
-                  {
-                      type: upload_file_type,
-                      asset_url: response.file,
-                      file_name: upload_file_name,
-                  }
-              ],
-              });
-          }else{
-            await channel.sendMessage({
-              text:  $fmcg("#stream_chat_text").val(),
-              attachments: [
-                  {
-                      type: upload_file_type,
-                      asset_url: response.file,
-                      file_name: upload_file_name,
-                  }
-              ],
-              });
-          }
-        }
-      }else{
-        if($fmcg("#stream_chat_text").val()!=''){
-          await channel.sendMessage({
-          text:  $fmcg("#stream_chat_text").val()
-          }); 
-        //  $fmcg("#stream_chat_text").val('');
-          //$fmcg(".msg-list-box.active").trigger('click');
-        }
-      }
-      var profile_id = $fmcg('.msg-user-bx.active').find('.company_name').attr('data_id');     
+
+    if(chatroom_created==1){
+      chatroom_created = 0;
+      var url=  "{{route('chat.create.chatroom')}}"; 
       $fmcg.ajax({
-	        url:"{{route('chat.sentNotification')}}",
-	        type:"POST",
-	        data:{
-	          "_token": "{{ csrf_token() }}",
-	          'reciever_id':profile_id
-          },
-          success:async function(data){ 
-          ;
-          },
-          error: function (xhr) { 
-              ;
+        url:url,
+        type:"POST",
+        dataType: 'json',
+        data:{
+          "_token": "{{ csrf_token() }}",
+          'default_chatroom':default_chatroom,
+          'profile_id':new_profile_id
+        },
+        success:async function(data){ 
+         //console.log(data.default_chatroom);console.log(data.member1);;console.log(data.member2);
+          await createChannel(data.default_chatroom,data.member1,data.member2,data.cmp_img); 
+          var vidFileLength = $fmcg("#msg_attach_file")[0].files.length; 
+        if(vidFileLength != 0){
+        // $fmcg('#msg_attach_file').prop('files')[0];
+          var mimeType=$fmcg('#msg_attach_file').prop('files')[0]['type']; //mimeType=image/jpeg or application/pdf etc...        
+          const response =  await channel.sendImage($fmcg('#msg_attach_file').prop('files')[0]); 
+          if(response.file != undefined){
+            if(mimeType.split('/')[0] === 'image'){
+                await channel.sendMessage({
+                text:  $fmcg("#stream_chat_text").val(),
+                attachments: [
+                    {
+                        type: upload_file_type,
+                        asset_url: response.file,
+                        file_name: upload_file_name,
+                    }
+                ],
+                });
+            }else{
+              await channel.sendMessage({
+                text:  $fmcg("#stream_chat_text").val(),
+                attachments: [
+                    {
+                        type: upload_file_type,
+                        asset_url: response.file,
+                        file_name: upload_file_name,
+                    }
+                ],
+                });
+            }
           }
-	    }); 
-      $fmcg("#stream_chat_text").val('');
-      $fmcg(".msg-user-bx.active").trigger('click');
-      $fmcg('.file-list').html('');
-	    $fmcg('.file-list').hide();
-      $fmcg('#msg_attach_file').val("");
-      if($fmcg("#stream_chat_text").val()!=''){
-        $fmcg("#send_message").addClass('enable');
-      }else{
-        $fmcg("#send_message").removeClass('enable');
-      }
-    //   if($fmcg("#stream_chat_text").val()!=''){
-    //     await channel.sendMessage({
-    //      text:  $fmcg("#stream_chat_text").val()
-    //     }); 
-    //     $fmcg("#stream_chat_text").val('');
-    //     $fmcg(".msg-user-bx.active").trigger('click');
-    //   }
+        }else{
+          if($fmcg("#stream_chat_text").val()!=''){
+            await channel.sendMessage({
+            text:  $fmcg("#stream_chat_text").val()
+            }); 
+          //  $fmcg("#stream_chat_text").val('');
+            //$fmcg(".msg-list-box.active").trigger('click');
+          }
+        }
+        //$fmcg(".msg-list-box:first").trigger('click');
+        await loadChannel(data.default_chatroom,data.cmp_img,$fmcg('.cht-user-name').text());
+        var profile_id = $fmcg('.msg-user-bx.active').find('.company_name').attr('data_id');     
+        $fmcg.ajax({
+            url:"{{route('chat.sentNotification')}}",
+            type:"POST",
+            data:{
+              "_token": "{{ csrf_token() }}",
+              'reciever_id':profile_id
+            },
+            success:async function(data){ 
+            ;
+            },
+            error: function (xhr) { 
+                ;
+            }
+        }); 
+        $fmcg("#stream_chat_text").val('');
+        $fmcg(".msg-user-bx.active").trigger('click');
+        $fmcg('.file-list').html('');
+        $fmcg('.file-list').hide();
+        $fmcg('#msg_attach_file').val("");
+        if($fmcg("#stream_chat_text").val()!=''){
+          $fmcg("#send_message").addClass('enable');
+        }else{
+          $fmcg("#send_message").removeClass('enable');
+        }
+        },
+        error: function (xhr) {
+           ;            
+        }
+      });
       
+    }else{
+      var vidFileLength = $fmcg("#msg_attach_file")[0].files.length; 
+        if(vidFileLength != 0){
+        // $fmcg('#msg_attach_file').prop('files')[0];
+          var mimeType=$fmcg('#msg_attach_file').prop('files')[0]['type']; //mimeType=image/jpeg or application/pdf etc...        
+          const response =  await channel.sendImage($fmcg('#msg_attach_file').prop('files')[0]); 
+          if(response.file != undefined){
+            if(mimeType.split('/')[0] === 'image'){
+                await channel.sendMessage({
+                text:  $fmcg("#stream_chat_text").val(),
+                attachments: [
+                    {
+                        type: upload_file_type,
+                        asset_url: response.file,
+                        file_name: upload_file_name,
+                    }
+                ],
+                });
+            }else{
+              await channel.sendMessage({
+                text:  $fmcg("#stream_chat_text").val(),
+                attachments: [
+                    {
+                        type: upload_file_type,
+                        asset_url: response.file,
+                        file_name: upload_file_name,
+                    }
+                ],
+                });
+            }
+          }
+        }else{
+          if($fmcg("#stream_chat_text").val()!=''){
+            await channel.sendMessage({
+            text:  $fmcg("#stream_chat_text").val()
+            }); 
+          //  $fmcg("#stream_chat_text").val('');
+            //$fmcg(".msg-list-box.active").trigger('click');
+          }
+        }
+        var profile_id = $fmcg('.msg-user-bx.active').find('.company_name').attr('data_id');     
+        $fmcg.ajax({
+            url:"{{route('chat.sentNotification')}}",
+            type:"POST",
+            data:{
+              "_token": "{{ csrf_token() }}",
+              'reciever_id':profile_id
+            },
+            success:async function(data){ 
+            ;
+            },
+            error: function (xhr) { 
+                ;
+            }
+        }); 
+        $fmcg("#stream_chat_text").val('');
+        $fmcg(".msg-user-bx.active").trigger('click');
+        $fmcg('.file-list').html('');
+        $fmcg('.file-list').hide();
+        $fmcg('#msg_attach_file').val("");
+        if($fmcg("#stream_chat_text").val()!=''){
+          $fmcg("#send_message").addClass('enable');
+        }else{
+          $fmcg("#send_message").removeClass('enable');
+        }
+      //   if($fmcg("#stream_chat_text").val()!=''){
+      //     await channel.sendMessage({
+      //      text:  $fmcg("#stream_chat_text").val()
+      //     }); 
+      //     $fmcg("#stream_chat_text").val('');
+      //     $fmcg(".msg-user-bx.active").trigger('click');
+      //   }
+      }
     }
 		$fmcg('#show-more-content').show();
 		$fmcg(function(){
@@ -777,6 +868,7 @@ $fmcg(document).ready(function(){
 $fmcg(document).on('click','.cht-ico',async function(e){  
      e.preventDefault();
      profile_id = $fmcg(this).attr("sender-id");
+     new_profile_id = profile_id;
      $fmcg.ajax({
 	        url:"{{route('chat.ajaxmessages')}}",
 	        type:"POST",
@@ -795,8 +887,12 @@ $fmcg(document).on('click','.cht-ico',async function(e){
                 //console.log(channel.addMembers([member1], { text: 'New Member joined the channel.' }));
                 await channel.addMembers([member1]); 
                 await channel.addMembers([member2]); 
-              }else
-              await createChannel(default_chatroom,member1,member2,data.cmp_img); 
+              }else{
+                chatroom_created = 1;
+                $fmcg(".msg-level-2").show(200);
+                displayMessage(data.cmp_img,data.sender_details.buyer_company.company_name,'')
+                //await createChannel(default_chatroom,member1,member2,data.cmp_img); 
+              }
               if($fmcg('.new-msg-bx').is(':hidden'))
               {     
               $fmcg('.new-msg-bx-button').trigger("click");

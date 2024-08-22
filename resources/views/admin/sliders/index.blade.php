@@ -59,7 +59,9 @@
                                     <th>#</th>
                                     <th>Title</th>
                                    <th>Created at</th>
-                                    <th>Show Home</th> <th class="action-icon">Action</th>
+                                    <th>Show Home</th> 
+                                     <th>Show Network</th> 
+                                    <th class="action-icon">Action</th>
                                 </tr>
                       </thead>
                       <tbody>
@@ -80,6 +82,16 @@
                                         <label for="radio-{{$row->id}}">On</label>
                                         <input type="radio" id="radio-1{{$row->id}}" name="switch-{{$row->id}}"  value="No" {{$row->show_home=='No'?'checked':''}} onchange="activateslider({{$row->id}})"/>
                                         <label for="radio-1{{$row->id}}">Off</label>
+
+                                      </div>
+                                    </td>
+                                    <td>
+                                       <div class="switch-field">
+                                        <input type="radio" id="network-radio-{{$row->id}}" name="network-switch-{{$row->id}}" value="Yes" 
+                                        {{$row->show_network=='Yes'?'checked':''}} onchange="activateNetworkslider({{$row->id}})" />
+                                        <label for="network-radio-{{$row->id}}">On</label>
+                                        <input type="radio" id="network-radio-1{{$row->id}}" name="network-switch-{{$row->id}}"  value="No" {{$row->show_network=='No'?'checked':''}} onchange="activateNetworkslider({{$row->id}})"/>
+                                        <label for="network-radio-1{{$row->id}}">Off</label>
 
                                       </div>
                                     </td>
@@ -140,7 +152,9 @@
                                     <th>#</th>
                                     <th>Title</th>
                                    <th>Created at</th>
-                                    <th>Show Home</th> <th class="action-icon">Action</th>
+                                    <th>Show Home</th> 
+                                    <th>Show Network</th> 
+                                    <th class="action-icon">Action</th>
                                 </tr>
                       </thead>
                       <tbody>
@@ -161,6 +175,16 @@
                                         <label for="radio-{{$row->id}}">On</label>
                                         <input type="radio" id="radio-1{{$row->id}}" name="switch-{{$row->id}}"  value="No" {{$row->show_home=='No'?'checked':''}} onchange="mobile_activateslider({{$row->id}})"/>
                                         <label for="radio-1{{$row->id}}">Off</label>
+
+                                      </div>
+                                    </td>
+                                    <td>
+                                       <div class="switch-field">
+                                        <input type="radio" id="network-radio-{{$row->id}}" name="network-switch-{{$row->id}}" value="Yes" 
+                                        {{$row->show_network=='Yes'?'checked':''}} onchange="mobile_activatesliderNetwork({{$row->id}})" />
+                                        <label for="network-radio-{{$row->id}}">On</label>
+                                        <input type="radio" id="network-radio-1{{$row->id}}" name="network-switch-{{$row->id}}"  value="No" {{$row->show_network=='No'?'checked':''}} onchange="mobile_activatesliderNetwork({{$row->id}})"/>
+                                        <label for="network-radio-1{{$row->id}}">Off</label>
 
                                       </div>
                                     </td>
@@ -261,7 +285,60 @@
     });  
 
   }
-  
+   function activateNetworkslider(id){
+    var status=$("input[name='network-switch-"+id+"']:checked").val();
+    swal({
+    title:"Do you want to continue ? " ,
+    text: "",
+    icon: "warning",
+    buttons: true,
+    dangerMode: true,
+  })
+  .then((willDelete) => {
+    if (willDelete) {
+      
+      $.ajax({
+         url: "{{url('updateactiveslider-network')}}",
+            type: "post",
+            data:{ 
+                _token:'{{ csrf_token() }}',
+                  id: id,
+                  status: status,
+            },
+            async:true,
+            cache: false,
+            dataType: 'json',
+            success: function(data){
+              if(data)
+                  swal("Active Slider Changed", "", "success");
+              else
+                  swal("Error On Submission", "", "error");
+              location.reload(true);
+          } ,
+          error: function(XMLHttpRequest, textStatus, errorThrown) { 
+            swal(errorThrown, "", "error");
+          }  
+
+        })
+    } 
+    else {
+        
+           var cur_status=$("input[name='network-switch-"+id+"']:checked").val();
+           if(cur_status=='Yes')
+              {
+                $("#network-radio-"+id).prop('checked',false);
+                $("#network-radio-1"+id).prop('checked',true);
+              }
+           else
+              {
+                $("#network-radio-"+id).prop('checked',true);
+                $("#network-radio-1"+id).prop('checked',false);
+              }
+          
+        }
+    });  
+
+  }
   
   
   function mobile_activateslider(id){
@@ -318,7 +395,60 @@
     });  
 
   }
-  
+   function mobile_activatesliderNetwork(id){
+    var status=$("input[name='network-switch-"+id+"']:checked").val();
+    swal({
+    title:"Do you want to continue ? " ,
+    text: "",
+    icon: "warning",
+    buttons: true,
+    dangerMode: true,
+  })
+  .then((willDelete) => {
+    if (willDelete) {
+      
+      $.ajax({
+         url: "{{url('mobile_updateactiveslider-network')}}",
+            type: "post",
+            data:{ 
+                _token:'{{ csrf_token() }}',
+                  id: id,
+                  status: status,
+            },
+            async:true,
+            cache: false,
+            dataType: 'json',
+            success: function(data){
+              if(data)
+                  swal("Active Slider Changed", "", "success");
+              else
+                  swal("Error On Submission", "", "error");
+              location.reload(true);
+          } ,
+          error: function(XMLHttpRequest, textStatus, errorThrown) { 
+            swal(errorThrown, "", "error");
+          }  
+
+        })
+    } 
+    else {
+        
+           var cur_status=$("input[name='network-switch-"+id+"']:checked").val();
+           if(cur_status=='Yes')
+              {
+                $("#network-radio-"+id).prop('checked',false);
+                $("#network-radio-1"+id).prop('checked',true);
+              }
+           else
+              {
+                $("#network-radio-"+id).prop('checked',true);
+                $("#network-radio-1"+id).prop('checked',false);
+              }
+          
+        }
+    });  
+
+  }
   
   
   

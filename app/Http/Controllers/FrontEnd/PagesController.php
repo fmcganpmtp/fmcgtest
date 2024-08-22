@@ -305,9 +305,17 @@ public function companyDB(){
 	$countries_netw = Country::whereIn('id',$country_id)->orderBy('countries.name','asc')->get();	 
    
 	if($this->isMobile()) {
-	 	return view('frontEnd.pages.company-db_mobile',compact('allcategorylists','CompanyType','countries_cdb','countries_netw'));
+		$mobile_slider = MobileSliderimage::leftJoin('mobile_sliders', 'mobile_sliderimages.slider_id', '=', 'mobile_sliders.id')
+		->where('mobile_sliders.show_home',"Yes")
+		->select('mobile_sliderimages.*')
+		->orderBy('mobile_sliderimages.display_order','asc') ->get();
+	 	return view('frontEnd.pages.company-db_mobile',compact('allcategorylists','CompanyType','countries_cdb','countries_netw','mobile_slider'));
 	} else {
-		return view('frontEnd.pages.company-db',compact('allcategorylists','CompanyType','countries_cdb','countries_netw'));
+		$slider = Sliderimage::leftJoin('sliders', 'sliderimages.slider_id', '=', 'sliders.id')
+		->where('sliders.show_network',"Yes")
+		->select('sliderimages.*')
+		->orderBy('sliderimages.display_order','asc') ->get();
+		return view('frontEnd.pages.company-db',compact('allcategorylists','CompanyType','countries_cdb','countries_netw','slider'));
 	}
 
 }
@@ -1185,10 +1193,10 @@ public function companyDbs(Request $request){
 		if (Auth::guard("user")->check()) {
 			return redirect(route("package.listing"));
         }  
-		$query = Package::where("status", "!=", "deleted");
+        $query = Package::where("status", "!=", "deleted");
         $packages = $query->orderBy('display_order','asc') ->get();
-		if($this->isMobile()) { 
-	    	return view("frontEnd.pages.pricing",compact("packages"));
+        if($this->isMobile()) { 
+	    	return view("frontEnd.pages.pricing_mobile",compact("packages"));
         } else {
           return view("frontEnd.pages.pricing",compact("packages"));
     	}
@@ -1208,4 +1216,218 @@ public function companyDbs(Request $request){
 			}
 		}		 
 	}
+	public function demorequest(Request $request){
+	    if($request->request_name==''){
+	        $return_array = array('ajax_status' => false, 'message' => 'Please enter your name');
+	        return response()->json($return_array);
+	    }
+	    if($request->request_email==''){
+	        $return_array = array('ajax_status' => false, 'message' => 'Please enter your email address');
+	        return response()->json($return_array);
+	    }
+	    if($request->request_phone==''){
+	        $return_array = array('ajax_status' => false, 'message' => 'Please enter your phone number');
+	        return response()->json($return_array);
+	    }
+	    Mail::send('emails.RequestdemoAdminMail', ['name' => $request->request_name,'email' => $request->request_email,'phone' => $request->request_phone,'request_message' =>$request->request_message], function($message) use($request){
+			$company_email = Generalsetting::where('item','company_email')->first()->value;	   
+			if(!empty($company_email))
+				$message->to($company_email);
+			else
+				$message->to('info@fmcg.com');
+			$message->subject('New Demo Request - FMCG');
+		}); 
+		 $return_array = array('ajax_status' => true, 'message' => 'Successfully sent your request. Our team will be in touch with you soon');
+	    return response()->json($return_array);
+	}
+	public function network(Request $request){
+	    if (Auth::guard("user")->check()) {
+			return redirect(route("companyDB"));
+        }
+	    $allcategorylists=Category::query()
+						->select('name','id')
+						->whereIn('id', function ($query) {
+        					$query->select('parent_category_id')
+				            ->distinct()
+				            ->from('seller_products')
+				            ->where('parent_category_id', '>', 0);
+    					})->where('parent_id', null)
+    					->get(); 				
+	    $CompanyType=CompanyType::orderBy('company_type','asc')->get();  
+    	$country_id = User::where('users.status','<>','Deleted')
+     	->where('users.seller_type','Master')
+     	->where('users.status','Active')
+    	->groupBy("country_id")
+    	->pluck("country_id")
+    	->all();
+	    $countries_cdb = Country::whereIn('id',$country_id)->orderBy('countries.name','asc')->get();
+	    
+    	if($this->isMobile()) {
+    	    $mobile_slider = MobileSliderimage::leftJoin('mobile_sliders', 'mobile_sliderimages.slider_id', '=', 'mobile_sliders.id')
+    		->where('mobile_sliders.show_home',"Yes")
+    		->select('mobile_sliderimages.*')
+    		->orderBy('mobile_sliderimages.display_order','asc') ->get();
+    	  return view('frontEnd.pages.network_guest_mobile',compact('allcategorylists','CompanyType','countries_cdb','mobile_slider'));
+    	} else {
+    	    	$slider = Sliderimage::leftJoin('sliders', 'sliderimages.slider_id', '=', 'sliders.id')
+		->where('sliders.show_network',"Yes")
+		->select('sliderimages.*')
+		->orderBy('sliderimages.display_order','asc') ->get();
+    		return view('frontEnd.pages.network_guest',compact('allcategorylists','CompanyType','countries_cdb','slider'));
+    	}
+	}
+	public function companyDbsGuest(Request $request){  
+    
+    	$start_from=$request->input('start_from');
+    	$per_page=$request->input('per_page');
+    	$seller_name_search=strtoupper($request->input('seller_name'));
+    	$category_id= $request->input('category_id');
+    	$company_type= $request->input('company_type');
+    	$selected_country_id= $request->input('selected_country_id');   
+    	//$active_sellers=$this->PublicMiddlewareController->getexpireduserslist();
+    	$company_types = CompanyType::select("id", "company_type")->get(); 
+    	//dd($active_sellers);
+    	$user_data = User::join('buyer_companies','buyer_companies.user_id', '=', 'users.id')
+    				->leftJoin('countries', 'countries.id', '=', 'users.country_id')
+    				->leftJoin('subscriptions', 'subscriptions.user_id', '=', 'users.id')
+    				->leftJoin('company_types', 'buyer_companies.company_type', '=', 'company_types.id') 
+    				->where('users.status','Active')
+    				->where('users.seller_type','Master') 
+    				//->where('users.id','<>',$user_id)
+    				//->whereIn('users.id',$active_sellers)
+    			//	->whereNotIn('users.id',$network_id)
+    				->select('users.name as user_name','users.profile_pic','company_types.company_type','users.varification_status','buyer_companies.about_company as about_company','buyer_companies.company_image as company_image','users.id as main_id'
+    				,'buyer_companies.company_street','countries.name as country_name','buyer_companies.company_type as cmp_type','buyer_companies.company_name','buyer_companies.company_location','users.country_id',DB::raw("(CASE  WHEN subscriptions.expairy_date > NOW() THEN 'true' ELSE 'false' END ) as expairy"))->having('expairy', 'true');
+    	if($seller_name_search!=''){	
+    		$user_data = $user_data->Where(function ($query) use ($seller_name_search) {
+    			$query->orWhere(DB::raw('UPPER(buyer_companies.about_company)'), 'LIKE','%'.$seller_name_search.'%');
+    			$query->orWhere(DB::raw('UPPER(buyer_companies.profile_keywords)'), 'LIKE','%'.$seller_name_search.'%');
+    			$query->orWhere(DB::raw('UPPER(users.name)'), 'LIKE','%'.$seller_name_search.'%');
+    			$query->orWhere(DB::raw("CONCAT(users.name, ' ', users.surname)"), 'LIKE', "%".$seller_name_search."%");
+    			$query->orWhere(DB::raw('UPPER(buyer_companies.company_name)'), 'LIKE','%'.$seller_name_search.'%');
+    		});
+    	}
+    	if($request->input('company_type')!=''){
+    		$user_data = $user_data->Where(function ($query) use ($company_type) {
+    			foreach ($company_type as $term) {
+    				$query->orWhereRaw('find_in_set("' . $term . '",buyer_companies.company_type)');
+    			}
+    		});
+    	}
+    	
+    	if($request->input('selected_country_id')!='')
+    		$user_data = $user_data->whereIn('users.country_id',$selected_country_id);
+    	$category_ids = []; 
+    	if($category_id!='0'){
+    		$category_ids = explode(',',$category_id);
+    		$sellers_list = SellerProduct::select('user_id')->distinct()->WhereIn('seller_products.parent_category_id',$category_ids)->get()->pluck('user_id')->toArray();
+    		$offline_list = SellerOfflineCategory::select('user_id')->distinct()->WhereRaw( 'find_in_set("' . $category_id . '",seller_offline_categories.category_id)')->get()->pluck('user_id')->toArray();
+    		if(!empty($sellers_list)&&!empty($offline_list))
+    			$combinedArray = array_merge($sellers_list, $offline_list);
+    		else
+    			$combinedArray = $sellers_list; 
+    		if(!empty($combinedArray)){
+    			$uniqueArray = array_unique($combinedArray);
+    			$user_data = $user_data->whereIn('users.id',$uniqueArray);
+    		}
+    	}
+    	$count = $user_data->groupby('main_id')->get()->count();
+    	$user_data= $user_data->groupby('main_id')
+    				->orderby('user_name','ASC')
+    				->paginate(9); 
+    	$last_page = $user_data->lastPage();
+    	$data_arr=[];
+    	$prod_data=[];
+    	$prod_data1=[];
+    	$prod_dat_all=[];
+    	if(!empty($user_data)) {
+    		foreach ($user_data as $record) {
+    			$prod_data=[];
+    			$prod_data1=[];
+    			$prod_dat_all=[];
+             	$userId = $record->main_id;
+    			 $featured_prdcts= [];
+            	$featured_prdcts=SellerProduct::select('seller_products.id','name', 'image_path')
+    							->leftjoin('seller_product_images', function ($join) {
+    								$join->on('seller_product_images.product_id', '=', 'seller_products.id')
+    									->where('seller_product_images.thumbnail', '=', 'yes'); 
+    							})
+    							->where('product_visibility','Yes')
+    							->where('status','active')
+    							->where('user_id',$userId) 
+    							->orderBy('user_featured_prdct', 'asc')
+    							->orderBy('id', 'desc')
+    							->take(4)->get();         
+    			
+    			
+            
+               	$prod_dat_all = $featured_prdcts;           
+            	$parent_cat_id=SellerProduct::where('user_id',$record->main_id)->where('product_visibility','Yes')->where("status", "active")->select('parent_category_id')->groupBy('parent_category_id')->get();
+            	//$parent_categorylists = Category::whereIn("id", $parent_cat_id)->orderBy('name',"ASC")->get();
+    //         	$seller_Ofln_Cats = SellerOfflineCategory::select('category_id')->where('user_id', $userId)->first();
+    // 			$seller_offine_categorylists = []; 
+    // 			if ($seller_Ofln_Cats) 
+    // 				$seller_offine_categorylists = explode(",", $seller_Ofln_Cats->category_id);
+    			$categorylists = Category::whereIn("id", $parent_cat_id)
+    			//	->orwhereIn("id", $seller_offine_categorylists)
+    				->where('parent_id',null)
+    				->whereNotNull('name')
+    				->where('name','<>','')
+    				->distinct() 
+    				->orderBy('name','asc')
+    				->pluck("name")
+    				->all();            
+    			if(count($categorylists)>7){
+    				$categorylists = array_slice($categorylists, 0, 7);
+    				$cats = implode( ', ', $categorylists )."....";
+    			} else
+             		$cats = implode( ', ', $categorylists ); 
+    				$class_verified = '';
+    				if($record->varification_status=='varified')
+    					$class_verified = 'active-border';            
+    				$company_image =    $record->company_image;
+    				if(($company_image!=''))
+                    	$img_path = asset('uploads/BuyerCompany/').'/'.$company_image;
+                    elseif(!empty($record->profile_pic))
+                    	$img_path = asset('/uploads/userImages/').'/'.$record->profile_pic;
+                    else  
+                    	$img_path = asset('uploads/defaultImages/default_avatar.png');        
+                    $network_exist=false;
+                    $c_types = $c_types_names =[]; 
+    				if($record->cmp_type) { 				
+    					foreach ($company_types as $company_type){
+    						$c_types = explode(",",$record->cmp_type);
+    						if(in_array($company_type->id, $c_types))
+    							$c_types_names[] = $company_type->company_type ;
+    					} 
+    				}
+    				$c_types_names =  implode( ', ', $c_types_names );
+    				$data_arr[] = array(
+    								'company_image'=>$img_path,
+    								'class_verified'=>$class_verified,
+    								'profile_pic'=>$record->profile_pic,
+    								'cmp_type'=>$c_types_names,
+    								'user_name'=>$record->user_name,
+    								'country_name'=>$record->country_name,
+    								'network_exist'=>$record->network_exist,
+    								'main_id'=>$record->main_id,
+    								'company_name'=>$record->company_name,
+    								'varification_status'=>$record->varification_status,
+    								'categorylists'=>$categorylists, 
+    								'about_company'=>strip_tags($record->about_company),
+    								'prod_data'=>$prod_dat_all,
+    								'categories'=>$cats, 	
+    							);             
+            }
+    	}
+    	Session::put("tab", "myCdb"); 
+    	if($request->ajax()) {
+    		$returnData['user_data']=$data_arr;
+    		$returnData['user_qry']=$user_data;
+    		$returnData['pagin']=$user_data->links();
+    		$returnData['last_page']=$last_page;
+            return json_encode($returnData); 
+        }
+       // return view('frontEnd.pages.company_db_list',['user_data'=>$data_arr,'user_qry'=>$user_data,'last_page'=>$last_page,'company_types'=>$company_types]); 
+    }
 }

@@ -365,12 +365,12 @@ class MessageController extends Controller
                 ];        
                 $client->updateUser($user);
             }else{
-                Chatroom::create([
-                    'chatroom' =>$chatroom[0].'_'.$chatroom[1],
-                    'sender_company_id' =>$chatroom[0],
-                    'buyer_company_id' =>$chatroom[1],
-                    'created_by' =>Auth::guard('user')->user()->id
-                ]);
+                // Chatroom::create([
+                //     'chatroom' =>$chatroom[0].'_'.$chatroom[1],
+                //     'sender_company_id' =>$chatroom[0],
+                //     'buyer_company_id' =>$chatroom[1],
+                //     'created_by' =>Auth::guard('user')->user()->id
+                // ]);
                 $default_chatroom = $chatroom[0].'_'.$chatroom[1];
                 if(($sender_details->BuyerCompany->company_image!=""))
                     $cmp_img = asset('uploads/BuyerCompany/').'/'.$sender_details->BuyerCompany->company_image;
@@ -397,6 +397,7 @@ class MessageController extends Controller
        $sender_id = Auth::guard('user')->user()->id;
        $sender_name = Auth::guard('user')->user()->name;
        $reciever_id = $request->reciever_id;
+
        if($reciever_id!=''){
         $reciever_profile = User::find($reciever_id);
         if(!empty($reciever_profile)&&$reciever_profile->parent_id==0){
@@ -443,6 +444,70 @@ class MessageController extends Controller
             $return_array = array('ajax_status' => false, 'message' => 'Reciever account not found');
        }
        
+        return response()->json($return_array);
+    }
+    public function createChatroom(Request $request){
+        $default_chatroom = $request->default_chatroom;
+        $chat_room_exist = 0;
+        $sender_details = [];      
+        $client = new StreamClient(
+            getenv("STREAM_API_KEY"),
+            getenv("STREAM_API_SECRET"),
+            null,
+            null,
+            9 // timeout
+        );   
+        $myCompany = User::find(Auth::guard('user')->user()->id); 
+        if($request->profile_id){
+             $sender_details = User::find($request->profile_id);  
+            $chatroom = [];
+            $sender_company_id = '';
+            $reciever_company_id = '';
+            if($myCompany->parent_id!='')
+                $sender_company_id = User::find($myCompany->parent_id)->BuyerCompany->id;
+            else
+                $sender_company_id = $myCompany->BuyerCompany->id;
+            if($sender_details->parent_id!='')
+                $reciever_company_id = User::find($sender_details->parent_id)->BuyerCompany->id;
+            else
+                $reciever_company_id = $sender_details->BuyerCompany->id;
+            $chatroom = array($reciever_company_id,$sender_company_id);
+            sort($chatroom);   
+            $chatroom_exist = Chatroom::where('sender_company_id',$chatroom[0])->where('buyer_company_id', $chatroom[1])->first();
+            $chat_room_exist =0;
+            if(!empty($chatroom_exist)){
+                $default_chatroom = $chatroom_exist->chatroom;
+                $chat_room_exist = 1;
+                if(($sender_details->BuyerCompany->company_image!=""))
+                    $cmp_img = asset('uploads/BuyerCompany/').'/'.$sender_details->BuyerCompany->company_image;
+                else 
+                    $cmp_img = asset('uploads/defaultImages/seller.jpg'); 
+                $user = [
+                    'id' => preg_replace('/[@\.]/', '_', $sender_details->email),
+                    'name' => $sender_details->BuyerCompany->company_name.'|'.$sender_details->name.' '.$sender_details->surname.'|'.$sender_details->position.'|'.$request->sender_id,
+                    'role' => 'admin',
+                    'image' =>$cmp_img, 
+                ];        
+                $client->updateUser($user);
+            }else{
+                if(($sender_details->BuyerCompany->company_image!=""))
+                $cmp_img = asset('uploads/BuyerCompany/').'/'.$sender_details->BuyerCompany->company_image;
+                else 
+                $cmp_img = asset('uploads/defaultImages/seller.jpg'); 
+                //$default_chatroom = $chatroom[0].'_'.$chatroom[1];
+                Chatroom::create([
+                    'chatroom' =>$default_chatroom,
+                    'sender_company_id' =>$chatroom[0],
+                    'buyer_company_id' =>$chatroom[1],
+                    'created_by' =>Auth::guard('user')->user()->id
+                ]);
+                
+            }
+        }
+        //$username = preg_replace('/[@\.]/', '_', Auth::guard('user')->user()->email);
+        $member1 =  preg_replace('/[@\.]/', '_', Auth::guard('user')->user()->email);
+        $member2 =  preg_replace('/[@\.]/', '_', $sender_details->email);
+        $return_array = array('ajax_status' => true, 'member2'=>$member2,'default_chatroom'=>$default_chatroom,'member1'=>$member1,'cmp_img'=>$cmp_img);
         return response()->json($return_array);
     }
 }

@@ -404,20 +404,21 @@ class ProductController extends Controller
             }
         }
 
-        $user_id = $user = $wish_listed = "";
-        if (Auth::guard("user")->check()) {
-            $user_id = Auth::guard("user")->user()->id;
-            $user = User::find($user_id);
-            $usertype = Auth::guard("user")->user()->usertype;
-            // $wish_listed=  Wishlist::where('product_id','=',$productId)->where('user_id','=',$user_id)->pluck('wishlist')->first();
-        }
-
+        //$user_id = $user = $wish_listed = "";
+        // if (Auth::guard("user")->check()) {
+        //     $user_id = Auth::guard("user")->user()->id;
+        //     $user = User::find($user_id);
+        //     $usertype = Auth::guard("user")->user()->usertype;
+        //     // $wish_listed=  Wishlist::where('product_id','=',$productId)->where('user_id','=',$user_id)->pluck('wishlist')->first();
+        // }
+            $category_id = [];
             $search_conditions = SearchCondition::pluck("search_name")->all();
-       
+            if($search_key!=''){
             $category_id = Category::where("slug", "LIKE", $search_key)->where('have_product','Yes')
                 ->pluck("id")
                 ->all(); 
-               
+            }
+          //  dd($category_id);   
             if(empty($category_id))
             {
                 $type_searchby_text='partial';
@@ -564,9 +565,9 @@ class ProductController extends Controller
             $category_Name_fr_slug = Category::where("slug", "LIKE", $search_key)->pluck("name")->first(); 
         
             if($this->isMobile()) 
-                return view("frontEnd.products.product-listing_mobile",compact("user","validity","brand_lists","search_conditions","search_key","Trendingproducts","left_menu_list","central_listing", "max_product_price","type_searchby_text","category_Name_fr_slug"));
+                return view("frontEnd.products.product-listing_mobile",compact( "validity","brand_lists","search_conditions","search_key","Trendingproducts","left_menu_list","central_listing", "max_product_price","type_searchby_text","category_Name_fr_slug"));
             else 
-                return view("frontEnd.products.product-listing",compact("user","validity","brand_lists","search_conditions","search_key","Trendingproducts","left_menu_list","central_listing", "max_product_price","type_searchby_text","category_Name_fr_slug"));
+                return view("frontEnd.products.product-listing",compact( "validity","brand_lists","search_conditions","search_key","Trendingproducts","left_menu_list","central_listing", "max_product_price","type_searchby_text","category_Name_fr_slug"));
 
             
            

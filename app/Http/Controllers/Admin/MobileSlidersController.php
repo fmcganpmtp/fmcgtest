@@ -160,6 +160,15 @@ class MobileSlidersController extends Controller
         $Slider = MobileSlider::find($id)->update(['show_home'=>$status]);
          echo json_encode($Slider);  
     }
+    public function updateactivesliderNetwork(Request $request)
+    { 
+        $id=$request->id;
+        $status=$request->status;
+        //status changing
+        DB::table('mobile_sliders')->update(['show_network'=>'No']);
+        $Slider = MobileSlider::find($id)->update(['show_network'=>$status]);
+         echo json_encode($Slider);  
+    }
     // remove only image in server
     public function removeMedia(Request $request)
     { 

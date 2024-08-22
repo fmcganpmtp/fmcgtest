@@ -57,6 +57,8 @@ Route::get('/checkNewMessage/{senter_id}/{last_message}', 'App\Http\Controllers\
 Route::get('/checkNotifications', 'App\Http\Controllers\FrontEnd\MessageController@checkNotifications')->name('checkNotifications');
 Route::get('/messages', 'App\Http\Controllers\FrontEnd\MessageController@messagesPage')->name('chat.messages');
 Route::post('/ajaxmessages', 'App\Http\Controllers\FrontEnd\MessageController@ajaxmessages')->name('chat.ajaxmessages');
+Route::post('/create-chatroom', 'App\Http\Controllers\FrontEnd\MessageController@createChatroom')->name('chat.create.chatroom');
+
 //stripe
 Route::post('/session', 'App\Http\Controllers\FrontEnd\StripeController@session')->name('session');
 Route::post('/session1', 'App\Http\Controllers\FrontEnd\StripeController@session1')->name('session1');
@@ -180,7 +182,9 @@ Route::get('/terms-and-conditions', 'App\Http\Controllers\FrontEnd\PagesControll
 Route::get('/privacy-policy', 'App\Http\Controllers\FrontEnd\PagesController@PrivacyPolicy')->name('privacy.policy');
 Route::get('/faq', 'App\Http\Controllers\FrontEnd\PagesController@Faq')->name('Faq');
 
-
+Route::get('/pricing', 'App\Http\Controllers\FrontEnd\PagesController@pricing')->name('pricing');
+Route::post('/demorequest', 'App\Http\Controllers\FrontEnd\PagesController@demorequest')->name('demorequest');
+Route::get('/network', 'App\Http\Controllers\FrontEnd\PagesController@network')->name('network');
 
 Route::get('/admin/settings/topcategory', 'App\Http\Controllers\Admin\AdminController@topcategorylist')->name('admin.listtopcategory')->middleware('auth:admin');
 Route::post('/admin/settings/topcategory','App\Http\Controllers\Admin\AdminController@savetopcategory')->name('admin.savetopcategory')->middleware('auth:admin');
@@ -275,6 +279,7 @@ Route::get('/company-database', 'App\Http\Controllers\FrontEnd\PagesController@c
 
 Route::post('sellers_list', 'App\Http\Controllers\FrontEnd\PagesController@getsellerslist_search')->name('sellers.get-more-sellers');
 Route::post('company-dbs', 'App\Http\Controllers\FrontEnd\PagesController@companyDbs')->name('company-dbs');
+Route::post('company-dbs-guest', 'App\Http\Controllers\FrontEnd\PagesController@companyDbsGuest')->name('company-dbs-guest');
 Route::post('my-nw-lists', 'App\Http\Controllers\FrontEnd\PagesController@myNwLists')->name('my-nw-lists');
 Route::post('network_contacts', 'App\Http\Controllers\FrontEnd\PagesController@getnetwork_users_list')->name('sellers.network-contacts');
 Route::get('/revokeFrom_network', 'App\Http\Controllers\FrontEnd\PagesController@revokeFrom_network')->name('revokeFrom_network')->middleware('auth:user');
@@ -561,6 +566,8 @@ Route::get('/mobile_slider/delete/{id}', 'App\Http\Controllers\Admin\MobileSlide
 
 Route::post('updateactiveslider', 'App\Http\Controllers\Admin\SlidersController@updateactiveslider')->name('updateactiveslider')->middleware('auth:admin');
 Route::post('mobile_updateactiveslider', 'App\Http\Controllers\Admin\MobileSlidersController@updateactiveslider')->name('mobile.updateactiveslider')->middleware('auth:admin');
+Route::post('updateactiveslider-network', 'App\Http\Controllers\Admin\SlidersController@updateactivesliderNetwork')->name('updateactiveslider-network')->middleware('auth:admin');
+Route::post('mobile_updateactiveslider-network', 'App\Http\Controllers\Admin\MobileSlidersController@updateactivesliderNetwork')->name('mobile.mobile_updateactiveslider-network')->middleware('auth:admin');
 
 Route::post('updatesellerfeaturedproduct', 'App\Http\Controllers\Admin\ProductController@updatesellerfeaturedproduct')->name('updatesellerfeaturedproduct')->middleware('auth:admin');
 Route::post('updatesellerseasonproduct', 'App\Http\Controllers\Admin\ProductController@updatesellerseasonproduct')->name('updatesellerseasonproduct')->middleware('auth:admin');

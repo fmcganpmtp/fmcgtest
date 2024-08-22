@@ -85,7 +85,7 @@
 			<div class="middle-header middle-header-style-two">
 				<div class="container">
 					<div class="row align-items-center">
-						<div class="col-lg-3">
+						<div class="col-lg-5">
 							<?php
 								$company_logo="";			
 								foreach($view_composer_general as $general)
@@ -98,8 +98,15 @@
 								?>
 							<div class="logo"> <a href="{{route('home')}}"> <img src="{{ $img_url }}" alt="Image"> </a> </div>
 						</div>
-						<div class="col-lg-4">
-							
+						<div class="col-lg-2">
+							<ul class="middle-menu"  >
+                                <li><a class="middle-menu-item  {{ Route::is('home')  ? 'active' : '' }}" href="{{route('home')}}">Products</a></li>
+                                @if(Auth::guard('user')->check())   
+                                    <li><a class="middle-menu-item {{ Route::is('companyDB')  ? 'active' : '' }}" href="{{route('companyDB')}}">Companies</a></li> 
+                                @else
+                                    <li><a class="middle-menu-item {{ Route::is('network')  ? 'active' : '' }}" href="{{route('network')}}">Companies</a></li> 
+                                @endif
+                              </ul>
 						</div>
 						<div class="col-lg-5">
 							<?php    
@@ -193,10 +200,36 @@
 							</div>
 						</div>
 						<?php } else { ?> 
+						
 						<ul class="head-right">
-							<li><a href="{{route('user-login')}}"><i class="fa fa-user" aria-hidden="true"></i><br><b>Sign in</b></a></li>
-							<li><a href="{{ route('user-register') }}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> <br> <b>Register</b></a></li>
+						    
+						    <li class="hd-drp-down"><div class="dropdown  ">
+                          <a class=" dropdown-toggle before-abt " href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                         <i class="fa fa-info" aria-hidden="true"></i>
+ About
+                          </a>
+                        
+                          <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                            <li><a class="dropdown-item" href="{{url('about-us')}}"><i class="fa fa-info-circle" aria-hidden="true"></i>
+About Us</a></li>
+                            <li><a class="dropdown-item" href="{{route('pricing')}}"><i class="fa fa-tag" aria-hidden="true"></i>
+Pricing</a></li> 
+                          </ul>
+                        </div>
+                        </li>
+                        
+                        
+							<li class="bfr-log"><a href="{{route('user-login')}}"><i class="fa fa-user" aria-hidden="true"></i><b>Sign in</b></a></li>
+							<li class="bfr-log"><a href="{{ route('user-register') }}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>  <b>Register</b></a></li>
+							<li ><button class="btn btn-warning"  data-bs-toggle="modal" data-bs-target="#staticBackdrop">Request</br>Demo</button></li>
 						</ul>
+						
+						
+					
+                        
+                        
+                        
+                        
 						<?php } ?>          
 					</div>
 					
@@ -426,6 +459,58 @@ body{position:relative;}
 					</div>
 				</div>
 			</div>
+					
+		</header>
+		
+		
+		 
+		
+		
+		
+		
+		
+		
+		
+		
+		
+			<div class="modal fade demo-modal" id="staticBackdrop"     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="staticBackdropLabel">Request Demo</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                              </div>
+                              <div class="modal-body">
+                                  <div class="Messages_demo text-warning"></div>
+                                 <div class="mb-3">
+                                  <label for="exampleFormControlInput1" class="form-label">Name</label>
+                                  <input type="text" class="form-control" id="request_name" placeholder="John Smith">
+                                  <span id="err_request_name" style="display:none">Please enter your name</span>
+                                </div>
+                                <div class="mb-3">
+                                  <label for="exampleFormControlInput1" class="form-label">Email address</label>
+                                  <input type="email" class="form-control" id="request_email" placeholder="name@example.com">
+                                  <span id="err_request_email" style="display:none">Please enter your email address</span>
+                                </div>
+                                <div class="mb-3">
+                                  <label for="exampleFormControlInput1" class="form-label">Phone Number</label>
+                                  <input type="text" class="form-control" id="request_phone" placeholder="+1123456">
+                                  <span id="err_request_phone" style="display:none">Please enter your phone number</span>
+                                </div>
+                                <div class="mb-3">
+                                  <label for="exampleFormControlTextarea1" class="form-label">Message</label>
+                                  <textarea class="form-control" id="request_message" rows="3"></textarea>
+                                  
+                                </div>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary btn-save" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary btn-save" id="btn_request_demo">Submit</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+		
 			<!-- End Navbar Area -->
 <script  type="text/javascript">
     var url_subpath = '{{url('product-listing')}}/';
@@ -500,12 +585,60 @@ $fmcg.ajax({
            })  ;
 
 });
-
-
+$fmcg(document).on('click','#btn_request_demo',function(){
+     var url_request_demo = "{{route('demorequest')}}";
+     var request_name = $fmcg('#request_name').val();
+     var request_email = $fmcg('#request_email').val();
+     var request_phone = $fmcg('#request_phone').val();
+     var request_message = $fmcg('#request_message').val(); 
+     var error = 0;
+     if(request_name==''){
+         $fmcg("#err_request_name").show();
+         error++;
+     }else{
+         $fmcg("#err_request_name").hide();
+     }
+     if(request_email==''){
+         $fmcg("#err_request_email").show();
+         error++;
+     }else{
+         $fmcg("#err_request_email").hide();
+     }
+     if(request_phone==''){
+         $fmcg("#err_request_phone").show();
+         error++;
+     }else{
+         $fmcg("#err_request_phone").hide();
+     }
+     if(error==0){
+        $fmcg.ajax({
+               url: url_request_demo,
+               type: "post",
+               async:true,
+               cache: false,
+                data:{
+    	          "_token": "{{ csrf_token() }}",
+    	          'request_name':request_name,
+                   'request_email':request_email,
+                   'request_phone':request_phone,
+                   'request_message':request_message, 
+                },
+               dataType: 'json',
+               success: function(menu_structure){
+                    
+                       $('.Messages_demo').html(menu_structure.message);
+                  
+        } ,
+             error: function(XMLHttpRequest, textStatus, errorThrown) { 
+               $('.Messages_demo').html('Some error occured. Please try again');
+             }  
+   
+       })  ;
+    }
+     
+});
 </script>
 
-			
-		</header>
-		
+	
 		
 		

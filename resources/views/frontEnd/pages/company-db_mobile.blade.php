@@ -2,6 +2,36 @@
 @section('title', 'Company Database')
 @section('content')
 <?php // dd($user_data); ?> 
+
+@if(!is_null($mobile_slider))
+	<section class="sliderC">
+		<div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel" data-bs-pause="false">
+			<?php  $count = 0;  ?>
+			<div class="carousel-indicators">
+				@foreach ($mobile_slider as $Slider_img)
+				<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{$count}}" class="@if($count==0)  active @endif" aria-current="true" aria-label="Slide {{$count}}"></button>
+				<?php $count++; ?>
+				@endforeach 
+			</div>
+			<?php  $count = 0;  ?>
+			<div class="carousel-inner">
+				@foreach ($mobile_slider as $Slider_img)  
+				<div class="carousel-item @if($count==0)  active @endif" data-bs-interval="5000">
+				    @if($Slider_img->target!='')  
+						 <?php  $url = (!preg_match("~^(?:f|ht)tps?://~i", $Slider_img->target))?"http://" . $Slider_img->target:$Slider_img->target;  ?>
+						 	<a href="{{$url}}" target="_blank" >
+						@endif 
+					<img src="{{ URL::asset('/assets/uploads/sliders/'.$Slider_img->image)}}"     class="d-block w-100" >
+					</a>
+				</div>
+				<?php $count++; ?>
+				@endforeach  
+			</div>
+			<button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev"> <span class="carousel-control-prev-icon" aria-hidden="true"></span> <span class="visually-hidden">Previous</span> </button>
+			<button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next"> <span class="carousel-control-next-icon" aria-hidden="true"></span> <span class="visually-hidden">Next</span> </button>
+		</div>
+	</section>
+	@endif
 <sectiion class="my-n-w-new">
    <!-- Modal -->
    <div class="container myNetWork">
