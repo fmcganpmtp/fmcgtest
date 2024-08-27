@@ -503,7 +503,7 @@ body{position:relative;}
                                   
                                 </div>
                               </div>
-                              <div class="modal-footer">
+                              <div class="modal-footer" id="demo_button_outer">
                                 <button type="button" class="btn btn-secondary btn-save" data-bs-dismiss="modal">Close</button>
                                 <button type="button" class="btn btn-primary btn-save" id="btn_request_demo">Submit</button>
                               </div>
@@ -592,6 +592,8 @@ $fmcg(document).on('click','#btn_request_demo',function(){
      var request_phone = $fmcg('#request_phone').val();
      var request_message = $fmcg('#request_message').val(); 
      var error = 0;
+	 var demo_button_outer = $fmcg('#demo_button_outer').html();
+	 
      if(request_name==''){
          $fmcg("#err_request_name").show();
          error++;
@@ -611,6 +613,7 @@ $fmcg(document).on('click','#btn_request_demo',function(){
          $fmcg("#err_request_phone").hide();
      }
      if(error==0){
+		$fmcg('#demo_button_outer').html('<img width="50px" src="{{asset('img/loading-gif.gif')}}"/>');
         $fmcg.ajax({
                url: url_request_demo,
                type: "post",
@@ -626,11 +629,12 @@ $fmcg(document).on('click','#btn_request_demo',function(){
                dataType: 'json',
                success: function(menu_structure){
                     
-                       $('.Messages_demo').html(menu_structure.message);
-                  
-        } ,
+                       $fmcg('.Messages_demo').html(menu_structure.message);
+					   $fmcg('#demo_button_outer').html(demo_button_outer);
+        		} ,
              error: function(XMLHttpRequest, textStatus, errorThrown) { 
-               $('.Messages_demo').html('Some error occured. Please try again');
+				$fmcg('.Messages_demo').html('Some error occured. Please try again');
+				$fmcg('#demo_button_outer').html(demo_button_outer);
              }  
    
        })  ;

@@ -65,7 +65,7 @@ $cls_myNetw = "";
                         <button class="nav-link {{$cls}}" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Company Database</button>
                      </li>
                      <li class="nav-item " role="presentation">
-                        <a href="{{ route('user-login')}}" class="nav-link  " id="network-tab"   >My Network</button>
+                        <a href="{{ route('user-login')}}" class="nav-link  " id="network-tab"   >My Network</a>
                      </li>
                   </ul>
                   <div class="tab-content" id="myTabContent">
@@ -89,7 +89,7 @@ $cls_myNetw = "";
                               <div class="col-lg-3 col-12">
                                  <div class="mb-3">
                                     <div class="form-group fm0002">
-                                       <select class="js-example-data-array form-control select2-hidden-accessible class="form-control"" multiple tabindex="-1" aria-hidden="true" placeholder="Company Type" name="company_type[]" id='company_type' >
+                                       <select class="js-example-data-array form-control select2-hidden-accessible" class="form-control" multiple tabindex="-1" aria-hidden="true" placeholder="Company Type" name="company_type[]" id='company_type' >
                                        @if($CompanyType)
                                        @foreach($CompanyType as $item)
                                        <option value="{{$item->id}}">{{$item->company_type}}</option>
