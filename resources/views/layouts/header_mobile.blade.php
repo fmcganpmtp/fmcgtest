@@ -355,7 +355,7 @@ $fmcg(document).on('click','#btn_request_demo',function(){
          $fmcg("#err_request_phone").hide();
      }
      if(error==0){
-      $fmcg('#demo_button_outer').html('<img width="50px" src="{{asset('img/loading-gif.gif')}}"/>');
+      $fmcg('#demo_button_outer').html('<img width="50px" src="{{asset('img/Loading_icon.gif')}}"/>');
         $fmcg.ajax({
                url: url_request_demo,
                type: "post",
