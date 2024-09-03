@@ -195,7 +195,22 @@ const el1 = document.createElement('div')
    fnloadsellers(1); //top search
    $fmcg('#search_by_category,#search_by_category1').select2();
    
-   
+   $fmcg(document).on("click", ".hd_srch", function(event) { 
+      
+      $fmcg('.search-box').submit(false);
+      event.preventDefault();
+      $fmcg("#company_db_list").empty();
+      fnloadsellers();
+         
+	});
+   $fmcg("#search_by_name").keydown(function (event) { 
+         if (event.which == 13) { 
+             event.preventDefault();
+             $fmcg('.search-box').submit(false);
+             $fmcg("#company_db_list").empty();
+             fnloadsellers();
+         }
+   });    
    
    $fmcg("#search_by_name").keydown(function (event) { 
          if (event.which == 13) { 

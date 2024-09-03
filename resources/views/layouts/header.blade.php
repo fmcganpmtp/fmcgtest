@@ -162,36 +162,45 @@
 								
 									
 								<div class="dropdown-menu language-dropdown-menu" aria-labelledby="language2">
+								<a class="dropdown-item" href="{{route('MyCompanyProfile')}}"> <i class="fa fa-user" aria-hidden="true"></i> Profile </a> 
+								@if(($view_composer_profile_menu_visible_criteria['flag_blocked_active'] != true) && $view_composer_profile_menu_visible_criteria['flag2'])
+								<a class="dropdown-item" href="{{route('companyDB')}}"> <i class="fa fa-sitemap" aria-hidden="true"></i> Network </a> 
+								<a class="dropdown-item" href="{{route('seller.products')}}"> <i class="fa fa-plus-square" aria-hidden="true"></i>Manage Products </a>
+								<a class="dropdown-item" href="{{route('BusinessInsight')}}"> <i class="fa fa-signal" aria-hidden="true"></i> Insights </a>
+								@endif
+								@if((Auth::guard('user')->user()->seller_type!='Co-Seller')  && $view_composer_profile_menu_visible_criteria['flag2'] == true)
+									<a class="dropdown-item" href="{{route('seller.kyc.approval')}}"> <i class="fa fa-clone" aria-hidden="true"></i> KYC approval @if(Auth::guard('user')->user()->varification_status!="varified" )<i class="fa fa-exclamation notific" aria-hidden="true" ></i>@endif</a>
+								@endif
 								{{--	@if($view_composer_profile_menu_visible_criteria['general_companyDashboard'] == 1 )--}}
 								@if(($view_composer_profile_menu_visible_criteria['flag_blocked_active'] != true) && $view_composer_profile_menu_visible_criteria['flag2'])
-									<a class="dropdown-item" href="{{route('seller.dashboard')}}"> <i class="fa fa-tachometer" aria-hidden="true"></i> Dashboard</a>
+									<!-- <a class="dropdown-item" href="{{route('seller.dashboard')}}"> <i class="fa fa-tachometer" aria-hidden="true"></i> Dashboard</a> -->
 							    @endif
 								{{--	@endif  --}}
 								{{-- @if($view_composer_profile_menu_visible_criteria['general_companyProfile'] == 1 )--}}
-									<a class="dropdown-item" href="{{route('MyCompanyProfile')}}"> <i class="fa fa-user" aria-hidden="true"></i> My profile </a> 
+									
 								 {{-- @endif --}}
 									@if((Auth::guard('user')->user()->seller_type!='Co-Seller')  && $view_composer_profile_menu_visible_criteria['flag2'] == true)
-									<a class="dropdown-item" href="{{route('seller.kyc.approval')}}"> <i class="fa fa-clone" aria-hidden="true"></i> KYC approval @if(Auth::guard('user')->user()->varification_status!="varified" )<i class="fa fa-exclamation notific" aria-hidden="true" ></i>@endif</a>
+									<!-- <a class="dropdown-item" href="{{route('seller.kyc.approval')}}"> <i class="fa fa-clone" aria-hidden="true"></i> KYC approval @if(Auth::guard('user')->user()->varification_status!="varified" )<i class="fa fa-exclamation notific" aria-hidden="true" ></i>@endif</a> -->
 									@endif
 									@if(($view_composer_profile_menu_visible_criteria['flag_blocked_active'] != true) && $view_composer_profile_menu_visible_criteria['flag2'])
 									{{-- @if($view_composer_profile_menu_visible_criteria['network_expand'] == 1)--}}
 									 {{-- <a class="dropdown-item" href="{{route('user.mynetwork')}}"> <i class="fa fa-pencil-square-o" aria-hidden="true"></i>My Networks </a>--}}
-									 <a class="dropdown-item" href="{{route('companyDB')}}"> <i class="fa fa-pencil-square-o" aria-hidden="true"></i>Company Database </a> 
+									 <!-- <a class="dropdown-item" href="{{route('companyDB')}}"> <i class="fa fa-pencil-square-o" aria-hidden="true"></i>Company Database </a>  -->
 									{{-- @endif --}}
 									@if( $view_composer_profile_menu_visible_criteria['general_companyDashboard'] == 1 && Auth::guard('user')->user()->seller_type!='Co-Seller' ) 
 								<!--	<a class="dropdown-item" href="{{route('user.listcosellers')}}"> <i class="fa fa-toggle-on" aria-hidden="true"></i> Manage Co-Users </a> -->
 									@endif
 									
 								{{--	@if($view_composer_profile_menu_visible_criteria['prd_menu_visble'] == 1 || $view_composer_profile_menu_visible_criteria['active_product_count'] >0)--}}
-									<a class="dropdown-item" href="{{route('seller.products')}}"> <i class="fa fa-plus-square" aria-hidden="true"></i> Product </a>
+									<!-- <a class="dropdown-item" href="{{route('seller.products')}}"> <i class="fa fa-plus-square" aria-hidden="true"></i> Product </a> -->
 								{{--	@endif --}}
 									
 								{{--	@if($view_composer_profile_menu_visible_criteria['market_productRequests'] == 1 || $view_composer_profile_menu_visible_criteria['market_createProductRequests'] ==1) --}}
-									<a class="dropdown-item" href="{{ route('Product.Requests')}}"> <i class="fa fa-tasks" aria-hidden="true"></i> Product requests </a>
+									<!-- <a class="dropdown-item" href="{{ route('Product.Requests')}}"> <i class="fa fa-tasks" aria-hidden="true"></i> Product requests </a> -->
 								{{--	@endif--}}
 									@endif
 									
-									<a class="dropdown-item" href="{{ route('package.listing')}}"> <i class="fa fa-tasks" aria-hidden="true"></i> Subscription details </a>
+									<a class="dropdown-item" href="{{ route('package.listing')}}"> <i class="fa fa-tasks" aria-hidden="true"></i> Subscription  </a>
 								
 									<a class="dropdown-item" href="{{route('logout')}}"> <i class="fa fa-sign-out" aria-hidden="true"></i>Log out </a> 
 								</div>
@@ -259,6 +268,7 @@ Pricing</a></li>
 					<div class="row">
 					
 					<div class="col-lg-3">
+					@if(!Route::is('companyDB')&&!Route::is('network') )
 						<nav class="navbar navbar-expand-md navbar-light">
 							<div class="navbar-category">
 								<button type="button" id="categoryButton2" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="ri-menu-line"></i> ALL CATEGORIES <i class="arrow-down ri-arrow-down-s-line"></i> </button>
@@ -268,7 +278,7 @@ Pricing</a></li>
 							</div>
 							
 								</nav>
-								
+					@endif			
 								</div><!-->
 							
 							<!--menu.css-->
@@ -398,7 +408,12 @@ body{position:relative;}
 									$search_key_value = $category_Name_fr_slug;
 									?>
 							<form class="search-box" action="{{route('headsearch')}}"> 
+							
+								@if(!Route::is('companyDB')&&!Route::is('network') )
 								<input type="text"  name="search" autocomplete="off" id="search" class="form-control input-lg  {{ $errors->has('search') ? ' is-invalid' : '' }} hd_srch" value="{{$search_key_value}}" placeholder="Search"  >
+								@else
+								<input type="text"  name="search" autocomplete="off" id="search" class="form-control input-lg  {{ $errors->has('search') ? ' is-invalid' : '' }} hd_srch" value="{{$search_key_value}}" placeholder="Search companies based on Name/Keyword"  >
+								@endif
 								@if ($errors->has('search'))
 								<span class="invalid-feedback" role="alert">
 								<strong>{{ $errors->first('search') }}</strong>

@@ -269,8 +269,34 @@ const el1 = document.createElement('div')
    getnetworkList(1); //bottom already added list
    fnloadsellers(1); //top search
    $fmcg('#search_by_category,#search_by_category1').select2();
-   
-   
+   $fmcg(document).on("click", ".hd_srch_btn", function(event) { 
+		$fmcg('.search-box').submit(false);
+             event.preventDefault(); 
+      if($fmcg("#myTab .nav-item .nav-link.active").text() == 'My Network') {
+      
+      $fmcg("#search_by_name1").val($fmcg('.hd_srch').val()); 
+      fnbtnsearchnetwork();
+      }else{
+      $fmcg("#company_db_list").empty();
+      $fmcg("#search_by_name").val($fmcg('.hd_srch').val()); 
+      fnbtnsearchnetwork();
+      fnloadsellers();
+      }
+	});
+   $fmcg(document).on("click", ".hd_srch", function(event) { 
+      $fmcg('.search-box').submit(false);
+             event.preventDefault();             
+             if($fmcg("#myTab .nav-item .nav-link.active").text() == 'My Network'){
+               $fmcg("#search_by_name1").val($fmcg('.hd_srch').val()); 
+               fnbtnsearchnetwork();
+             }else{
+               $fmcg("#company_db_list").empty();
+               $fmcg("#search_by_name").val($fmcg('.hd_srch').val()); 
+               
+               fnloadsellers();
+             }
+       
+	});
    
    $fmcg("#search_by_name").keydown(function (event) { 
          if (event.which == 13) { 

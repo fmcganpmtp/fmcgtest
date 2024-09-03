@@ -20,6 +20,8 @@
 	                 $fmcg("#attachment_cntr").hide();
 	           }
 	    });
+		@if(!Route::is('companyDB')&&!Route::is('network') )
+
 	   $fmcg("#search").autocomplete({ 
 	       source: "{{ url('TypeaheadSearch') }}",
 	           focus: function( event, ui ) {
@@ -35,13 +37,16 @@
 	               .data( "item.autocomplete", item )
 	               .append(inner_html)
 	               .appendTo( ul );
-	   };
-	});
-
+	   };@endif
+	}); 
 </script> 
 <script src="{{ asset('js/category-menu.js')}}"></script>
 <script src="{{ asset('assets/js/jquery.emojiarea.min.js')}}"></script>
 <script type="text/javascript">
+	@if(Route::is('companyDB')||Route::is('network') )
+	
+	;
+	@else
 	var route = "{{ url('autocomplete-search') }}";
 	$fmcg('#top_bar_search').typeahead({ 
 	  limit:20,
@@ -63,6 +68,7 @@
 	    window.location=url_path;
 	  }
 	});
+	@endif
 </script>
 <script>
 	$fmcg(document).ready(function(){

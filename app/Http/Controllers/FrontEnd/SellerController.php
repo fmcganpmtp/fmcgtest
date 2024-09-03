@@ -68,12 +68,17 @@ class SellerController extends Controller
             $usertype = Auth::guard("user")->user()->usertype;
             $user = User::find($user_id);
             $categories = Category::where("parent_id", null)->where('name','<>','')->orderBy('name','ASC')->get();
-        
+            
+            $categorylist = SellerProduct::select("parent_category_id")
+            ->where("user_id", $user_id)
+            ->where('status','<>','deleted') 
+            ->pluck("parent_category_id")->all();;
+            $product_categories = Category::whereIn("id", $categorylist)->where("parent_id", null)->where('name','<>','')->orderBy('name','ASC')->get();
             //if not seller redirect to home
             if($this->isMobile()) { 
-                return view("frontEnd.seller.ListProducts_mobile",compact("user", "categories"));
+                return view("frontEnd.seller.ListProducts_mobile",compact("user", "categories","product_categories"));
             } else {
-                return view( "frontEnd.seller.ListProducts", compact("user", "categories") );
+                return view( "frontEnd.seller.ListProducts", compact("user", "categories","product_categories") );
             }
         }else {
             return redirect()->route("home");

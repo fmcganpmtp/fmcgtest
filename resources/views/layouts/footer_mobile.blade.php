@@ -270,6 +270,8 @@ elGeneral.innerHTML = "This option is disabled as per the current package.Would 
 			}
 			});
 		});
+
+		@if(!Route::is('companyDB')&&!Route::is('network') )
 		$fmcg(document).ready(function () {
 		$fmcg('.hd_srch_btn').prop('disabled', true);
 		
@@ -282,6 +284,8 @@ elGeneral.innerHTML = "This option is disabled as per the current package.Would 
 		}
 		});
 		});
+		@endif
+		
 		wow = new WOW(
 		{
 		animateClass: 'animated',
