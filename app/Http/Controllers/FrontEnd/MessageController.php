@@ -510,4 +510,12 @@ class MessageController extends Controller
         $return_array = array('ajax_status' => true, 'member2'=>$member2,'default_chatroom'=>$default_chatroom,'member1'=>$member1,'cmp_img'=>$cmp_img);
         return response()->json($return_array);
     }
+    public function deleteChatroom(Request $request){
+        $default_chatroom = $request->default_chatroom;
+        $chat_room_exist = 0;
+        $sender_details = [];      
+        Chatroom::where('default_chatroom',$request->default_chatroom)->delete();         
+        $return_array = array('ajax_status' => true);
+        return response()->json($return_array);
+    }
 }

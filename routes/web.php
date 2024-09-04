@@ -58,6 +58,7 @@ Route::get('/checkNotifications', 'App\Http\Controllers\FrontEnd\MessageControll
 Route::get('/messages', 'App\Http\Controllers\FrontEnd\MessageController@messagesPage')->name('chat.messages');
 Route::post('/ajaxmessages', 'App\Http\Controllers\FrontEnd\MessageController@ajaxmessages')->name('chat.ajaxmessages');
 Route::post('/create-chatroom', 'App\Http\Controllers\FrontEnd\MessageController@createChatroom')->name('chat.create.chatroom');
+Route::post('/delete-chatroom', 'App\Http\Controllers\FrontEnd\MessageController@deleteChatroom')->name('chat.delete.chatroom');
 
 //stripe
 Route::post('/session', 'App\Http\Controllers\FrontEnd\StripeController@session')->name('session');

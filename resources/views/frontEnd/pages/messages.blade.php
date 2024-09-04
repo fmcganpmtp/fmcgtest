@@ -409,6 +409,26 @@ $fmcg(document).on('keyup','#stream_chat_text',async function(){
     }
     $fmcg(document).on('click','#deleteChatroom',async function(){      
       const destroy = await channel.delete();
+      if(destroy){
+        var url=  "{{route('chat.delete.chatroom')}}"; 
+        $fmcg.ajax({
+          url:url,
+          type:"POST",
+          dataType: 'json',
+          data:{
+            "_token": "{{ csrf_token() }}",
+            'default_chatroom':default_chatroom, 
+          },
+          success:async function(data){ 
+          //console.log(data.default_chatroom);console.log(data.member1);;console.log(data.member2);
+          ;
+          
+          },
+          error: function (xhr) {
+            ;            
+          }
+        });
+      }
       await checkChannels();
       $fmcg('.msg-list-box:first').trigger('click');
     });
