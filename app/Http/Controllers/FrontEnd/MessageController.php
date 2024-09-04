@@ -514,7 +514,7 @@ class MessageController extends Controller
         $default_chatroom = $request->default_chatroom;
         $chat_room_exist = 0;
         $sender_details = [];      
-        Chatroom::where('default_chatroom',$request->default_chatroom)->delete();         
+        Chatroom::where('chatroom',$request->default_chatroom)->delete();         
         $return_array = array('ajax_status' => true);
         return response()->json($return_array);
     }
