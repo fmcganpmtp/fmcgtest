@@ -9,6 +9,7 @@
 	                 $fmcg("#attachment_cntr").hide();
 	           }
 	    });
+		@if(!Route::is('companyDB')&&!Route::is('network') )
 	   $fmcg("#search").autocomplete({ 
 	       source: "{{ url('TypeaheadSearch') }}",
 	           focus: function( event, ui ) {
@@ -26,7 +27,7 @@
 	               .appendTo( ul );
 	   };
 	   
-	   
+	   @endif
 	   $fmcg("#chat_close").click(function(e) {
 	             $fmcg("#divmaincontainer").hide();
 
@@ -39,6 +40,10 @@
 
 <script>
 	$fmcg(document).ready(function(){
+		@if(Route::is('companyDB')||Route::is('network') )
+	
+	;
+	@else
 		var route = "{{ url('autocomplete-search') }}";
 	$fmcg('#top_bar_search').typeahead({ 
 	  limit:20,
@@ -60,6 +65,7 @@
 	    window.location=url_path;
 	  }
 	});
+	@endif
 	  $fmcg("#categoryButton2").click(function(){
 	    $fmcg(".new-cat-menu").slideToggle();
 	  });
