@@ -230,7 +230,7 @@ Pricing</a></li>
                         
 							<li class="bfr-log"><a href="{{route('user-login')}}"><i class="fa fa-user" aria-hidden="true"></i><b>Sign in</b></a></li>
 							<li class="bfr-log"><a href="{{ route('user-register') }}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>  <b>Register</b></a></li>
-							<li ><button class="btn btn-warning"  data-bs-toggle="modal" data-bs-target="#staticBackdrop">Request</br>Demo</button></li>
+							<!-- <li ><button class="btn btn-warning"  data-bs-toggle="modal" data-bs-target="#staticBackdrop">Request</br>Demo</button></li> -->
 						</ul>
 						
 						

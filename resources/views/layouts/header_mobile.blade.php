@@ -257,7 +257,7 @@
     <li><a class="dropdown-item" href="{{route('pricing')}}"><i class="fa fa-tag" aria-hidden="true"></i>Pricing</a></li> 
     <li><a class="dropdown-item" href="{{route('user-login')}}"><i class="fa fa-user" aria-hidden="true"></i>Sign in </a></li>
 	<li><a class="dropdown-item" href="{{ route('user-register') }}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>Register </a></li>
-	<li><button class="btn btn-warning"  data-bs-toggle="modal" data-bs-target="#staticBackdrop">Request Demo</button></li>
+	<!-- <li><button class="btn btn-warning"  data-bs-toggle="modal" data-bs-target="#staticBackdrop">Request Demo</button></li> -->
   </ul>
 </div>
                         <?php } ?>
