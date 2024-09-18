@@ -1158,12 +1158,14 @@ public function adminassignpackagetoadmin (Request $request)
     $subitem=$request->get('subitem');
 
     $user_details=  User::find($hdnuser_id);
+    $user_id_list = User::select('id')->distinct()->where('users.status','<>','Deleted')->where('users.company_id',$user_details->company_id)->get()->pluck('id')->toArray();
+    foreach($user_id_list as $row){
     $accounts = PackageAccount::where('id',$subitem)->first();
     $no_of_accounts = 0;
     if(!empty($accounts))
         $no_of_accounts = $accounts->no_of_accounts;    
 
-    $order_data=array('user_id'=>$hdnuser_id,
+    $order_data=array('user_id'=>$row,
         'package_id'=> $package_id,
         'order_type'=>'',
         'accounts_id'=> $subitem,
@@ -1190,10 +1192,10 @@ public function adminassignpackagetoadmin (Request $request)
              
      $order=OrderDetail::create($order_data);
 
-     DB::table('subscriptions')->where('subscriptions.user_id', '=',$hdnuser_id)
+     DB::table('subscriptions')->where('subscriptions.user_id', '=',$row)
                                ->where('subscriptions.status','Active')->update(['status'=>'In-Active']);
 
-     $Subscription_data=array('user_id'=>$hdnuser_id,
+     $Subscription_data=array('user_id'=>$row,
             'package_id'=> $package_id,
             'auto_renewal'=>1,
             'type'=> 'seller',
@@ -1204,8 +1206,10 @@ public function adminassignpackagetoadmin (Request $request)
            );
      
      $Subscription=Subscription::create( $Subscription_data);
+    }
     // $user_details->update(["usertype"=>strtolower($Package->user_type)]);
      $user_details->update(["usertype"=>'seller']);
+        
      echo json_encode("Package Assigned");
 }
 
@@ -1513,9 +1517,9 @@ public function adminusersellersstatusupdates (Request $request)
             ->whereDate('subscriptions.expairy_date', '>=', Carbon::now())
             ->orderBy('packages.package_basic_price','DESC')
             ->first(); 
-            if(!empty($package_data)){
-                $market_uploads = $package_data->market_uploads;    
-                if($package_data->market_uploads=='')
+            if(!empty($package_data_display)){
+                $market_uploads = $package_data_display->market_uploads;    
+                if($package_data_display->market_uploads=='')
                    $prdts_to_uplod="Unlimited";
                 elseif($market_uploads>0 && $market_uploads>$product_count)
                     $prdts_to_uplod=$market_uploads-$product_count;
@@ -1537,7 +1541,7 @@ public function adminusersellersstatusupdates (Request $request)
                 "address" => $address,
                 "created_at" => date('d-m-Y', strtotime($record->created_at)),
                 "country_name" => $record->country_name, 
-                "pkg_name" => $package_data_display->name,   
+                "pkg_name" => (!empty($package_data_display))?$package_data_display->name:'Free',   
                 "subscription_start" => $record->subscription_start==''? 'Nill': date('d-m-Y', strtotime($record->subscription_start)),
                 "subscription" => $record->expairy_date==''? 'Nill': date('d-m-Y', strtotime($record->expairy_date)),);    
         }
