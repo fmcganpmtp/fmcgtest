@@ -1506,6 +1506,13 @@ public function adminusersellersstatusupdates (Request $request)
             $product_count_pending = SellerProductTemp::where("user_id", $userId)->where("status",'<>', "deleted")->count(); 
             $product_count = $product_count_approved + $product_count_pending;                 
             $prdts_to_uplod=0;
+            $user_id_list = User::select('id')->distinct()->where('users.status','<>','Deleted')->where('users.company_id',$record->company_id)->get()->pluck('id')->toArray();
+            $package_data_display = DB::table('subscriptions')->leftJoin('packages', 'packages.id', '=', 'subscriptions.package_id')
+            ->whereIn('subscriptions.user_id', $user_id_list)
+            ->where('subscriptions.status','active')
+            ->whereDate('subscriptions.expairy_date', '>=', Carbon::now())
+            ->orderBy('packages.package_basic_price','DESC')
+            ->first(); 
             if(!empty($package_data)){
                 $market_uploads = $package_data->market_uploads;    
                 if($package_data->market_uploads=='')
@@ -1530,7 +1537,7 @@ public function adminusersellersstatusupdates (Request $request)
                 "address" => $address,
                 "created_at" => date('d-m-Y', strtotime($record->created_at)),
                 "country_name" => $record->country_name, 
-                "pkg_name" => $record->pkg_name,   
+                "pkg_name" => $package_data_display->name,   
                 "subscription_start" => $record->subscription_start==''? 'Nill': date('d-m-Y', strtotime($record->subscription_start)),
                 "subscription" => $record->expairy_date==''? 'Nill': date('d-m-Y', strtotime($record->expairy_date)),);    
         }
