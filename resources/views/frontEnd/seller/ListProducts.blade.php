@@ -46,31 +46,9 @@
                 <div class="form-group">
                   <select type="text" id="category_id"  class="form-control" >
                                         <option value="">Filter By Category</option>
-                                        @if($categories)
-                                            @foreach($categories as $item)
-                                                <?php 
-                                                 $category_ids = [];
-                                                $categorylist=App\Models\Category::where('parent_id',$item->id)->pluck('id')->all();       // all subcategories                   
-                                                array_push($category_ids,$item->id);  //parent category to array
-                                                foreach ($categorylist as $value){
-                                                  if(!in_array($value, $category_ids)) //subctegory id not in $category_id array
-                                                    array_push($category_ids,$value); //all category ids as array
-                                                  for ($i=0; $i<count($category_ids);$i++){
-                                                    $category1=App\Models\Category::where('parent_id',$category_ids[$i])->get();
-                                                    foreach ($category1 as  $value2){   
-                                                      if(!in_array($value2->id, $category_ids))
-                                                        array_push($category_ids,$value2->id);
-                                                    }                             
-                                                  }                
-                                                }
-                                                $userId = Auth::guard("user")->user()->id;
-                                                if (Auth::guard("user")->user()->seller_type != "Master") 
-                                                    $userId = Auth::guard("user")->user()->parent_id;
-                                                $productlist=App\Models\SellerProduct::whereIn('category_id',$category_ids)->where('user_id',$userId)->where('status','active')->get();
-                                                
-                                                if(count($productlist)==0)
-                                                  continue;
-                                                  ?>
+                                        @if($product_categories)
+                                            @foreach($product_categories as $item)
+                                                  
                                                 <option value="{{$item->id}}" >{{$item->name ?? ''}}</option>
                                                 
                                             @endforeach
