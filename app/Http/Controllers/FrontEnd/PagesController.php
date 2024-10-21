@@ -1297,7 +1297,7 @@ public function companyDbs(Request $request){
     				//->whereIn('users.id',$active_sellers)
     			//	->whereNotIn('users.id',$network_id)
     				->select('users.name as user_name','users.profile_pic','company_types.company_type','users.varification_status','buyer_companies.about_company as about_company','buyer_companies.company_image as company_image','users.id as main_id'
-    				,'buyer_companies.company_street','countries.name as country_name','buyer_companies.company_type as cmp_type','buyer_companies.company_name','buyer_companies.company_location','users.country_id',DB::raw("(CASE  WHEN subscriptions.expairy_date > NOW() THEN 'true' ELSE 'false' END ) as expairy"))->having('expairy', 'true');
+    				,'buyer_companies.company_street','countries.name as country_name','buyer_companies.company_type as cmp_type','buyer_companies.company_name','buyer_companies.company_location','users.country_id',DB::raw("(CASE  WHEN subscriptions.expairy_date > NOW() THEN 'true' ELSE 'false' END ) as expairy"));
     	if($seller_name_search!=''){	
     		$user_data = $user_data->Where(function ($query) use ($seller_name_search) {
     			$query->orWhere(DB::raw('UPPER(buyer_companies.about_company)'), 'LIKE','%'.$seller_name_search.'%');
