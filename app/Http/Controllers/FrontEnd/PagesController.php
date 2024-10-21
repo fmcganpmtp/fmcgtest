@@ -653,8 +653,8 @@ $join->on('seller_products.user_id', '=', 'users.id');
 //$join->orOn('seller_products.user_id', '=', 'users.parent_id');
 		})
 	   // ->where('seller_products.product_visibility','Yes')
-->whereIn('users.id',$network_id)
-->whereIn('users.id',$active_sellers);                  
+->whereIn('users.id',$network_id);
+//->whereIn('users.id',$active_sellers);                  
 $category_ids=[];      
 		if($category_id!='0'){
 			 $categorylist=Category::where('parent_id',$category_id)->pluck('id')->all();       // all subcategories                  
@@ -688,7 +688,7 @@ $join->on('buyer_companies.user_id', '=', 'users.id');
 
 ->select('users.name as user_name','users.id','company_types.company_type','users.profile_pic','users.varification_status','users.id as main_id','buyer_companies.company_street','buyer_companies.company_type as cmp_type','buyer_companies.company_name','buyer_companies.company_location','buyer_companies.company_image as company_image','countries.name as country_name')
 ->whereIn('users.id',$network_id)
-->whereIn('users.id',$active_sellers)
+//->whereIn('users.id',$active_sellers)
 ->when($category_id!=0, function ($query) use ($sellers_list,$offile_userslist) {
 $query->where(function ($query1) use ($sellers_list,$offile_userslist){
 						 $query1->whereIn('users.id',$sellers_list)->orwhereIn('users.id',$offile_userslist);

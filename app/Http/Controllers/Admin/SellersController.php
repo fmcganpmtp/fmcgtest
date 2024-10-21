@@ -1525,6 +1525,7 @@ public function adminusersellersstatusupdates (Request $request)
                     $prdts_to_uplod=$market_uploads-$product_count;
                     	
             }
+            $pakage_name = (!empty($package_data_display))?$package_data_display->name:'Free';
             $data_arr[] = array(
                 "id" => $record->id,
                 "name" =>$name,
@@ -1543,7 +1544,8 @@ public function adminusersellersstatusupdates (Request $request)
                 "country_name" => $record->country_name, 
                 "pkg_name" => (!empty($package_data_display))?$package_data_display->name:'Free',   
                 "subscription_start" => $record->subscription_start==''? 'Nill': date('d-m-Y', strtotime($record->subscription_start)),
-                "subscription" => $record->expairy_date==''? 'Nill': date('d-m-Y', strtotime($record->expairy_date)),);    
+                "subscription" => ($pakage_name=='Free')?'':($record->expairy_date==''? 'Nill': date('d-m-Y', strtotime($record->expairy_date))),
+			);        
         }
 
         $response = array(
