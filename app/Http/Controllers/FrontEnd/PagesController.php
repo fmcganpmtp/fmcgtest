@@ -1430,4 +1430,16 @@ public function companyDbs(Request $request){
         }
        // return view('frontEnd.pages.company_db_list',['user_data'=>$data_arr,'user_qry'=>$user_data,'last_page'=>$last_page,'company_types'=>$company_types]); 
     }
+	 public static function generateCaptcha()
+    {
+        $configCaptchaType = config('captcha.CAPTCHA_TYPE');
+
+        // If the config number is 0, generate a 'flat' (alphanumeric) captcha,
+        // otherwise, generate a 'math' captcha
+        if ($configCaptchaType == 0) {
+            return captcha_img('alphanumeric');
+        } else {
+            return captcha_img('math');
+        }
+    }
 }
