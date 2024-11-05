@@ -81,7 +81,7 @@ Route::view('/home', 'home');
 Route::view('/user', 'user');
 //Excel import
 Route::post('/seller-products', 'App\Http\Controllers\FrontEnd\SellerController@import')->name('import-exl');
-
+Route::get('/reload-captcha',  'App\Http\Controllers\FrontEnd\PagesController@reloadCaptcha')->name('reloadCaptcha');
 Route::get('/product-details/{productId}', 'App\Http\Controllers\FrontEnd\ProductController@ProductDetails')->name('product.details');
 Route::get('autocompleteSproductFrontend', 'App\Http\Controllers\FrontEnd\ProductController@autocompleteSproductFrontend')->name('autocompleteSproductFrontend');
 Route::get('/list-categories/{categoryId}', 'App\Http\Controllers\FrontEnd\CategoryController@ListCategories')->name('list.categories');

@@ -1430,6 +1430,27 @@ public function companyDbs(Request $request){
         }
        // return view('frontEnd.pages.company_db_list',['user_data'=>$data_arr,'user_qry'=>$user_data,'last_page'=>$last_page,'company_types'=>$company_types]); 
     }
+	public function reloadCaptcha()
+    {
+        $configCaptchaType = config('captcha.CAPTCHA_TYPE');
+
+        // Initialize variable to store captcha type
+        $captchaType = '';
+
+        // If the config number is 0, set captcha type to 'flat' (alphanumeric)
+        // If it's 1, set captcha type to 'math'
+        if ($configCaptchaType == 0) {
+            $captchaType = 'alphanumeric';
+        } else {
+            $captchaType = 'math';
+        }
+
+        // the generated type will be stored in the captchaImage
+        $captchaImage = captcha_img($captchaType);
+
+        // Return JSON response with the generated captcha image
+        return response()->json(['captcha' => $captchaImage]);
+    }
 	 public static function generateCaptcha()
     {
         $configCaptchaType = config('captcha.CAPTCHA_TYPE');
