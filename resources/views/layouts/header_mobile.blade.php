@@ -60,7 +60,7 @@
 
   gtag('config', 'G-TG7NKKFFF4');
 </script>
-
+<script id="vtag-ai-js" async src="https://r2.leadsy.ai/tag.js" data-pid="2T80cbuqUotJS9AB" data-version="062024"></script>
    </head>
    <body>
       <div class="loaderajax" style="display: none;">
@@ -257,7 +257,7 @@
     <li><a class="dropdown-item" href="{{route('pricing')}}"><i class="fa fa-tag" aria-hidden="true"></i>Pricing</a></li> 
     <li><a class="dropdown-item" href="{{route('user-login')}}"><i class="fa fa-user" aria-hidden="true"></i>Sign in </a></li>
 	<li><a class="dropdown-item" href="{{ route('user-register') }}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>Register </a></li>
-	<!-- <li><button class="btn btn-warning"  data-bs-toggle="modal" data-bs-target="#staticBackdrop">Request Demo</button></li> -->
+	<li><button class="btn btn-warning"  data-bs-toggle="modal" data-bs-target="#staticBackdrop">Request Demo</button></li>
   </ul>
 </div>
                         <?php } ?>
@@ -329,6 +329,15 @@
                                   <textarea class="form-control" id="request_message" rows="3"></textarea>
                                   
                                 </div>
+                                <div class="mb-3 captcha">
+                                 <label for="exampleFormControlTextarea1" class="form-label">Calculate the Value</label>
+                                 <span>{!! App\Http\Controllers\FrontEnd\PagesController::generateCaptcha(config('captcha.default.type')) !!}</span>
+                                 <button type="button" class="btn btn-danger reload" id="reload">↻</button>
+                              </div>
+                              <div class="mb-3">
+                                 <input id="captcha" type="text" class="form-control" placeholder="Enter Captcha" name="captcha" id="captcha">
+                                 <span id="err_request_captcha" style="display:none">Please enter Captcha</span>
+                              </div>
                               </div>
                               <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary btn-save" data-bs-dismiss="modal">Close</button>
@@ -350,6 +359,7 @@ $fmcg(document).on('click','#btn_request_demo',function(){
      var request_message = $fmcg('#request_message').val(); 
      var error = 0;
      var demo_button_outer = $fmcg('#demo_button_outer').html();
+     var captcha = $fmcg('#captcha').val(); 
      if(request_name==''){
          $fmcg("#err_request_name").show();
          error++;
@@ -368,6 +378,12 @@ $fmcg(document).on('click','#btn_request_demo',function(){
      }else{
          $fmcg("#err_request_phone").hide();
      }
+     if(captcha==''){
+         $fmcg("#err_request_captcha").show();
+         error++;
+     }else{
+         $fmcg("#err_request_captcha").hide();
+     }
      if(error==0){
       $fmcg('#demo_button_outer').html('<img width="50px" src="{{asset('img/Loading_icon.gif')}}"/>');
         $fmcg.ajax({
@@ -381,13 +397,19 @@ $fmcg(document).on('click','#btn_request_demo',function(){
                    'request_email':request_email,
                    'request_phone':request_phone,
                    'request_message':request_message, 
+                   'captcha':captcha
                 },
                dataType: 'json',
                success: function(menu_structure){
                     
                   $fmcg('.Messages_demo').html(menu_structure.message);
 					   $fmcg('#demo_button_outer').html(demo_button_outer);
-                  
+					   $fmcg('#request_name').val('');
+					   $fmcg('#request_email').val('');
+					   $fmcg('#request_phone').val('');
+				       $fmcg('#request_message').val(''); 
+					   $fmcg('#captcha').val(''); 
+					   $fmcg('#reload').trigger('click');
         } ,
              error: function(XMLHttpRequest, textStatus, errorThrown) { 
                $fmcg('.Messages_demo').html('Some error occured. Please try again');
