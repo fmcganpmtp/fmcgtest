@@ -421,4 +421,13 @@ $fmcg(document).on('click','#btn_request_demo',function(){
     }
      
 });
+$fmcg(document).on('click','#reload',function(){ 
+	$fmcg.ajax({
+            type: 'GET',
+            url: 'reload-captcha',
+            success: function(data) {
+                $fmcg(".captcha span").html(data.captcha);
+            }
+        });
+    });
 </script>
