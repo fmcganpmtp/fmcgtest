@@ -339,6 +339,7 @@
                                  <span id="err_request_captcha" style="display:none">Please enter Captcha</span>
                               </div>
                               </div>
+							    <div class="Messages_demo text-warning"></div>
                               <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary btn-save" data-bs-dismiss="modal">Close</button>
                                 <button type="button" class="btn btn-primary btn-save" id="btn_request_demo">Submit</button>
